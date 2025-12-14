@@ -330,7 +330,6 @@ article{padding:0.6rem 0 1rem}
 @media(max-width:600px){
   .site-header{padding:.75rem 0.75rem}
   .section-grid{grid-template-columns:1fr}
-  .theme-toggle{display:none}
   
   .top-nav ul {
     flex-wrap: wrap;
