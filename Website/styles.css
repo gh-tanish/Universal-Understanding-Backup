@@ -126,7 +126,7 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   color: #93c5fd;
 }
 
-/* Level 3: Turquoise (VI1.1.1) - two dots */
+/* Level 3: Sky Blue (VI1.1.1) - two dots */
 .section-card[href*="1-1-1-"] .card-ref,
 .section-card[href*="1-1-2-"] .card-ref,
 .section-card[href*="1-1-3-"] .card-ref,
@@ -137,9 +137,9 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 .section-card[href*="1-2-1-"] .card-ref,
 .section-card[href*="1-2-2-"] .card-ref,
 .section-card[href*="1-2-3-"] .card-ref {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(45, 212, 191, 0.08));
-  border-color: rgba(20, 184, 166, 0.25);
-  color: #5eead4;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(56, 189, 248, 0.08));
+  border-color: rgba(14, 165, 233, 0.25);
+  color: #7dd3fc;
 }
 
 /* Level 4: Cyan (VI1.1.1.1) - three dots */
@@ -217,9 +217,9 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 .light-mode .section-card[href*="1-2-1-"] .card-ref,
 .light-mode .section-card[href*="1-2-2-"] .card-ref,
 .light-mode .section-card[href*="1-2-3-"] .card-ref {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(45, 212, 191, 0.05));
-  border-color: rgba(20, 184, 166, 0.2);
-  color: #14b8a6;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.05));
+  border-color: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
 }
 
 .light-mode .section-card[href*="1-1-1-1-"] .card-ref,
@@ -378,11 +378,11 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   color: #93c5fd;
 }
 
-/* Level 3: Turquoise */
+/* Level 3: Sky Blue */
 .search-ref[data-depth="3"] {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(45, 212, 191, 0.08));
-  border-color: rgba(20, 184, 166, 0.25);
-  color: #5eead4;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(56, 189, 248, 0.08));
+  border-color: rgba(14, 165, 233, 0.25);
+  color: #7dd3fc;
 }
 
 /* Level 4: Cyan */
@@ -405,9 +405,9 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 }
 
 .light-mode .search-ref[data-depth="3"] {
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(45, 212, 191, 0.05));
-  border-color: rgba(20, 184, 166, 0.2);
-  color: #14b8a6;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.05));
+  border-color: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
 }
 
 .light-mode .search-ref[data-depth="4"] {
