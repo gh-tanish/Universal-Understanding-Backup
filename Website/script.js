@@ -212,9 +212,24 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Resolve the target path relative to the current page, so it works everywhere
-            const resolved = new URL(targetPath, window.location.href);
-            window.location.href = resolved.href;
+            // Always resolve from Website root for robust navigation
+            // Find the /Website/ root in the current path
+            const current = window.location.pathname;
+            const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
+            let websiteRoot = '/Website/';
+            if (websiteIdx !== -1) {
+              websiteRoot = current.substring(0, websiteIdx + 9);
+            }
+            // Remove any leading slash from targetPath
+            const cleanTarget = targetPath.replace(/^\/+/, '');
+            // Compose the full path
+            const fullPath = websiteRoot + cleanTarget;
+            // Use location.origin if available, else just use the path
+            if (window.location.origin && window.location.origin !== 'null') {
+              window.location.href = window.location.origin + fullPath;
+            } else {
+              window.location.href = fullPath;
+            }
           };
           item.addEventListener('click', handleNavigation);
         });
