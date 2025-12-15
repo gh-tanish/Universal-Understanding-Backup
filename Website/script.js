@@ -1,69 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Helper function to convert absolute path to relative based on current page location
-  function toRelativePath(targetPath) {
-    try {
-      // Get current path
-      let currentPath = window.location.pathname;
-      
-      // Find "Website" or "website" in the path and get everything after it
-      const websiteMatch = currentPath.match(/\/(website|Website)\//i);
-      if (websiteMatch) {
-        const websiteIndex = currentPath.indexOf(websiteMatch[0]);
-        currentPath = currentPath.substring(websiteIndex + websiteMatch[0].length);
-      }
-      
-      // Remove index.html from current path to get directory
-      currentPath = currentPath.replace(/index\.html$/i, '');
-      
-      // Normalize target path (remove leading slashes)
-      let target = targetPath.replace(/^\/+/, '');
-      
-      // Split both paths into parts (filter out empty strings)
-      const currentParts = currentPath.split('/').filter(p => p);
-      const targetParts = target.split('/').filter(p => p);
-      
-      console.log('Current parts:', currentParts);
-      console.log('Target parts:', targetParts);
-      
-      // Find common base path
-      let commonLength = 0;
-      const minLength = Math.min(currentParts.length, targetParts.length);
-      
-      for (let i = 0; i < minLength; i++) {
-        if (currentParts[i].toLowerCase() === targetParts[i].toLowerCase()) {
-          commonLength++;
-        } else {
-          break;
-        }
-      }
-      
-      console.log('Common length:', commonLength);
-      
-      // Calculate steps up needed (from current directory, not including common path)
-      const stepsUp = currentParts.length - commonLength;
-      console.log('Steps up:', stepsUp);
-      
-      // Build relative path
-      let relativePath = '';
-      if (stepsUp > 0) {
-        relativePath = '../'.repeat(stepsUp);
-      }
-      
-      // Add remaining target path (parts after common base)
-      const remainingPath = targetParts.slice(commonLength).join('/');
-      console.log('Remaining path:', remainingPath);
-      
-      relativePath += remainingPath;
-      
-      console.log('Final relative path:', relativePath);
-      return relativePath || './';
-      
-    } catch (e) {
-      console.error('Error calculating relative path:', e);
-      return targetPath.replace(/^\/+/, '');
-    }
-  }
-
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
@@ -189,15 +124,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
-            const path = this.dataset.path;
-            console.log('Clicked path:', path);
-            console.log('Current location:', window.location.pathname);
+            const targetPath = this.dataset.path.replace(/^\/+/, ''); // Remove leading slashes like "Scientia/1-Mathematical-Foundations/..."
             
-            // Convert absolute path to relative path based on current depth
-            const relativePath = toRelativePath(path);
-            console.log('Calculated relative path:', relativePath);
+            // Count how many levels deep we are from the Website root
+            const currentPath = window.location.pathname;
+            const pathAfterWebsite = currentPath.split(/[\/\\]website[\/\\]/i)[1] || currentPath;
+            const currentDepth = pathAfterWebsite.split('/').filter(p => p && p.toLowerCase() !== 'index.html').length;
             
-            window.location.href = relativePath;
+            // Build path: go up to Website root, then navigate to target
+            const upPath = currentDepth > 0 ? '../'.repeat(currentDepth) : '';
+            const finalPath = upPath + targetPath;
+            
+            console.log('Current depth:', currentDepth, 'Final path:', finalPath);
+            window.location.href = finalPath;
           });
         });
       } else {
