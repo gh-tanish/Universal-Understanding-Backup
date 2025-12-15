@@ -1,16 +1,17 @@
 /* Smooth page transition */
 /* Smoother page transition */
 /* Even gentler page transition */
+
 .fade-in {
-  animation: fadeInUU 1.2s cubic-bezier(0.33, 1, 0.68, 1);
+  animation: fadeInUU 1.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes fadeInUU {
-  from { opacity: 0; transform: translateY(32px); }
+  from { opacity: 0; transform: translateY(40px); }
   to { opacity: 1; transform: none; }
 }
 
 .fade-out {
-  animation: fadeOutUU 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation: fadeOutUU 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 @keyframes fadeOutUU {
   from { opacity: 1; }
