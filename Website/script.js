@@ -14,9 +14,12 @@ document.addEventListener('DOMContentLoaded', function() {
       // Normalize target path (remove leading slashes)
       let target = targetPath.replace(/^\/+/, '');
       
-      // Split both paths into parts
+      // Split both paths into parts (filter out empty strings)
       const currentParts = currentPath.split('/').filter(p => p);
       const targetParts = target.split('/').filter(p => p);
+      
+      console.log('Current parts:', currentParts);
+      console.log('Target parts:', targetParts);
       
       // Find common base path
       let commonLength = 0;
@@ -30,8 +33,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
       
-      // Calculate steps up needed
+      console.log('Common length:', commonLength);
+      
+      // Calculate steps up needed (from current directory, not including common path)
       const stepsUp = currentParts.length - commonLength;
+      console.log('Steps up:', stepsUp);
       
       // Build relative path
       let relativePath = '';
@@ -39,15 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
         relativePath = '../'.repeat(stepsUp);
       }
       
-      // Add remaining target path
+      // Add remaining target path (parts after common base)
       const remainingPath = targetParts.slice(commonLength).join('/');
+      console.log('Remaining path:', remainingPath);
+      
       relativePath += remainingPath;
       
-      // If we're in the same directory and no upward navigation needed
-      if (relativePath === '') {
-        relativePath = remainingPath;
-      }
-      
+      console.log('Final relative path:', relativePath);
       return relativePath || './';
       
     } catch (e) {
