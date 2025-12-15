@@ -182,8 +182,13 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
             const path = this.dataset.path;
+            console.log('Clicked path:', path);
+            console.log('Current location:', window.location.pathname);
+            
             // Convert absolute path to relative path based on current depth
             const relativePath = toRelativePath(path);
+            console.log('Calculated relative path:', relativePath);
+            
             window.location.href = relativePath;
           });
         });
