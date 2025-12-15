@@ -195,10 +195,13 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results (with touch support for mobile)
         document.querySelectorAll('.search-result-item').forEach(item => {
           const handleNavigation = function(e) {
+            // Prevent default behavior and stop propagation immediately
             e.preventDefault();
             e.stopPropagation();
+            e.stopImmediatePropagation();
             
             const targetPath = this.dataset.path;
+            if (!targetPath) return;
             
             // Get current URL and normalize to forward slashes
             const currentUrl = window.location.href.replace(/\\/g, '/');
@@ -238,17 +241,13 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Final relative path:', relativePath);
             
-            // Use both methods for better compatibility
-            try {
-              window.location.href = relativePath;
-            } catch(err) {
-              window.location.assign(relativePath);
-            }
+            // Navigate immediately
+            window.location.href = relativePath;
           };
           
-          // Add both click and touchend events for mobile compatibility
-          item.addEventListener('click', handleNavigation);
-          item.addEventListener('touchend', handleNavigation);
+          // Use mousedown/touchstart for immediate response before click can be cancelled
+          item.addEventListener('mousedown', handleNavigation, { passive: false });
+          item.addEventListener('touchstart', handleNavigation, { passive: false });
         });
       } else {
         searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
@@ -258,11 +257,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Close search results when clicking outside
     document.addEventListener('click', function(e) {
+    const closeSearchResults = function(e) {
       if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
         searchResults.classList.remove('active');
       }
-    });
+    };
     
+    document.addEventListener('click', closeSearchResults);
+    document.addEventListener('touchstart', closeSearchResults
     // Keep search open when focusing on search bar
     searchBar.addEventListener('focus', function() {
       if (this.value.trim().length > 0) {
