@@ -287,24 +287,36 @@ document.addEventListener('DOMContentLoaded', function() {
   // Toggle function for expandable content
   var toggleButtons = document.querySelectorAll('.toggle-btn');
   
+  console.log('Found toggle buttons:', toggleButtons.length);
+  
   toggleButtons.forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
+      
+      console.log('Toggle button clicked');
       
       var nextDiv = this.nextElementSibling;
       while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
         nextDiv = nextDiv.nextElementSibling;
       }
       
+      console.log('Found toggle content:', nextDiv);
+      
       if (nextDiv) {
         var isExpanded = nextDiv.classList.contains('expanded');
+        console.log('Is expanded:', isExpanded);
+        
         if (isExpanded) {
           nextDiv.classList.remove('expanded');
           this.classList.remove('expanded');
+          console.log('Collapsed');
         } else {
           nextDiv.classList.add('expanded');
           this.classList.add('expanded');
+          console.log('Expanded');
         }
+      } else {
+        console.log('No toggle content found!');
       }
     });
   });
