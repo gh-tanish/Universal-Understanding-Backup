@@ -210,64 +210,23 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.search-result-item').forEach(item => {
           const handleNavigation = function(e) {
             e.preventDefault();
-            
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            
-            // Get current page's pathname
-            const currentPath = window.location.pathname.replace(/\\/g, '/');
-            
-            console.log('Current pathname:', currentPath);
-            console.log('Target path:', targetPath);
-            
-            // Find where "Website" folder is in the path (case-insensitive)
-            const lowerPath = currentPath.toLowerCase();
-            let websiteIdx = lowerPath.lastIndexOf('/website/');
-            
-            // If not found, try finding any occurrence with different case
-            if (websiteIdx === -1) {
-              // Try to find by looking for common patterns
-              const pathSegments = currentPath.split('/');
-              for (let i = 0; i < pathSegments.length; i++) {
-                if (pathSegments[i].toLowerCase() === 'website') {
-                  websiteIdx = currentPath.toLowerCase().indexOf('/' + pathSegments[i].toLowerCase() + '/');
-                  break;
-                }
-              }
+            // Always resolve from Website root for reliability
+            let websiteRoot = '/Website/';
+            // If current path is already inside Website, use relative
+            if (window.location.pathname.toLowerCase().includes('/website/')) {
+              // Count how many directories deep we are after /Website/
+              const rel = window.location.pathname.split('/Website/')[1] || '';
+              const depth = (rel.match(/\//g) || []).length - 1;
+              let prefix = '';
+              for (let i = 0; i < depth; i++) prefix += '../';
+              window.location.href = prefix + targetPath;
+            } else {
+              // Not in Website, just use Website root
+              window.location.href = websiteRoot + targetPath;
             }
-            
-            if (websiteIdx === -1) {
-              // Still can't find Website folder, navigate directly
-              console.log('Website folder not found, using direct path');
-              window.location.href = targetPath;
-              return;
-            }
-            
-            // Get current location relative to Website root
-            // This includes the current file (e.g., "Scientia/index.html" or "Scientia/1-Mathematical-Foundations/index.html")
-            const relativeToWebsite = currentPath.substring(websiteIdx + 9); // 9 = length of '/website/'
-            
-            console.log('Relative to Website:', relativeToWebsite);
-            
-            // Count how many directories deep we are (count slashes, each slash means we need one ../)
-            const slashCount = (relativeToWebsite.match(/\//g) || []).length;
-            
-            console.log('Slash count (depth):', slashCount);
-            
-            // Build relative path: go up 'slashCount' levels, then navigate to target
-            let relativePath = '';
-            for (let i = 0; i < slashCount; i++) {
-              relativePath += '../';
-            }
-            relativePath += targetPath;
-            
-            console.log('Final relative path:', relativePath);
-            
-            // Navigate immediately
-            window.location.href = relativePath;
           };
-          
-          // Use click event which works on both mobile and desktop
           item.addEventListener('click', handleNavigation);
         });
       } else {

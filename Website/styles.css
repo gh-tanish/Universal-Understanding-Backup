@@ -370,46 +370,48 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   top: calc(100% + 8px);
   left: 0;
   min-width: 280px;
-  background: rgba(15,23,32,0.98);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(24,28,38,0.98);
+  border: 1px solid rgba(91,33,182,0.18);
   border-radius: 8px;
   max-height: 400px;
   overflow-y: auto;
   display: none;
-  z-index: 1000;
-    display: flex; /* Added display flex */
-    flex-direction: column; /* Added flex-direction column */
-    align-items: center; /* Centered items */
-    justify-content: center; /* Centered items */
-    text-align: center; /* Centered text */
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
   -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
 .search-results.active {
   display: block;
 }
-    width: 100%; /* Added width 100% */
 
 .light-mode .search-results {
   background: rgba(255,255,255,0.98);
-  border-color: rgba(0,0,0,0.12);
+  border-color: rgba(91,33,182,0.10);
+  box-shadow: 0 4px 16px rgba(91,33,182,0.10);
 }
 
 
 .search-result-item {
   padding: 10px 12px;
-  width: 100%; /* Added width 100% for mobile */
+  width: 100%;
   cursor: pointer;
   transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+  -webkit-tap-highlight-color: rgba(91,33,182,0.08);
   touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
+  background: transparent;
+  color: var(--text);
 }
 
 .search-result-item:not(:last-child) {
@@ -426,15 +428,19 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
 }
 
 .search-result-item:hover {
-  background: rgba(255,255,255,0.08);
+  background: rgba(91,33,182,0.10);
+  color: var(--accent-2);
 }
 
 .light-mode .search-result-item {
   border-bottom-color: rgba(0,0,0,0.06);
+  background: transparent;
+  color: var(--text);
 }
 
 .light-mode .search-result-item:hover {
-  background: rgba(0,0,0,0.05);
+  background: rgba(91,33,182,0.06);
+  color: var(--accent-2);
 }
 
 .search-ref {
