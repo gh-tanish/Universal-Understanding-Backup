@@ -212,9 +212,8 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Always resolve from Website root using URL API for robust navigation
-            const websiteRoot = window.location.origin + '/Website/';
-            const resolved = new URL(targetPath.replace(/^\/?/, ''), websiteRoot);
+            // Resolve the target path relative to the current page, so it works everywhere
+            const resolved = new URL(targetPath, window.location.href);
             window.location.href = resolved.href;
           };
           item.addEventListener('click', handleNavigation);
