@@ -212,8 +212,27 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Always navigate using absolute path from /Website/ root
-            window.location.href = '/Website/' + targetPath.replace(/^\/?/, '');
+            // If running as file://, use relative path; else use absolute from /Website/
+            if (window.location.protocol === 'file:') {
+              // Calculate relative path from current file to target
+              const current = window.location.pathname;
+              // Find the Website root in the current path
+              const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
+              let fromPath = current;
+              if (websiteIdx !== -1) {
+                fromPath = current.substring(websiteIdx + 9); // skip '/website/'
+              }
+              // Remove filename if present (e.g., index.html)
+              let fromDir = fromPath.replace(/[^/]*$/, '');
+              // Count how many directories deep we are
+              const upLevels = (fromDir.match(/\//g) || []).filter(Boolean).length - 1;
+              let relPrefix = '';
+              for (let i = 0; i < upLevels; i++) relPrefix += '../';
+              window.location.href = relPrefix + targetPath;
+            } else {
+              // On web server, use absolute path
+              window.location.href = '/Website/' + targetPath.replace(/^\/?/, '');
+            }
           };
           item.addEventListener('click', handleNavigation);
         });
