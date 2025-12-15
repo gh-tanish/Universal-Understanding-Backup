@@ -351,6 +351,7 @@ article{padding:0.6rem 0 1rem}
   }
   
   .theme-toggle {
+    display: inline-flex !important;
     font-size: 0.85rem;
     padding: 0.3rem 0.5rem;
     white-space: nowrap;
