@@ -67,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (themeDropdownBtn) {
       if (theme === 'system') themeDropdownBtn.textContent = 'System';
       else if (theme === 'light') themeDropdownBtn.textContent = 'Light';
+      else if (theme === 'dark') themeDropdownBtn.textContent = 'Dark';
       else themeDropdownBtn.textContent = 'Dark';
     }
   }

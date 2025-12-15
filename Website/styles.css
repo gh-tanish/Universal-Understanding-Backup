@@ -1,19 +1,36 @@
 /* Theme dropdown styles */
-.theme-toggle-dropdown { position: relative; display: inline-block; }
-.theme-toggle { min-width: 80px; }
+.theme-toggle-dropdown { position: relative; display: inline-block; z-index: 1100; }
+.theme-toggle {
+  min-width: 80px;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
 .theme-dropdown-list {
   position: absolute;
   top: 110%;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--surface, #222);
   border: 1px solid rgba(0,0,0,0.12);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.12);
   min-width: 120px;
-  z-index: 1001;
+  z-index: 1200;
   padding: 0.3rem 0;
   margin: 0;
   list-style: none;
+}
+@media (max-width: 600px) {
+  .theme-dropdown-list {
+    left: 50% !important;
+    right: auto !important;
+    min-width: 120px;
+    max-width: 90vw;
+    transform: translateX(-50%) !important;
+    font-size: 1.05rem;
+  }
 }
 .theme-dropdown-list li {
   padding: 0.5rem 1.2rem;
@@ -23,6 +40,10 @@
   border: none;
   font-size: 1rem;
   transition: background 0.2s;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .theme-dropdown-list li:hover, .theme-dropdown-list li:focus {
   background: var(--accent, #5b21b6);
