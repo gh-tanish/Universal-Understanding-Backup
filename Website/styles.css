@@ -12,6 +12,31 @@
   text-shadow: none;
 }
 
+body.light-mode .info-italic {
+  color: #000 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .info-italic,
+  body.dark-mode .info-italic {
+    color: #fff !important;
+    opacity: 1;
+    text-shadow: none;
+  }
+}
+
+body.light-mode .info-italic {
+  color: #000 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .info-italic {
+    color: #fff !important;
+    opacity: 1;
+    text-shadow: none;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   .info-italic {
     color: #fff !important;
