@@ -38,18 +38,34 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
+  const systemThemeBtn = document.getElementById('systemThemeBtn');
   const body = document.body;
-  
-  // Update button text based on current mode
-  if (themeToggle) {
+
+  function updateThemeButtonText() {
     const isLight = body.classList.contains('light-mode');
-    themeToggle.textContent = isLight ? 'Light' : 'Dark';
-    
-    // Add click handler
+    if (themeToggle) themeToggle.textContent = isLight ? 'Light' : 'Dark';
+  }
+  updateThemeButtonText();
+
+  if (themeToggle) {
     themeToggle.onclick = function() {
       const isLightMode = body.classList.toggle('light-mode');
       this.textContent = isLightMode ? 'Light' : 'Dark';
       localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    };
+  }
+
+  if (systemThemeBtn) {
+    systemThemeBtn.onclick = function() {
+      localStorage.removeItem('theme');
+      // Re-apply system theme
+      const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      if (systemTheme === 'light') {
+        body.classList.add('light-mode');
+      } else {
+        body.classList.remove('light-mode');
+      }
+      updateThemeButtonText();
     };
   }
 
