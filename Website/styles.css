@@ -353,8 +353,16 @@ article{padding:0.6rem 0 1rem}
   .theme-toggle {
     display: inline-flex !important;
     font-size: 0.85rem;
-    padding: 0.3rem 0.5rem;
+    padding: 0.5rem 0.65rem;
     white-space: nowrap;
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1000;
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
   }
   
   .search-container {
