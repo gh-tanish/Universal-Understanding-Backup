@@ -6,6 +6,11 @@
   justify-content: center;
   align-items: center;
   display: flex;
+  visibility: hidden;
+}
+
+body.js-theme-ready .theme-toggle {
+  visibility: visible;
 }
 .theme-dropdown-list {
   position: absolute;
@@ -30,6 +35,14 @@
     max-width: 90vw;
     transform: translateX(-50%) !important;
     font-size: 1.05rem;
+  }
+  .theme-toggle {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+    display: flex;
+    align-items: center;
   }
 }
 .theme-dropdown-list li {

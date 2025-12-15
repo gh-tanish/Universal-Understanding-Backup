@@ -36,10 +36,14 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
+
   // Theme dropdown functionality
   const themeDropdownBtn = document.getElementById('themeDropdownBtn');
   const themeDropdownList = document.getElementById('themeDropdownList');
   const body = document.body;
+
+  // Mark body as JS-ready for theme
+  body.classList.add('js-theme-ready');
 
   function setTheme(theme) {
     if (theme === 'system') {
