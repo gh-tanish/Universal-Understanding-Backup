@@ -203,38 +203,37 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetPath = this.dataset.path;
             if (!targetPath) return;
             
-            // Get current URL and normalize to forward slashes
-            const currentUrl = window.location.href.replace(/\\/g, '/');
+            // Get current page's pathname
+            const currentPath = window.location.pathname.replace(/\\/g, '/');
+            
+            console.log('Current pathname:', currentPath);
+            console.log('Target path:', targetPath);
             
             // Find where "Website" folder is in the path (case-insensitive)
-            const lowerUrl = currentUrl.toLowerCase();
-            const websiteIdx = lowerUrl.lastIndexOf('/website/');
+            const lowerPath = currentPath.toLowerCase();
+            const websiteIdx = lowerPath.lastIndexOf('/website/');
             
             if (websiteIdx === -1) {
-              // Can't find Website folder, try direct navigation
+              // Can't find Website folder, navigate directly
+              console.log('Website folder not found, using direct path');
               window.location.href = targetPath;
               return;
             }
             
-            // Get the part after /website/ (this is our current location relative to Website root)
-            const afterWebsite = currentUrl.substring(websiteIdx + 9); // 9 = length of '/website/'
+            // Get current location relative to Website root
+            // This includes the current file (e.g., "Scientia/index.html" or "Scientia/1-Mathematical-Foundations/index.html")
+            const relativeToWebsite = currentPath.substring(websiteIdx + 9); // 9 = length of '/website/'
             
-            // Split by slashes and count directories (exclude the .html file and empty parts)
-            const parts = afterWebsite.split('/').filter(part => {
-              return part && part.trim() !== '' && !part.match(/\.html?$/i);
-            });
+            console.log('Relative to Website:', relativeToWebsite);
             
-            const depth = parts.length;
+            // Count how many directories deep we are (count slashes, each slash means we need one ../)
+            const slashCount = (relativeToWebsite.match(/\//g) || []).length;
             
-            console.log('Current URL:', currentUrl);
-            console.log('After Website:', afterWebsite);
-            console.log('Parts:', parts);
-            console.log('Depth:', depth);
-            console.log('Target:', targetPath);
+            console.log('Slash count (depth):', slashCount);
             
-            // Build relative path: go up 'depth' levels, then navigate to target
+            // Build relative path: go up 'slashCount' levels, then navigate to target
             let relativePath = '';
-            for (let i = 0; i < depth; i++) {
+            for (let i = 0; i < slashCount; i++) {
               relativePath += '../';
             }
             relativePath += targetPath;
