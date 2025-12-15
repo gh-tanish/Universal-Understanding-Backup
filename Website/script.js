@@ -192,9 +192,12 @@ document.addEventListener('DOMContentLoaded', function() {
         `}).join('');
         searchResults.classList.add('active');
 
-        // Add click handlers to results
+        // Add click handlers to results (with touch support for mobile)
         document.querySelectorAll('.search-result-item').forEach(item => {
-          item.addEventListener('click', function() {
+          const handleNavigation = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             const targetPath = this.dataset.path;
             
             // Get current URL and normalize to forward slashes
@@ -235,8 +238,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Final relative path:', relativePath);
             
-            window.location.href = relativePath;
-          });
+            // Use both methods for better compatibility
+            try {
+              window.location.href = relativePath;
+            } catch(err) {
+              window.location.assign(relativePath);
+            }
+          };
+          
+          // Add both click and touchend events for mobile compatibility
+          item.addEventListener('click', handleNavigation);
+          item.addEventListener('touchend', handleNavigation);
         });
       } else {
         searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
