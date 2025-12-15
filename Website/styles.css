@@ -371,21 +371,49 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   backdrop-filter: blur(4px);
 }
 
-/* Level 2: Blue - one dot in reference */
-.search-ref[class*=".1"],
-.search-ref:not([class*=".1."]):not([class*=".2."]):not([class*=".3."]):not([class*=".4."]):not([class*=".5."]):not([class*=".6."]):not([class*=".7."]):not([class*=".8."]):not([class*=".9."])[data-ref*=".1"],
-.search-ref:not([class*=".1."]):not([class*=".2."]):not([class*=".3."]):not([class*=".4."]):not([class*=".5."]):not([class*=".6."]):not([class*=".7."]):not([class*=".8."]):not([class*=".9."])[data-ref*=".2"],
-.search-ref:not([class*=".1."]):not([class*=".2."]):not([class*=".3."]):not([class*=".4."]):not([class*=".5."]):not([class*=".6."]):not([class*=".7."]):not([class*=".8."]):not([class*=".9."])[data-ref*=".3"],
-.search-ref:not([class*=".1."]):not([class*=".2."]):not([class*=".3."]):not([class*=".4."]):not([class*=".5."]):not([class*=".6."]):not([class*=".7."]):not([class*=".8."]):not([class*=".9."])[data-ref*=".4"] {
+/* Level 2: Blue */
+.search-ref[data-depth="2"] {
   background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.08));
   border-color: rgba(37, 99, 235, 0.25);
   color: #93c5fd;
+}
+
+/* Level 3: Turquoise */
+.search-ref[data-depth="3"] {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(45, 212, 191, 0.08));
+  border-color: rgba(20, 184, 166, 0.25);
+  color: #5eead4;
+}
+
+/* Level 4: Cyan */
+.search-ref[data-depth="4"] {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(34, 211, 238, 0.08));
+  border-color: rgba(6, 182, 212, 0.25);
+  color: #67e8f9;
 }
 
 .light-mode .search-ref {
   background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(168, 85, 247, 0.05));
   border-color: rgba(139, 92, 246, 0.2);
   color: #7c3aed;
+}
+
+.light-mode .search-ref[data-depth="2"] {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(59, 130, 246, 0.05));
+  border-color: rgba(37, 99, 235, 0.2);
+  color: #2563eb;
+}
+
+.light-mode .search-ref[data-depth="3"] {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(45, 212, 191, 0.05));
+  border-color: rgba(20, 184, 166, 0.2);
+  color: #14b8a6;
+}
+
+.light-mode .search-ref[data-depth="4"] {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(34, 211, 238, 0.05));
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #06b6d4;
 }
 
 .search-result-title {

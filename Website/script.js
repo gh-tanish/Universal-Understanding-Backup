@@ -147,15 +147,18 @@ document.addEventListener('DOMContentLoaded', function() {
       );
 
       if (matches.length > 0) {
-        searchResults.innerHTML = matches.map(match => `
+        searchResults.innerHTML = matches.map(match => {
+          const dotCount = (match.ref.match(/\./g) || []).length;
+          const depth = dotCount + 1;
+          return `
           <div class="search-result-item" data-path="${match.path}">
             <div class="search-result-content">
               <div class="search-result-title">${match.title}</div>
               <div class="search-result-path">${match.section}</div>
             </div>
-            <span class="search-ref">${match.ref}</span>
+            <span class="search-ref" data-depth="${depth}">${match.ref}</span>
           </div>
-        `).join('');
+        `}).join('');
         searchResults.classList.add('active');
 
         // Add click handlers to results
