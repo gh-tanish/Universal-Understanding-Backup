@@ -124,21 +124,27 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
-            const targetPath = this.dataset.path.replace(/^\/+/, ''); // Remove leading slashes
+            const targetPath = this.dataset.path;
             
-            // Get current URL and find the Website folder
-            const currentHref = window.location.href;
-            const websiteMatch = currentHref.match(/(.*\/[Ww]ebsite)\//);
-            
-            if (websiteMatch) {
-              // Build absolute path: everything up to and including Website, then target path
-              const websiteBase = websiteMatch[1];
-              const fullPath = websiteBase + '/' + targetPath;
-              console.log('Navigating to:', fullPath);
-              window.location.href = fullPath;
+            // Check if we're on a web server (http/https) or local file (file://)
+            if (window.location.protocol === 'file:') {
+              // For file:// protocol, build full path from Website folder
+              const currentHref = window.location.href;
+              const websiteMatch = currentHref.match(/(.*\/[Ww]ebsite)\//);
+              
+              if (websiteMatch) {
+                const websiteBase = websiteMatch[1];
+                const cleanPath = targetPath.replace(/^\/+/, '');
+                const fullPath = websiteBase + '/' + cleanPath;
+                console.log('File protocol - navigating to:', fullPath);
+                window.location.href = fullPath;
+              } else {
+                console.log('No Website folder found');
+                window.location.href = targetPath;
+              }
             } else {
-              // Fallback: try relative path
-              console.log('Website folder not found, trying relative:', targetPath);
+              // For http/https, use the path as-is (it's already absolute from server root)
+              console.log('Web server - navigating to:', targetPath);
               window.location.href = targetPath;
             }
           });
