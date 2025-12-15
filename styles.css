@@ -41,6 +41,9 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   .top-nav::after {
     animation: none;
   }
+  .site-header h1 {
+    animation: none;
+  }
 }
 
 /* Tag chips */
@@ -276,7 +279,13 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif}
 .top-nav li a.active{color:var(--accent-2);border-bottom-color:var(--accent)}
 
 .site-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--surface);border-bottom:1px solid rgba(255,255,255,0.04);transition:background-color 0.4s ease,border-color 0.4s ease}
-.site-header h1{margin:0;font-size:1.1rem;background:linear-gradient(90deg,#2563eb,#5b21b6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.site-header h1{margin:0;font-size:1.1rem;background:linear-gradient(90deg,#4facfe,#8f6bff,#ff7ab6,#4facfe);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleGradientShift 8s ease-in-out infinite}
+
+@keyframes titleGradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 .main-nav{list-style:none;margin:0;padding:0;display:flex;gap:1rem}
 .main-nav li a{text-decoration:none;color:var(--text);padding:.25rem .5rem;border-radius:4px;transition:all 0.3s ease}
 .main-nav li a:hover{background:rgba(255,255,255,0.02)}
