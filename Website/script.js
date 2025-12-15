@@ -255,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Close search results when clicking outside
-    document.addEventListener('click', function(e) {
     const closeSearchResults = function(e) {
       if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) {
         searchResults.classList.remove('active');
@@ -263,7 +262,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     document.addEventListener('click', closeSearchResults);
-    document.addEventListener('touchstart', closeSearchResults
+    document.addEventListener('touchstart', closeSearchResults);
+    
     // Keep search open when focusing on search bar
     searchBar.addEventListener('focus', function() {
       if (this.value.trim().length > 0) {
