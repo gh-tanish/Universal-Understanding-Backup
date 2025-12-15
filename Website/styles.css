@@ -124,13 +124,15 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   100% { background-position: 0% 50%; }
 }
 
-/* Respect reduced motion preferences */
+
+/* Respect reduced motion preferences only if user sets it */
 @media (prefers-reduced-motion: reduce) {
-  .top-nav::after {
-    animation: none;
-  }
-  .site-header h1 {
-    animation: none;
+  .top-nav::after,
+  .site-header h1,
+  .fade-in,
+  .fade-out {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
