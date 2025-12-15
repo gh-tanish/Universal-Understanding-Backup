@@ -54,8 +54,33 @@ body.light-mode{--bg:#f5f5f7;--surface:#ffffff;--muted:#6b7280;--text:#1f2937;--
 body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background-color 0.4s ease,color 0.4s ease}
 
 .top-nav{background:rgba(15,23,32,0.95);border-bottom:1px solid rgba(91,33,182,0.3);padding:0.75rem 0;position:sticky;top:0;z-index:100;transition:background-color 0.4s ease,border-color 0.4s ease}
-.top-nav ul{list-style:none;margin:0;padding:0 2rem;display:flex;gap:2rem;max-width:1100px;margin:0 auto;align-items:center;justify-content:center}
-.top-nav li a{color:var(--text);text-decoration:none;font-weight:500;padding:0.5rem 0;border-bottom:2px solid transparent;transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1)}
+.top-nav ul {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  gap: 2rem;
+  max-width: 1100px;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+}
+.top-nav li {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.top-nav li a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-bottom: 2px solid transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
 
 /* Gradient underline directly under the top bar */
 .top-nav {
@@ -480,22 +505,50 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   opacity: 0.8;
 }
 
+@media (max-width: 900px) {
+  .top-nav ul {
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .top-nav ul {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem;
+    justify-content: flex-start;
+  }
+  .top-nav li {
+    flex-shrink: 0;
+  }
+  .top-nav li:not(.search-container) {
+    font-size: 0.85rem;
+  }
+  .top-nav li a {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+  }
+  .theme-toggle {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.65rem;
+    min-height: 44px;
+    min-width: 44px;
+  }
   .search-container {
+    order: 10;
+    flex-basis: 100%;
     width: 100%;
     margin: 0.5rem 0;
   }
-  
   .search-bar {
     width: 100%;
     max-width: 100%;
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
   }
-  
   .search-bar:focus {
     width: 100%;
   }
-  
   .search-results {
     left: 0;
     right: 0;
