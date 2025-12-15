@@ -330,16 +330,30 @@ article{padding:0.6rem 0 1rem}
 @media(max-width:600px){
   .site-header{padding:.75rem 0.75rem}
   .section-grid{grid-template-columns:1fr}
-  .theme-toggle{display:none}
   
   .top-nav ul {
     flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
+    justify-content: flex-start;
+  }
+  
+  .top-nav li {
+    flex-shrink: 0;
   }
   
   .top-nav li:not(.search-container) {
     font-size: 0.85rem;
+  }
+  
+  .top-nav li a {
+    font-size: 0.85rem;
+  }
+  
+  .theme-toggle {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    white-space: nowrap;
   }
   
   .search-container {
