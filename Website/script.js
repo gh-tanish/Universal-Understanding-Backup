@@ -124,36 +124,23 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
-            const targetPath = this.dataset.path.replace(/^\/+/, ''); // Remove leading slashes like "Scientia/1-Mathematical-Foundations/..."
+            const targetPath = this.dataset.path.replace(/^\/+/, ''); // Remove leading slashes
             
-            // Get current location and find how deep we are from Website folder
+            // Get current URL and find the Website folder
             const currentHref = window.location.href;
+            const websiteMatch = currentHref.match(/(.*\/[Ww]ebsite)\//);
             
-            // Find the Website folder in the current URL
-            const websiteIndex = currentHref.toLowerCase().lastIndexOf('/website/');
-            if (websiteIndex === -1) {
-              // Fallback: just try the target path
+            if (websiteMatch) {
+              // Build absolute path: everything up to and including Website, then target path
+              const websiteBase = websiteMatch[1];
+              const fullPath = websiteBase + '/' + targetPath;
+              console.log('Navigating to:', fullPath);
+              window.location.href = fullPath;
+            } else {
+              // Fallback: try relative path
+              console.log('Website folder not found, trying relative:', targetPath);
               window.location.href = targetPath;
-              return;
             }
-            
-            // Get everything after /website/
-            const afterWebsite = currentHref.substring(websiteIndex + 9); // 9 = length of '/website/'
-            
-            // Count directory levels (excluding the current file)
-            const parts = afterWebsite.split('/').filter(p => p && !p.match(/\.html?$/i));
-            const depth = parts.length;
-            
-            // Build relative path
-            const upPath = depth > 0 ? '../'.repeat(depth) : '';
-            const finalPath = upPath + targetPath;
-            
-            console.log('Current URL:', currentHref);
-            console.log('After website:', afterWebsite);
-            console.log('Depth:', depth, 'Parts:', parts);
-            console.log('Final path:', finalPath);
-            
-            window.location.href = finalPath;
           });
         });
       } else {
