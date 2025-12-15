@@ -1,38 +1,58 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Helper function to convert absolute path to relative based on current page location
-  function toRelativePath(absolutePath) {
+  function toRelativePath(targetPath) {
     try {
-      // Get current page URL and create a base URL (directory of current page)
-      const currentUrl = new URL(window.location.href);
-      const currentDir = currentUrl.href.substring(0, currentUrl.href.lastIndexOf('/') + 1);
+      // Get current path and normalize it
+      let currentPath = window.location.pathname;
       
-      // Find the "Website" folder in the current path
-      const currentPath = currentUrl.pathname;
-      const websiteMatch = currentPath.match(/\/([Ww]ebsite)\//);
-      
-      if (!websiteMatch) {
-        // Fallback: just remove leading slash and hope for the best
-        return absolutePath.replace(/^\/+/, '');
+      // Remove index.html from current path to get directory
+      currentPath = currentPath.replace(/\/index\.html$/i, '/');
+      if (!currentPath.endsWith('/')) {
+        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
       }
       
-      // Get position of Website folder
-      const websitePos = currentPath.indexOf(websiteMatch[0]);
-      const websiteBase = currentPath.substring(0, websitePos + websiteMatch[0].length);
+      // Normalize target path (remove leading slashes)
+      let target = targetPath.replace(/^\/+/, '');
       
-      // Calculate path from current location to Website root
-      const afterWebsite = currentPath.substring(websitePos + websiteMatch[0].length);
-      const parts = afterWebsite.split('/').filter(p => p && p.toLowerCase() !== 'index.html');
-      const levelsUp = parts.length;
+      // Split both paths into parts
+      const currentParts = currentPath.split('/').filter(p => p);
+      const targetParts = target.split('/').filter(p => p);
+      
+      // Find common base path
+      let commonLength = 0;
+      const minLength = Math.min(currentParts.length, targetParts.length);
+      
+      for (let i = 0; i < minLength; i++) {
+        if (currentParts[i].toLowerCase() === targetParts[i].toLowerCase()) {
+          commonLength++;
+        } else {
+          break;
+        }
+      }
+      
+      // Calculate steps up needed
+      const stepsUp = currentParts.length - commonLength;
       
       // Build relative path
-      const upPath = levelsUp > 0 ? '../'.repeat(levelsUp) : './';
-      const cleanTarget = absolutePath.replace(/^\/+/, '');
+      let relativePath = '';
+      if (stepsUp > 0) {
+        relativePath = '../'.repeat(stepsUp);
+      }
       
-      return upPath + cleanTarget;
+      // Add remaining target path
+      const remainingPath = targetParts.slice(commonLength).join('/');
+      relativePath += remainingPath;
+      
+      // If we're in the same directory and no upward navigation needed
+      if (relativePath === '') {
+        relativePath = remainingPath;
+      }
+      
+      return relativePath || './';
+      
     } catch (e) {
       console.error('Error calculating relative path:', e);
-      // Fallback
-      return absolutePath.replace(/^\/+/, '');
+      return targetPath.replace(/^\/+/, '');
     }
   }
 
