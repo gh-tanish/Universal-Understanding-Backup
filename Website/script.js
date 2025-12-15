@@ -33,34 +33,34 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchBar = document.getElementById('siteSearch');
   const searchResults = document.getElementById('searchResults');
   
-  // Define searchable topics with root-relative paths
+  // Define searchable topics with relative paths (no leading slash)
   const topics = [
-    { title: 'Mathematical Foundations', path: '/Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
-    { title: 'Algebra & Functions', path: '/Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
-    { title: 'Calculus', path: '/Scientia/1-Mathematical-Foundations/1-2-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.2' },
-    { title: 'Linear Algebra', path: '/Scientia/1-Mathematical-Foundations/1-3-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.3' },
-    { title: 'Differential Equations', path: '/Scientia/1-Mathematical-Foundations/1-4-Differential-Equations/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.4' },
-    { title: 'Complex Numbers & Complex Analysis', path: '/Scientia/1-Mathematical-Foundations/1-5-Complex-Numbers/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.5' },
-    { title: 'Vector & Tensor Calculus', path: '/Scientia/1-Mathematical-Foundations/1-6-Vector-and-Tensor-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.6' },
-    { title: 'Differential Geometry', path: '/Scientia/1-Mathematical-Foundations/1-7-Differential-Geometry/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.7' },
-    { title: 'Probability & Statistics', path: '/Scientia/1-Mathematical-Foundations/1-8-Probability-and-Statistics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.8' },
-    { title: 'Fourier & Transform Methods', path: '/Scientia/1-Mathematical-Foundations/1-9-Fourier-and-Transform-Methods/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.9' },
-    { title: 'Group Theory Basics', path: '/Scientia/1-Mathematical-Foundations/1-10-Group-Theory-Basics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.10' },
-    { title: 'Number Theory', path: '/Scientia/1-Mathematical-Foundations/1-11-Number-Theory/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.11' },
-    { title: 'Topology Basics', path: '/Scientia/1-Mathematical-Foundations/1-12-Topology-Basics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.12' },
-    { title: 'Advanced Linear Algebra & Functional Analysis', path: '/Scientia/1-Mathematical-Foundations/1-13-Advanced-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.13' },
-    { title: 'Transcendental Functions', path: '/Scientia/1-Mathematical-Foundations/1-14-Transcendental-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.14' },
-    { title: 'Physics Foundations', path: '/Scientia/2-Physics-Foundations/index.html', section: 'Scientia', ref: 'SC2' },
-    { title: 'Quantum Mechanics', path: '/Scientia/3-Quantum-Mechanics/index.html', section: 'Scientia', ref: 'SC3' },
-    { title: 'Relativity', path: '/Scientia/4-Relativity/index.html', section: 'Scientia', ref: 'SC4' },
-    { title: 'Foundational Biomedical Sciences', path: '/Vitalis/1-Foundational-Biomedical-Sciences/index.html', section: 'Vitalis', ref: 'VI1' },
-    { title: 'Anatomy & Human Structure', path: '/Vitalis/2-Anatomy-and-Human-Structure/index.html', section: 'Vitalis', ref: 'VI2' },
-    { title: 'Physiology', path: '/Vitalis/3-Physiology/index.html', section: 'Vitalis', ref: 'VI3' },
-    { title: 'Pathology', path: '/Vitalis/4-Pathology/index.html', section: 'Vitalis', ref: 'VI4' },
-    { title: 'Pharmacology', path: '/Vitalis/5-Pharmacology/index.html', section: 'Vitalis', ref: 'VI5' },
-    { title: 'Clinical Medicine', path: '/Vitalis/6-Clinical-Medicine/index.html', section: 'Vitalis', ref: 'VI6' },
-    { title: 'Medical Specialties & Subspecialties', path: '/Vitalis/7-Medical-Specialties/index.html', section: 'Vitalis', ref: 'VI7' },
-    { title: 'Advanced & Research Medicine', path: '/Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
+    { title: 'Mathematical Foundations', path: 'Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
+    { title: 'Algebra & Functions', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
+    { title: 'Calculus', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.2' },
+    { title: 'Linear Algebra', path: 'Scientia/1-Mathematical-Foundations/1-3-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.3' },
+    { title: 'Differential Equations', path: 'Scientia/1-Mathematical-Foundations/1-4-Differential-Equations/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.4' },
+    { title: 'Complex Numbers & Complex Analysis', path: 'Scientia/1-Mathematical-Foundations/1-5-Complex-Numbers/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.5' },
+    { title: 'Vector & Tensor Calculus', path: 'Scientia/1-Mathematical-Foundations/1-6-Vector-and-Tensor-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.6' },
+    { title: 'Differential Geometry', path: 'Scientia/1-Mathematical-Foundations/1-7-Differential-Geometry/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.7' },
+    { title: 'Probability & Statistics', path: 'Scientia/1-Mathematical-Foundations/1-8-Probability-and-Statistics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.8' },
+    { title: 'Fourier & Transform Methods', path: 'Scientia/1-Mathematical-Foundations/1-9-Fourier-and-Transform-Methods/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.9' },
+    { title: 'Group Theory Basics', path: 'Scientia/1-Mathematical-Foundations/1-10-Group-Theory-Basics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.10' },
+    { title: 'Number Theory', path: 'Scientia/1-Mathematical-Foundations/1-11-Number-Theory/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.11' },
+    { title: 'Topology Basics', path: 'Scientia/1-Mathematical-Foundations/1-12-Topology-Basics/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.12' },
+    { title: 'Advanced Linear Algebra & Functional Analysis', path: 'Scientia/1-Mathematical-Foundations/1-13-Advanced-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.13' },
+    { title: 'Transcendental Functions', path: 'Scientia/1-Mathematical-Foundations/1-14-Transcendental-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.14' },
+    { title: 'Physics Foundations', path: 'Scientia/2-Physics-Foundations/index.html', section: 'Scientia', ref: 'SC2' },
+    { title: 'Quantum Mechanics', path: 'Scientia/3-Quantum-Mechanics/index.html', section: 'Scientia', ref: 'SC3' },
+    { title: 'Relativity', path: 'Scientia/4-Relativity/index.html', section: 'Scientia', ref: 'SC4' },
+    { title: 'Foundational Biomedical Sciences', path: 'Vitalis/1-Foundational-Biomedical-Sciences/index.html', section: 'Vitalis', ref: 'VI1' },
+    { title: 'Anatomy & Human Structure', path: 'Vitalis/2-Anatomy-and-Human-Structure/index.html', section: 'Vitalis', ref: 'VI2' },
+    { title: 'Physiology', path: 'Vitalis/3-Physiology/index.html', section: 'Vitalis', ref: 'VI3' },
+    { title: 'Pathology', path: 'Vitalis/4-Pathology/index.html', section: 'Vitalis', ref: 'VI4' },
+    { title: 'Pharmacology', path: 'Vitalis/5-Pharmacology/index.html', section: 'Vitalis', ref: 'VI5' },
+    { title: 'Clinical Medicine', path: 'Vitalis/6-Clinical-Medicine/index.html', section: 'Vitalis', ref: 'VI6' },
+    { title: 'Medical Specialties & Subspecialties', path: 'Vitalis/7-Medical-Specialties/index.html', section: 'Vitalis', ref: 'VI7' },
+    { title: 'Advanced & Research Medicine', path: 'Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
   ];
 
   if (searchBar && searchResults) {
@@ -126,25 +126,17 @@ document.addEventListener('DOMContentLoaded', function() {
           item.addEventListener('click', function() {
             const targetPath = this.dataset.path;
             
-            // Check if we're on a web server (http/https) or local file (file://)
-            if (window.location.protocol === 'file:') {
-              // For file:// protocol, build full path from Website folder
-              const currentHref = window.location.href;
-              const websiteMatch = currentHref.match(/(.*\/[Ww]ebsite)\//);
-              
-              if (websiteMatch) {
-                const websiteBase = websiteMatch[1];
-                const cleanPath = targetPath.replace(/^\/+/, '');
-                const fullPath = websiteBase + '/' + cleanPath;
-                console.log('File protocol - navigating to:', fullPath);
-                window.location.href = fullPath;
-              } else {
-                console.log('No Website folder found');
-                window.location.href = targetPath;
-              }
+            // Get the Website root from the current URL
+            const currentHref = window.location.href;
+            const websiteMatch = currentHref.match(/(.*[\/\\][Ww]ebsite)[\/\\]/);
+            
+            if (websiteMatch) {
+              // Build full path from Website root
+              const websiteRoot = websiteMatch[1];
+              const fullPath = websiteRoot + '/' + targetPath;
+              window.location.href = fullPath;
             } else {
-              // For http/https, use the path as-is (it's already absolute from server root)
-              console.log('Web server - navigating to:', targetPath);
+              // Fallback - navigate directly
               window.location.href = targetPath;
             }
           });
