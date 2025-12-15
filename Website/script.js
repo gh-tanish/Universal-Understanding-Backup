@@ -126,32 +126,19 @@ document.addEventListener('DOMContentLoaded', function() {
           item.addEventListener('click', function() {
             const targetPath = this.dataset.path;
             
-            // Get current URL and normalize to forward slashes
-            const currentUrl = window.location.href.replace(/\\/g, '/');
+            // Get the current pathname (e.g., /Scientia/1-Mathematical-Foundations/index.html)
+            const currentPath = window.location.pathname;
             
-            // Find where "Website" folder is in the path (case-insensitive)
-            const lowerUrl = currentUrl.toLowerCase();
-            const websiteIdx = lowerUrl.lastIndexOf('/website/');
+            // Remove the filename to get just the directory path
+            const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
             
-            if (websiteIdx === -1) {
-              // Can't find Website folder, try direct navigation
-              window.location.href = targetPath;
-              return;
-            }
+            // Count directory levels by counting slashes (excluding leading/trailing)
+            const cleanPath = pathWithoutFile.replace(/^\/+|\/+$/g, '');
+            const depth = cleanPath === '' ? 0 : cleanPath.split('/').length;
             
-            // Get the part after /website/ (this is our current location relative to Website root)
-            const afterWebsite = currentUrl.substring(websiteIdx + 9); // 9 = length of '/website/'
-            
-            // Split by slashes and count directories (exclude the .html file and empty parts)
-            const parts = afterWebsite.split('/').filter(part => {
-              return part && part.trim() !== '' && !part.match(/\.html?$/i);
-            });
-            
-            const depth = parts.length;
-            
-            console.log('Current URL:', currentUrl);
-            console.log('After Website:', afterWebsite);
-            console.log('Parts:', parts);
+            console.log('Current path:', currentPath);
+            console.log('Path without file:', pathWithoutFile);
+            console.log('Clean path:', cleanPath);
             console.log('Depth:', depth);
             console.log('Target:', targetPath);
             
