@@ -124,8 +124,47 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
-            const path = this.dataset.path;
-            window.location.href = path;
+            const targetPath = this.dataset.path;
+            
+            // Get current URL and normalize to forward slashes
+            const currentUrl = window.location.href.replace(/\\/g, '/');
+            
+            // Find the base path (looking for index.html in URL to determine current depth)
+            const urlParts = currentUrl.split('/');
+            
+            // Find how many levels deep we are from the root
+            // Count directories after the domain until we hit index.html
+            let depth = 0;
+            let foundHtml = false;
+            
+            for (let i = urlParts.length - 1; i >= 0; i--) {
+              if (urlParts[i].match(/\.html?$/i)) {
+                foundHtml = true;
+                continue; // Skip the .html file itself
+              }
+              if (foundHtml && urlParts[i] && urlParts[i].trim() !== '') {
+                // Check if this part is a directory (not protocol, domain, etc.)
+                if (!urlParts[i].includes(':') && urlParts[i] !== '') {
+                  depth++;
+                }
+              }
+            }
+            
+            console.log('Current URL:', currentUrl);
+            console.log('URL Parts:', urlParts);
+            console.log('Depth:', depth);
+            console.log('Target:', targetPath);
+            
+            // Build relative path: go up 'depth' levels, then navigate to target
+            let relativePath = '';
+            for (let i = 0; i < depth; i++) {
+              relativePath += '../';
+            }
+            relativePath += targetPath;
+            
+            console.log('Final relative path:', relativePath);
+            
+            window.location.href = relativePath;
           });
         });
       } else {
