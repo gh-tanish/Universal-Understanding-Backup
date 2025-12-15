@@ -8,12 +8,12 @@
   margin-top: 0.5rem;
   font-weight: 400;
   text-align: center;
-  color: #111;
+  color: #111 !important;
 }
 
 @media (prefers-color-scheme: dark) {
   .info-italic {
-    color: #fff;
+    color: #fff !important;
     opacity: 0.92;
   }
 }
