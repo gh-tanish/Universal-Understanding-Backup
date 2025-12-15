@@ -1,103 +1,28 @@
 // Theme toggle - run immediately, not waiting for DOMContentLoaded
 (function() {
-  // Load saved theme or system preference immediately
-  function applyTheme(theme) {
-    if (theme === 'light') {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-  }
-
-  // Detect system preference
-  function getSystemTheme() {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-  }
-
-  let savedTheme = localStorage.getItem('theme');
-  if (!savedTheme) {
-    savedTheme = getSystemTheme();
-  }
-  applyTheme(savedTheme);
-
-  // Listen for system theme changes
-  if (window.matchMedia) {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) {
-        applyTheme(e.matches ? 'dark' : 'light');
-      }
-    });
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-      if (!localStorage.getItem('theme')) {
-        applyTheme(e.matches ? 'light' : 'dark');
-      }
-    });
+  // Load saved theme immediately
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
   }
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-
-  // Theme dropdown functionality
-  const themeDropdownBtn = document.getElementById('themeDropdownBtn');
-  const themeDropdownList = document.getElementById('themeDropdownList');
+  // Theme toggle functionality
+  const themeToggle = document.getElementById('themeToggle');
   const body = document.body;
-
-  // Mark body as JS-ready for theme
-  body.classList.add('js-theme-ready');
-
-  function setTheme(theme) {
-    if (theme === 'system') {
-      localStorage.removeItem('theme');
-      theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-    } else {
-      localStorage.setItem('theme', theme);
-    }
-    if (theme === 'light') {
-      body.classList.add('light-mode');
-    } else {
-      body.classList.remove('light-mode');
-    }
-    updateThemeDropdownLabel();
-  }
-
-  function getCurrentTheme() {
-    const saved = localStorage.getItem('theme');
-    if (!saved) return 'system';
-    return saved;
-  }
-
-  function updateThemeDropdownLabel() {
-    const theme = getCurrentTheme();
-    if (themeDropdownBtn) {
-      if (theme === 'system') themeDropdownBtn.textContent = 'System';
-      else if (theme === 'light') themeDropdownBtn.textContent = 'Light';
-      else if (theme === 'dark') themeDropdownBtn.textContent = 'Dark';
-      else themeDropdownBtn.textContent = 'Dark';
-    }
-  }
-  updateThemeDropdownLabel();
-
-  if (themeDropdownBtn && themeDropdownList) {
-    themeDropdownBtn.onclick = function(e) {
-      e.stopPropagation();
-      const expanded = themeDropdownBtn.getAttribute('aria-expanded') === 'true';
-      themeDropdownBtn.setAttribute('aria-expanded', !expanded);
-      themeDropdownList.style.display = expanded ? 'none' : 'block';
+  
+  // Update button text based on current mode
+  if (themeToggle) {
+    const isLight = body.classList.contains('light-mode');
+    themeToggle.textContent = isLight ? 'Light' : 'Dark';
+    
+    // Add click handler
+    themeToggle.onclick = function() {
+      const isLightMode = body.classList.toggle('light-mode');
+      this.textContent = isLightMode ? 'Light' : 'Dark';
+      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
     };
-    // Hide dropdown on click outside
-    document.addEventListener('click', function() {
-      themeDropdownBtn.setAttribute('aria-expanded', 'false');
-      themeDropdownList.style.display = 'none';
-    });
-    // Handle selection
-    themeDropdownList.querySelectorAll('li').forEach(li => {
-      li.onclick = function(e) {
-        e.stopPropagation();
-        setTheme(this.dataset.theme);
-        themeDropdownBtn.setAttribute('aria-expanded', 'false');
-        themeDropdownList.style.display = 'none';
-      };
-    });
   }
 
   // Search functionality
