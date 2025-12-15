@@ -16,13 +16,27 @@ document.addEventListener('DOMContentLoaded', function() {
   if (themeToggle) {
     const isLight = body.classList.contains('light-mode');
     themeToggle.textContent = isLight ? 'Light' : 'Dark';
-    
-    // Add click handler
-    themeToggle.onclick = function() {
+    themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+    themeToggle.setAttribute('tabindex', '0');
+    // Unified toggle function for both click and touch
+    function toggleTheme() {
       const isLightMode = body.classList.toggle('light-mode');
-      this.textContent = isLightMode ? 'Light' : 'Dark';
+      themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
+      themeToggle.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
       localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-    };
+    }
+    themeToggle.addEventListener('click', toggleTheme);
+    themeToggle.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      toggleTheme();
+    }, {passive: false});
+    // Keyboard accessibility
+    themeToggle.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
   }
 
   // Search functionality
