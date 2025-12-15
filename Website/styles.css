@@ -519,11 +519,11 @@ section{margin-bottom:1.5rem}
 
 /* Buttons / cards for sections */
 .section-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
-.section-card{display:flex;flex-direction:column;align-items:flex-start;gap:.6rem;padding:1.25rem;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.04);border-radius:10px;box-shadow:0 8px 24px rgba(2,6,23,0.6);transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);text-decoration:none;color:inherit;min-height:180px}
+.section-card{display:flex;flex-direction:column;align-items:flex-start;gap:.6rem;padding:1.25rem 1.4rem;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.04);border-radius:10px;box-shadow:0 8px 24px rgba(2,6,23,0.6);transition:transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);text-decoration:none;color:inherit;min-height:180px}
 .section-card:hover{transform:translateY(-6px);box-shadow:0 24px 60px rgba(2,6,23,0.75)}
 .section-card h3{margin:0;font-size:1.05rem;color:var(--text)}
 .section-card p{margin:0;color:var(--muted);font-size:.95rem}
-.card-status{display:block;margin-top:0.8rem;font-size:0.75rem;color:var(--muted);opacity:0.8;font-style:italic;text-align:left}
+.card-status{display:block;margin-top:0.8rem;padding:0 0.15rem;font-size:0.75rem;color:var(--muted);opacity:0.8;font-style:italic;text-align:left;overflow:visible;white-space:nowrap}
 
 /* Headings spacing and article padding to avoid edge contact */
 h1,h2,h3{margin:0 0 .6rem;padding-left:0;font-family:'Space Grotesk',sans-serif}
