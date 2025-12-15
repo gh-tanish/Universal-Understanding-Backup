@@ -288,9 +288,8 @@ document.addEventListener('DOMContentLoaded', function() {
   var toggleButtons = document.querySelectorAll('.toggle-btn');
   
   toggleButtons.forEach(function(btn) {
-    const handleToggle = function(e) {
+    btn.addEventListener('click', function(e) {
       e.preventDefault();
-      e.stopPropagation();
       
       var nextDiv = this.nextElementSibling;
       while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
@@ -307,14 +306,6 @@ document.addEventListener('DOMContentLoaded', function() {
           this.classList.add('expanded');
         }
       }
-    };
-    
-    // Add both click and touch events for mobile compatibility
-    btn.addEventListener('click', handleToggle);
-    btn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      handleToggle.call(this, e);
-    }, { passive: false });
     });
   });
 
