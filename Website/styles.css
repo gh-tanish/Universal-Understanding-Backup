@@ -1,19 +1,20 @@
 /* Adaptive italic info text for both light and dark themes */
+
 .info-italic {
   font-style: italic;
   font-size: 0.85rem;
   letter-spacing: 0.01em;
-  opacity: 0.92;
+  opacity: 1;
   margin-top: 0.5rem;
   font-weight: 400;
   text-align: center;
-  color: #222;
+  color: #111;
 }
 
 @media (prefers-color-scheme: dark) {
   .info-italic {
     color: #fff;
-    opacity: 0.85;
+    opacity: 0.92;
   }
 }
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
