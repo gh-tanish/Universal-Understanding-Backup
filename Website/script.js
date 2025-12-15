@@ -1,23 +1,39 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Helper function to calculate depth from Website root
-  function calculateDepth() {
-    const path = window.location.pathname;
-    // Count directory separators after "Website" folder
-    const websiteIndex = path.toLowerCase().indexOf('website');
-    if (websiteIndex === -1) return 0;
-    
-    const afterWebsite = path.substring(websiteIndex + 7); // 7 = length of "website"
-    const depth = afterWebsite.split('/').filter(p => p && p.toLowerCase() !== 'index.html').length;
-    return depth;
-  }
-  
-  // Helper function to convert absolute path to relative based on current depth
+  // Helper function to convert absolute path to relative based on current page location
   function toRelativePath(absolutePath) {
-    const depth = calculateDepth();
-    const prefix = depth > 0 ? '../'.repeat(depth) : './';
-    // Remove leading slash from absolute path
-    const cleanPath = absolutePath.replace(/^\/+/, '');
-    return prefix + cleanPath;
+    try {
+      // Get current page URL and create a base URL (directory of current page)
+      const currentUrl = new URL(window.location.href);
+      const currentDir = currentUrl.href.substring(0, currentUrl.href.lastIndexOf('/') + 1);
+      
+      // Find the "Website" folder in the current path
+      const currentPath = currentUrl.pathname;
+      const websiteMatch = currentPath.match(/\/([Ww]ebsite)\//);
+      
+      if (!websiteMatch) {
+        // Fallback: just remove leading slash and hope for the best
+        return absolutePath.replace(/^\/+/, '');
+      }
+      
+      // Get position of Website folder
+      const websitePos = currentPath.indexOf(websiteMatch[0]);
+      const websiteBase = currentPath.substring(0, websitePos + websiteMatch[0].length);
+      
+      // Calculate path from current location to Website root
+      const afterWebsite = currentPath.substring(websitePos + websiteMatch[0].length);
+      const parts = afterWebsite.split('/').filter(p => p && p.toLowerCase() !== 'index.html');
+      const levelsUp = parts.length;
+      
+      // Build relative path
+      const upPath = levelsUp > 0 ? '../'.repeat(levelsUp) : './';
+      const cleanTarget = absolutePath.replace(/^\/+/, '');
+      
+      return upPath + cleanTarget;
+    } catch (e) {
+      console.error('Error calculating relative path:', e);
+      // Fallback
+      return absolutePath.replace(/^\/+/, '');
+    }
   }
 
   // Theme toggle functionality
