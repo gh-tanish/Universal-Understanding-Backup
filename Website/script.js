@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
-  const htmlElement = document.documentElement;
   const body = document.body;
   
   // Load saved theme preference
@@ -16,17 +15,22 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Theme toggle function
   function toggleTheme(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     const isLightMode = body.classList.toggle('light-mode');
-    themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
+    if (themeToggle) themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
     localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
   }
   
   // Theme toggle button handlers - support both click and touch
   if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme, { passive: false });
-    themeToggle.addEventListener('touchend', toggleTheme, { passive: false });
+    themeToggle.addEventListener('click', toggleTheme);
+    themeToggle.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      toggleTheme(e);
+    });
   }
 
   // Search functionality
