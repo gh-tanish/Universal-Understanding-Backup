@@ -14,13 +14,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (themeToggle) themeToggle.textContent = 'Dark';
   }
   
-  // Theme toggle button click handler
+  // Theme toggle function
+  function toggleTheme(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const isLightMode = body.classList.toggle('light-mode');
+    themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+  }
+  
+  // Theme toggle button handlers - support both click and touch
   if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-      const isLightMode = body.classList.toggle('light-mode');
-      themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
-      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-    });
+    themeToggle.addEventListener('click', toggleTheme, { passive: false });
+    themeToggle.addEventListener('touchend', toggleTheme, { passive: false });
   }
 
   // Search functionality

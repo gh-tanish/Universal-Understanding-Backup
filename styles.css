@@ -363,6 +363,9 @@ article{padding:0.6rem 0 1rem}
     z-index: 1000;
     cursor: pointer;
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
   
   .search-container {
