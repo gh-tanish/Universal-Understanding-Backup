@@ -126,32 +126,19 @@ document.addEventListener('DOMContentLoaded', function() {
           item.addEventListener('click', function() {
             const targetPath = this.dataset.path;
             
-            // Get current URL and normalize to forward slashes
-            const currentUrl = window.location.href.replace(/\\/g, '/');
+            // Get the current pathname (e.g., /Scientia/1-Mathematical-Foundations/index.html)
+            const currentPath = window.location.pathname;
             
-            // Find the base path (looking for index.html in URL to determine current depth)
-            const urlParts = currentUrl.split('/');
+            // Remove the filename to get just the directory path
+            const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
             
-            // Find how many levels deep we are from the root
-            // Count directories after the domain until we hit index.html
-            let depth = 0;
-            let foundHtml = false;
+            // Count directory levels by counting slashes (excluding leading/trailing)
+            const cleanPath = pathWithoutFile.replace(/^\/+|\/+$/g, '');
+            const depth = cleanPath === '' ? 0 : cleanPath.split('/').length;
             
-            for (let i = urlParts.length - 1; i >= 0; i--) {
-              if (urlParts[i].match(/\.html?$/i)) {
-                foundHtml = true;
-                continue; // Skip the .html file itself
-              }
-              if (foundHtml && urlParts[i] && urlParts[i].trim() !== '') {
-                // Check if this part is a directory (not protocol, domain, etc.)
-                if (!urlParts[i].includes(':') && urlParts[i] !== '') {
-                  depth++;
-                }
-              }
-            }
-            
-            console.log('Current URL:', currentUrl);
-            console.log('URL Parts:', urlParts);
+            console.log('Current path:', currentPath);
+            console.log('Path without file:', pathWithoutFile);
+            console.log('Clean path:', cleanPath);
             console.log('Depth:', depth);
             console.log('Target:', targetPath);
             
