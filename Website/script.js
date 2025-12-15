@@ -126,10 +126,10 @@ document.addEventListener('DOMContentLoaded', function() {
           item.addEventListener('click', function() {
             const targetPath = this.dataset.path;
             
-            // Calculate how many directories deep we are from the current HTML file
-            const currentUrl = window.location.href;
+            // Get current URL and normalize to forward slashes
+            const currentUrl = window.location.href.replace(/\\/g, '/');
             
-            // Find where "Website" or "website" folder is in the path
+            // Find where "Website" folder is in the path (case-insensitive)
             const lowerUrl = currentUrl.toLowerCase();
             const websiteIdx = lowerUrl.lastIndexOf('/website/');
             
@@ -139,15 +139,21 @@ document.addEventListener('DOMContentLoaded', function() {
               return;
             }
             
-            // Get the part after /website/
+            // Get the part after /website/ (this is our current location relative to Website root)
             const afterWebsite = currentUrl.substring(websiteIdx + 9); // 9 = length of '/website/'
             
-            // Split by slashes and count directories (exclude the .html file itself)
+            // Split by slashes and count directories (exclude the .html file and empty parts)
             const parts = afterWebsite.split('/').filter(part => {
-              return part && !part.match(/\.html?$/i);
+              return part && part.trim() !== '' && !part.match(/\.html?$/i);
             });
             
             const depth = parts.length;
+            
+            console.log('Current URL:', currentUrl);
+            console.log('After Website:', afterWebsite);
+            console.log('Parts:', parts);
+            console.log('Depth:', depth);
+            console.log('Target:', targetPath);
             
             // Build relative path: go up 'depth' levels, then navigate to target
             let relativePath = '';
@@ -155,6 +161,8 @@ document.addEventListener('DOMContentLoaded', function() {
               relativePath += '../';
             }
             relativePath += targetPath;
+            
+            console.log('Final relative path:', relativePath);
             
             window.location.href = relativePath;
           });
