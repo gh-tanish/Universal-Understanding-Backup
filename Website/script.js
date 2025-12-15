@@ -1,4 +1,38 @@
 document.addEventListener('DOMContentLoaded', function() {
+  // Helper function to convert absolute paths to relative paths
+  function getRelativePath(from, to) {
+    // Remove 'index.html' from the end of from path if present
+    from = from.replace(/index\.html$/, '');
+    
+    // Split paths into parts
+    const fromParts = from.split('/').filter(p => p && p !== 'Website');
+    const toParts = to.split('/').filter(p => p && p !== 'Website');
+    
+    // Find common base
+    let commonLength = 0;
+    while (commonLength < fromParts.length - 1 && 
+           commonLength < toParts.length && 
+           fromParts[commonLength] === toParts[commonLength]) {
+      commonLength++;
+    }
+    
+    // Calculate how many levels to go up
+    const upLevels = fromParts.length - 1 - commonLength;
+    
+    // Build relative path
+    let relativePath = '';
+    if (upLevels > 0) {
+      relativePath = '../'.repeat(upLevels);
+    } else {
+      relativePath = './';
+    }
+    
+    // Add the remaining path parts
+    relativePath += toParts.slice(commonLength).join('/');
+    
+    return relativePath;
+  }
+
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
@@ -125,7 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
             const path = this.dataset.path;
-            window.location.href = path;
+            // Convert absolute path to relative path based on current location
+            const relativePath = getRelativePath(window.location.pathname, path);
+            window.location.href = relativePath;
           });
         });
       } else {
