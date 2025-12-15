@@ -1,36 +1,23 @@
 document.addEventListener('DOMContentLoaded', function() {
-  // Helper function to convert absolute paths to relative paths
-  function getRelativePath(from, to) {
-    // Remove 'index.html' from the end of from path if present
-    from = from.replace(/index\.html$/, '');
+  // Helper function to calculate depth from Website root
+  function calculateDepth() {
+    const path = window.location.pathname;
+    // Count directory separators after "Website" folder
+    const websiteIndex = path.toLowerCase().indexOf('website');
+    if (websiteIndex === -1) return 0;
     
-    // Split paths into parts
-    const fromParts = from.split('/').filter(p => p && p !== 'Website');
-    const toParts = to.split('/').filter(p => p && p !== 'Website');
-    
-    // Find common base
-    let commonLength = 0;
-    while (commonLength < fromParts.length - 1 && 
-           commonLength < toParts.length && 
-           fromParts[commonLength] === toParts[commonLength]) {
-      commonLength++;
-    }
-    
-    // Calculate how many levels to go up
-    const upLevels = fromParts.length - 1 - commonLength;
-    
-    // Build relative path
-    let relativePath = '';
-    if (upLevels > 0) {
-      relativePath = '../'.repeat(upLevels);
-    } else {
-      relativePath = './';
-    }
-    
-    // Add the remaining path parts
-    relativePath += toParts.slice(commonLength).join('/');
-    
-    return relativePath;
+    const afterWebsite = path.substring(websiteIndex + 7); // 7 = length of "website"
+    const depth = afterWebsite.split('/').filter(p => p && p.toLowerCase() !== 'index.html').length;
+    return depth;
+  }
+  
+  // Helper function to convert absolute path to relative based on current depth
+  function toRelativePath(absolutePath) {
+    const depth = calculateDepth();
+    const prefix = depth > 0 ? '../'.repeat(depth) : './';
+    // Remove leading slash from absolute path
+    const cleanPath = absolutePath.replace(/^\/+/, '');
+    return prefix + cleanPath;
   }
 
   // Theme toggle functionality
@@ -159,8 +146,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.search-result-item').forEach(item => {
           item.addEventListener('click', function() {
             const path = this.dataset.path;
-            // Convert absolute path to relative path based on current location
-            const relativePath = getRelativePath(window.location.pathname, path);
+            // Convert absolute path to relative path based on current depth
+            const relativePath = toRelativePath(path);
             window.location.href = relativePath;
           });
         });
