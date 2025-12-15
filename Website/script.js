@@ -212,20 +212,22 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Always resolve from Website root for reliability
-            let websiteRoot = '/Website/';
-            // If current path is already inside Website, use relative
-            if (window.location.pathname.toLowerCase().includes('/website/')) {
-              // Count how many directories deep we are after /Website/
-              const rel = window.location.pathname.split('/Website/')[1] || '';
-              const depth = (rel.match(/\//g) || []).length - 1;
-              let prefix = '';
-              for (let i = 0; i < depth; i++) prefix += '../';
-              window.location.href = prefix + targetPath;
-            } else {
-              // Not in Website, just use Website root
-              window.location.href = websiteRoot + targetPath;
+            // Calculate relative path from current page to target
+            const current = window.location.pathname;
+            // Find the Website root in the current path
+            const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
+            let fromPath = current;
+            if (websiteIdx !== -1) {
+              fromPath = current.substring(websiteIdx + 9); // skip '/website/'
             }
+            // Remove filename if present (e.g., index.html)
+            let fromDir = fromPath.replace(/[^/]*$/, '');
+            // Count how many directories deep we are
+            const upLevels = (fromDir.match(/\//g) || []).filter(Boolean).length - 1;
+            let relPrefix = '';
+            for (let i = 0; i < upLevels; i++) relPrefix += '../';
+            // If on root, relPrefix is ''
+            window.location.href = relPrefix + targetPath;
           };
           item.addEventListener('click', handleNavigation);
         });
