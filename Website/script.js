@@ -211,10 +211,22 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Find where "Website" folder is in the path (case-insensitive)
             const lowerPath = currentPath.toLowerCase();
-            const websiteIdx = lowerPath.lastIndexOf('/website/');
+            let websiteIdx = lowerPath.lastIndexOf('/website/');
+            
+            // If not found, try finding any occurrence with different case
+            if (websiteIdx === -1) {
+              // Try to find by looking for common patterns
+              const pathSegments = currentPath.split('/');
+              for (let i = 0; i < pathSegments.length; i++) {
+                if (pathSegments[i].toLowerCase() === 'website') {
+                  websiteIdx = currentPath.toLowerCase().indexOf('/' + pathSegments[i].toLowerCase() + '/');
+                  break;
+                }
+              }
+            }
             
             if (websiteIdx === -1) {
-              // Can't find Website folder, navigate directly
+              // Still can't find Website folder, navigate directly
               console.log('Website folder not found, using direct path');
               window.location.href = targetPath;
               return;
@@ -276,8 +288,10 @@ document.addEventListener('DOMContentLoaded', function() {
   var toggleButtons = document.querySelectorAll('.toggle-btn');
   
   toggleButtons.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
+    const handleToggle = function(e) {
       e.preventDefault();
+      e.stopPropagation();
+      
       var nextDiv = this.nextElementSibling;
       while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
         nextDiv = nextDiv.nextElementSibling;
@@ -293,6 +307,14 @@ document.addEventListener('DOMContentLoaded', function() {
           this.classList.add('expanded');
         }
       }
+    };
+    
+    // Add both click and touch events for mobile compatibility
+    btn.addEventListener('click', handleToggle);
+    btn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      handleToggle.call(this, e);
+    }, { passive: false });
     });
   });
 
