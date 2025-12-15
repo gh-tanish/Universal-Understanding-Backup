@@ -8,6 +8,29 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Add fade-in to main content
+  const main = document.querySelector('main');
+  if (main) main.classList.add('fade-in');
+
+  // Intercept internal navigation for fade-out effect
+  document.body.addEventListener('click', function(e) {
+    const a = e.target.closest('a');
+    if (a && a.href && a.origin === location.origin && !a.hasAttribute('target') && !a.href.startsWith('mailto:') && !a.href.startsWith('tel:')) {
+      // Only intercept local links
+      if (a.getAttribute('href').startsWith('#')) return;
+      e.preventDefault();
+      if (main) {
+        main.classList.remove('fade-in');
+        main.classList.add('fade-out');
+        setTimeout(() => {
+          window.location.href = a.href;
+        }, 280);
+      } else {
+        window.location.href = a.href;
+      }
+    }
+  }, true);
+
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
   const body = document.body;
@@ -258,38 +281,23 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Toggle function for expandable content
-  var toggleButtons = document.querySelectorAll('.toggle-btn');
-  
-  console.log('Found toggle buttons:', toggleButtons.length);
-  
+  const toggleButtons = document.querySelectorAll('.toggle-btn');
   toggleButtons.forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
-      
-      console.log('Toggle button clicked');
-      
-      var nextDiv = this.nextElementSibling;
+      let nextDiv = this.nextElementSibling;
       while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
         nextDiv = nextDiv.nextElementSibling;
       }
-      
-      console.log('Found toggle content:', nextDiv);
-      
       if (nextDiv) {
-        var isExpanded = nextDiv.classList.contains('expanded');
-        console.log('Is expanded:', isExpanded);
-        
+        const isExpanded = nextDiv.classList.contains('expanded');
         if (isExpanded) {
           nextDiv.classList.remove('expanded');
           this.classList.remove('expanded');
-          console.log('Collapsed');
         } else {
           nextDiv.classList.add('expanded');
           this.classList.add('expanded');
-          console.log('Expanded');
         }
-      } else {
-        console.log('No toggle content found!');
       }
     });
   });
