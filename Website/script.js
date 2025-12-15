@@ -1,45 +1,28 @@
+// Theme toggle - run immediately, not waiting for DOMContentLoaded
+(function() {
+  // Load saved theme immediately
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-mode');
+  }
+})();
+
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Script loaded');
-  
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
-  console.log('Theme toggle button:', themeToggle);
   const body = document.body;
   
-  // Load saved theme preference
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  console.log('Saved theme:', savedTheme);
-  if (savedTheme === 'light') {
-    body.classList.add('light-mode');
-    if (themeToggle) themeToggle.textContent = 'Light';
-  } else {
-    body.classList.remove('light-mode');
-    if (themeToggle) themeToggle.textContent = 'Dark';
-  }
-  
-  // Theme toggle function
-  function toggleTheme(e) {
-    console.log('Toggle theme called');
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    const isLightMode = body.classList.toggle('light-mode');
-    console.log('Light mode:', isLightMode);
-    if (themeToggle) themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-  }
-  
-  // Theme toggle button handlers - support both click and touch
+  // Update button text based on current mode
   if (themeToggle) {
-    console.log('Adding event listeners to theme toggle');
-    themeToggle.addEventListener('click', toggleTheme);
-    themeToggle.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      toggleTheme(e);
-    });
-  } else {
-    console.error('Theme toggle button not found!');
+    const isLight = body.classList.contains('light-mode');
+    themeToggle.textContent = isLight ? 'Light' : 'Dark';
+    
+    // Add click handler
+    themeToggle.onclick = function() {
+      const isLightMode = body.classList.toggle('light-mode');
+      this.textContent = isLightMode ? 'Light' : 'Dark';
+      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    };
   }
 
   // Search functionality
