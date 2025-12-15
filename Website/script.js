@@ -195,10 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add click handlers to results (with touch support for mobile)
         document.querySelectorAll('.search-result-item').forEach(item => {
           const handleNavigation = function(e) {
-            // Prevent default behavior and stop propagation immediately
             e.preventDefault();
-            e.stopPropagation();
-            e.stopImmediatePropagation();
             
             const targetPath = this.dataset.path;
             if (!targetPath) return;
@@ -256,9 +253,8 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = relativePath;
           };
           
-          // Use mousedown/touchstart for immediate response before click can be cancelled
-          item.addEventListener('mousedown', handleNavigation, { passive: false });
-          item.addEventListener('touchstart', handleNavigation, { passive: false });
+          // Use click event which works on both mobile and desktop
+          item.addEventListener('click', handleNavigation);
         });
       } else {
         searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
