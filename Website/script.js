@@ -36,37 +36,63 @@
 })();
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Theme toggle functionality
-  const themeToggle = document.getElementById('themeToggle');
-  const systemThemeBtn = document.getElementById('systemThemeBtn');
+  // Theme dropdown functionality
+  const themeDropdownBtn = document.getElementById('themeDropdownBtn');
+  const themeDropdownList = document.getElementById('themeDropdownList');
   const body = document.body;
 
-  function updateThemeButtonText() {
-    const isLight = body.classList.contains('light-mode');
-    if (themeToggle) themeToggle.textContent = isLight ? 'Light' : 'Dark';
-  }
-  updateThemeButtonText();
-
-  if (themeToggle) {
-    themeToggle.onclick = function() {
-      const isLightMode = body.classList.toggle('light-mode');
-      this.textContent = isLightMode ? 'Light' : 'Dark';
-      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-    };
-  }
-
-  if (systemThemeBtn) {
-    systemThemeBtn.onclick = function() {
+  function setTheme(theme) {
+    if (theme === 'system') {
       localStorage.removeItem('theme');
-      // Re-apply system theme
-      const systemTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      if (systemTheme === 'light') {
-        body.classList.add('light-mode');
-      } else {
-        body.classList.remove('light-mode');
-      }
-      updateThemeButtonText();
+      theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    } else {
+      localStorage.setItem('theme', theme);
+    }
+    if (theme === 'light') {
+      body.classList.add('light-mode');
+    } else {
+      body.classList.remove('light-mode');
+    }
+    updateThemeDropdownLabel();
+  }
+
+  function getCurrentTheme() {
+    const saved = localStorage.getItem('theme');
+    if (!saved) return 'system';
+    return saved;
+  }
+
+  function updateThemeDropdownLabel() {
+    const theme = getCurrentTheme();
+    if (themeDropdownBtn) {
+      if (theme === 'system') themeDropdownBtn.textContent = 'System';
+      else if (theme === 'light') themeDropdownBtn.textContent = 'Light';
+      else themeDropdownBtn.textContent = 'Dark';
+    }
+  }
+  updateThemeDropdownLabel();
+
+  if (themeDropdownBtn && themeDropdownList) {
+    themeDropdownBtn.onclick = function(e) {
+      e.stopPropagation();
+      const expanded = themeDropdownBtn.getAttribute('aria-expanded') === 'true';
+      themeDropdownBtn.setAttribute('aria-expanded', !expanded);
+      themeDropdownList.style.display = expanded ? 'none' : 'block';
     };
+    // Hide dropdown on click outside
+    document.addEventListener('click', function() {
+      themeDropdownBtn.setAttribute('aria-expanded', 'false');
+      themeDropdownList.style.display = 'none';
+    });
+    // Handle selection
+    themeDropdownList.querySelectorAll('li').forEach(li => {
+      li.onclick = function(e) {
+        e.stopPropagation();
+        setTheme(this.dataset.theme);
+        themeDropdownBtn.setAttribute('aria-expanded', 'false');
+        themeDropdownList.style.display = 'none';
+      };
+    });
   }
 
   // Search functionality
