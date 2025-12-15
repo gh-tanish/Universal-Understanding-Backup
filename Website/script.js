@@ -126,19 +126,37 @@ document.addEventListener('DOMContentLoaded', function() {
           item.addEventListener('click', function() {
             const targetPath = this.dataset.path;
             
-            // Get the Website root from the current URL
-            const currentHref = window.location.href;
-            const websiteMatch = currentHref.match(/(.*[\/\\][Ww]ebsite)[\/\\]/);
+            // Calculate how many directories deep we are from the current HTML file
+            const currentUrl = window.location.href;
             
-            if (websiteMatch) {
-              // Build full path from Website root
-              const websiteRoot = websiteMatch[1];
-              const fullPath = websiteRoot + '/' + targetPath;
-              window.location.href = fullPath;
-            } else {
-              // Fallback - navigate directly
+            // Find where "Website" or "website" folder is in the path
+            const lowerUrl = currentUrl.toLowerCase();
+            const websiteIdx = lowerUrl.lastIndexOf('/website/');
+            
+            if (websiteIdx === -1) {
+              // Can't find Website folder, try direct navigation
               window.location.href = targetPath;
+              return;
             }
+            
+            // Get the part after /website/
+            const afterWebsite = currentUrl.substring(websiteIdx + 9); // 9 = length of '/website/'
+            
+            // Split by slashes and count directories (exclude the .html file itself)
+            const parts = afterWebsite.split('/').filter(part => {
+              return part && !part.match(/\.html?$/i);
+            });
+            
+            const depth = parts.length;
+            
+            // Build relative path: go up 'depth' levels, then navigate to target
+            let relativePath = '';
+            for (let i = 0; i < depth; i++) {
+              relativePath += '../';
+            }
+            relativePath += targetPath;
+            
+            window.location.href = relativePath;
           });
         });
       } else {
