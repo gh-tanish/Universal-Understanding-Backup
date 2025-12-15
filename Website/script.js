@@ -2,14 +2,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Helper function to convert absolute path to relative based on current page location
   function toRelativePath(targetPath) {
     try {
-      // Get current path and normalize it
+      // Get current path
       let currentPath = window.location.pathname;
       
-      // Remove index.html from current path to get directory
-      currentPath = currentPath.replace(/\/index\.html$/i, '/');
-      if (!currentPath.endsWith('/')) {
-        currentPath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+      // Find "Website" or "website" in the path and get everything after it
+      const websiteMatch = currentPath.match(/\/(website|Website)\//i);
+      if (websiteMatch) {
+        const websiteIndex = currentPath.indexOf(websiteMatch[0]);
+        currentPath = currentPath.substring(websiteIndex + websiteMatch[0].length);
       }
+      
+      // Remove index.html from current path to get directory
+      currentPath = currentPath.replace(/index\.html$/i, '');
       
       // Normalize target path (remove leading slashes)
       let target = targetPath.replace(/^\/+/, '');
