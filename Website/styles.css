@@ -36,6 +36,12 @@ body.js-theme-ready .theme-toggle {
     transform: translateX(-50%) !important;
     font-size: 1.05rem;
   }
+  .theme-toggle-dropdown {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
   .theme-toggle {
     width: 100%;
     min-width: 0;
@@ -43,6 +49,7 @@ body.js-theme-ready .theme-toggle {
     text-align: center;
     display: flex;
     align-items: center;
+    margin: 0 auto;
   }
 }
 .theme-dropdown-list li {
