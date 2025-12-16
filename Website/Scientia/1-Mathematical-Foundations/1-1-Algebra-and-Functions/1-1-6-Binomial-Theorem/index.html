@@ -73,6 +73,21 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
           <li><strong>Key ideas:</strong> binomial coefficients, Pascal's triangle, combinatorial interpretation.</li>
         </ul>
 
+        <h4>Why it matters</h4>
+        <p>The binomial theorem expresses the expansion of (x + y)^n as a weighted sum where the weights are combinatorial coefficients. It appears across algebra, probability, series approximations, and combinatorics.</p>
+
+        <h4>Proof (combinatorial sketch)</h4>
+        <div class="content-box derivation-box">
+          <p>Consider multiplying (x+y) by itself n times. Each term in the expanded form corresponds to choosing either x or y from each factor. To get a term with x^{n-k} y^k we must choose y from exactly k of the n factors. The number of ways to choose which k factors supply y is \(\binom{n}{k}\), so the coefficient is \(\binom{n}{k}\).</p>
+        </div>
+
+        <h4>Properties & quick examples</h4>
+        <div class="content-box">
+          <p><strong>Symmetry:</strong> \(\binom{n}{k}=\binom{n}{n-k}\).</p>
+          <p><strong>Summation identity:</strong> \(\sum_{k=0}^n \binom{n}{k} = 2^n\).</p>
+          <p><strong>Example:</strong> (1+1)^n = \(\sum_{k=0}^n \binom{n}{k} = 2^n\) (counts all subsets of an n-set).</p>
+        </div>
+
         <h4>Binomial theorem</h4>
         <div class="content-box" style="font-size:1.12rem;">
           $$ (x + y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^{k} $$
