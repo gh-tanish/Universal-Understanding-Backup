@@ -402,8 +402,28 @@ if (window.__uuRootScriptInitialized) {
 					try {
 						const normalized = normalizePath(navPath || '');
 						const origin = (window.location && window.location.origin) ? window.location.origin : '';
-						// Ensure we don't duplicate the Website/ segment
-						navPath = origin + '/Website/' + normalized.replace(/^Website\//i, '').replace(/^\/+/, '');
+						// Detect whether the current site is hosted under /Website/.
+						// If so, include that prefix; otherwise emit root-relative paths.
+						let siteBase = '';
+						try {
+							const p = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
+							if (p.indexOf('/website/') !== -1) {
+								siteBase = '/Website';
+							} else {
+								// check script src for /Website/
+								let scriptSrc = (document.currentScript && document.currentScript.src) || '';
+								if (!scriptSrc) {
+									const scripts = document.getElementsByTagName('script');
+									for (let i = scripts.length - 1; i >= 0; i--) {
+										const s = scripts[i].src || '';
+										if (s && s.toLowerCase().indexOf('/website/') !== -1) { scriptSrc = s; break; }
+									}
+								}
+								if (scriptSrc && scriptSrc.toLowerCase().indexOf('/website/') !== -1) siteBase = '/Website';
+							}
+						} catch (ee) {}
+						// Ensure we don't duplicate the Website/ segment when building the URL
+						navPath = origin + siteBase + '/' + normalized.replace(/^Website\//i, '').replace(/^\/+/, '');
 					} catch (e) { /* leave navPath as originally provided */ }
 					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
 					// so search badges match the card refs exactly. Fall back to

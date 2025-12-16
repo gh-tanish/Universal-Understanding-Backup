@@ -164,12 +164,29 @@ if (window.__uuRootScriptInitialized) {
       // If already absolute, return as-is
       if (/^https?:\/\//i.test(path)) return path;
       const origin = window.location.origin || '';
-      // If path already contains Website/ prefix, return origin + /path
-      if (/^Website\//i.test(path)) return origin + '/' + path.replace(/^\/+/, '');
-      // If path starts with a top-level section, assume under Website/
-      if (/^(Scientia|Vitalis|Logos|Sensus)\//i.test(path)) return origin + '/Website/' + path.replace(/^\/+/, '');
-      // Default: place under Website/
-      return origin + '/Website/' + path.replace(/^\/+/, '');
+      // Detect whether site is hosted under /Website/
+      let siteBase = '';
+      try {
+        const locPath = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
+        if (locPath.indexOf('/website/') !== -1) {
+          siteBase = '/Website';
+        } else {
+          // check script src for /Website/
+          let scriptSrc = (document.currentScript && document.currentScript.src) || '';
+          if (!scriptSrc) {
+            const scripts = document.getElementsByTagName('script');
+            for (let i = scripts.length - 1; i >= 0; i--) {
+              const s = scripts[i].src || '';
+              if (s && s.toLowerCase().indexOf('/website/') !== -1) { scriptSrc = s; break; }
+            }
+          }
+          if (scriptSrc && scriptSrc.toLowerCase().indexOf('/website/') !== -1) siteBase = '/Website';
+        }
+      } catch (ee) {}
+
+      // Strip any leading Website/ so we can reapply the detected base consistently
+      const stripped = path.replace(/^Website[\\\/]?/i, '').replace(/^\/+/, '');
+      return origin + siteBase + '/' + stripped;
     } catch (e) { return p; }
   }
 
