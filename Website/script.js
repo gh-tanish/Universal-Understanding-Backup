@@ -240,16 +240,14 @@ if (window.__uuRootScriptInitialized) {
 			const resultItem = e.target.closest('.search-result-item');
 			if (resultItem) {
 				e.preventDefault();
-				const targetPath = resultItem.dataset.path;
+				let targetPath = resultItem.dataset.path || '';
 				if (!targetPath) return;
-				const currentPath = window.location.pathname;
-				const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
-				const cleanPath = pathWithoutFile.replace(/^\/+/g, '').replace(/\/+$/g, '');
-				const depth = cleanPath === '' ? 0 : cleanPath.split('/').length;
-				let relativePath = '';
-				for (let i = 0; i < depth; i++) relativePath += '../';
-				relativePath += targetPath;
-				window.location.href = relativePath;
+				// Normalize any leading 'Website/' prefix and backslashes so paths resolve from site root
+				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+				// Build an origin-rooted URL; this works when the site is served from the web root.
+				// If you host under a sub-path, consider updating `normalizePath` or sitemap entries instead.
+				const href = '/' + targetPath;
+				window.location.href = href;
 				return;
 			}
 
