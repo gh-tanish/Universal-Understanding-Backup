@@ -459,20 +459,18 @@ if (window.__uuRootScriptInitialized) {
 		if (baseEl && baseEl.href) {
 			try { return new URL(clean, baseEl.href).href; } catch (e) { /* fallthrough */ }
 		}
-		// 2) Try to use window.location.origin when available
-		try {
-			if (window.location && window.location.origin && window.location.origin !== 'null') {
-				return new URL('/' + clean, window.location.origin).href;
-			}
-		} catch (e) { /* fallthrough */ }
-		// 3) Fallback: if current pathname contains '/Website/', use that as a prefix
+		// 2) If current pathname contains '/Website/' (possibly nested under a repo
+		// root like '/RepoName/Website/'), preserve that prefix so links point
+		// to the correct subfolder on the same host.
 		try {
 			const p = window.location.pathname || '';
 			const lower = p.toLowerCase();
 			const idx = lower.indexOf('/website/');
 			if (idx !== -1) {
-				const prefix = p.slice(0, idx + '/Website/'.length);
-				return prefix + clean;
+				const prefix = p.slice(0, idx + '/website/'.length);
+				// keep original casing from p for prefix
+				const origPrefix = p.slice(0, idx) + p.slice(idx, idx + '/Website/'.length);
+				return origPrefix + clean;
 			}
 		} catch (e) { /* fallthrough */ }
 		// 4) Last resort, return root-relative
