@@ -82,7 +82,7 @@
   margin-top: 0.5rem;
   font-weight: 600;
   text-align: center;
-  color: #000 !important;
+  color: var(--text) !important;
   text-shadow: none;
 }
 /* Light mode */
