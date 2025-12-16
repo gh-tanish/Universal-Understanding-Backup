@@ -25,26 +25,25 @@ document.addEventListener('DOMContentLoaded', function() {
       let websiteRoot = '/Website/';
       if (websiteIdx !== -1) {
         websiteRoot = current.substring(0, websiteIdx + 9);
+      } else {
+        // If not found, fallback to /Website/ from root
+        websiteRoot = '/Website/';
       }
       // Remove any leading slash from href
-      const cleanTarget = a.getAttribute('href').replace(/^\/+/, '');
+      let cleanTarget = a.getAttribute('href').replace(/^\/+/, '');
+      // If already absolute from /Website/, don't double it
+      if (cleanTarget.toLowerCase().startsWith('website/')) {
+        cleanTarget = cleanTarget.substring(8);
+      }
       const fullPath = websiteRoot + cleanTarget;
       if (main) {
         main.classList.remove('fade-in');
         main.classList.add('fade-out');
         setTimeout(() => {
-          if (window.location.origin && window.location.origin !== 'null') {
-            window.location.href = window.location.origin + fullPath;
-          } else {
-            window.location.href = fullPath;
-          }
+          window.location.href = fullPath;
         }, 280);
       } else {
-        if (window.location.origin && window.location.origin !== 'null') {
-          window.location.href = window.location.origin + fullPath;
-        } else {
-          window.location.href = fullPath;
-        }
+        window.location.href = fullPath;
       }
     }
   }, true);
@@ -259,16 +258,15 @@ document.addEventListener('DOMContentLoaded', function() {
             let websiteRoot = '/Website/';
             if (websiteIdx !== -1) {
               websiteRoot = current.substring(0, websiteIdx + 9);
-            }
-            // Remove any leading slash from targetPath
-            const cleanTarget = targetPath.replace(/^\/+/, '');
-            // Compose the full path
-            const fullPath = websiteRoot + cleanTarget;
-            if (window.location.origin && window.location.origin !== 'null') {
-              window.location.href = window.location.origin + fullPath;
             } else {
-              window.location.href = fullPath;
+              websiteRoot = '/Website/';
             }
+            let cleanTarget = targetPath.replace(/^\/+/, '');
+            if (cleanTarget.toLowerCase().startsWith('website/')) {
+              cleanTarget = cleanTarget.substring(8);
+            }
+            const fullPath = websiteRoot + cleanTarget;
+            window.location.href = fullPath;
           };
           item.addEventListener('click', handleNavigation);
         });
