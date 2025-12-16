@@ -87,6 +87,40 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
           <p><strong>Summation identity:</strong> \(\sum_{k=0}^n \binom{n}{k} = 2^n\).</p>
           <p><strong>Example:</strong> (1+1)^n = \(\sum_{k=0}^n \binom{n}{k} = 2^n\) (counts all subsets of an n-set).</p>
         </div>
+        
+        <h4>Inductive proof (sketch)</h4>
+        <div class="content-box derivation-box">
+          <p>We prove the binomial theorem by induction on \(n\). Base case \(n=0\): \((x+y)^0=1\) holds. Assume
+          \((x+y)^n=\sum_{k=0}^n \binom{n}{k} x^{n-k}y^k\). Multiply both sides by \((x+y)\):
+          \[ (x+y)^{n+1} = \sum_{k=0}^n \binom{n}{k} x^{n-k+1}y^k + \sum_{k=0}^n \binom{n}{k} x^{n-k}y^{k+1}. \]
+          Reindex the second sum (set \(j=k+1\)) and combine like powers of \(x\) to obtain
+          \[ (x+y)^{n+1} = \sum_{k=0}^{n+1} \Big(\binom{n}{k} + \binom{n}{k-1}\Big) x^{n+1-k} y^k, \]
+          where \(\binom{n}{-1}=\binom{n}{n+1}=0\). Using Pascal's identity \(\binom{n}{k}+\binom{n}{k-1}=\binom{n+1}{k}\)
+          completes the induction.
+        </div>
+
+        <h4>Vandermonde's identity</h4>
+        <div class="content-box">
+          <p>For nonnegative integers \(m,n\):
+          \[ \sum_{k=0}^r \binom{m}{k}\binom{n}{r-k} = \binom{m+n}{r}. \]
+          This identity has a simple combinatorial proof: choose \(r\) items from two disjoint sets of sizes \(m\) and \(n\).</p>
+        </div>
+
+        <h4>Binomial series (general exponent)</h4>
+        <div class="content-box derivation-box">
+          <p>For arbitrary complex \(\alpha\) and |x|&lt;1, the generalized binomial series converges:
+          \[ (1+x)^\alpha = \sum_{k=0}^\infty \binom{\alpha}{k} x^k, \qquad \binom{\alpha}{k}=\dfrac{\alpha(\alpha-1)\cdots(\alpha-k+1)}{k!}. \]
+          This reduces to the usual polynomial when \(\alpha\) is a nonnegative integer.</p>
+        </div>
+
+        <h4>Applications</h4>
+        <div class="content-box">
+          <ul>
+            <li>Probability: expansion of \((p+q)^n\) gives probabilities for binomial (Bernoulli) trials.</li>
+            <li>Series approximations: Taylor expansions often use binomial coefficients.</li>
+            <li>Combinatorics: counting subsets, paths on grids and coefficients in generating functions.</li>
+          </ul>
+        </div>
 
         <h4>Binomial theorem</h4>
         <div class="content-box" style="font-size:1.12rem;">

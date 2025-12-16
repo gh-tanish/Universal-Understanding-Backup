@@ -113,6 +113,43 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
             Example: ways to choose 3 fruits from 5 types = \(\binom{5+3-1}{3}=\binom{7}{3}=35\).</p>
           </div>
 
+          <h4>Derivation: permutations and combinations (step-by-step)</h4>
+          <div class="content-box derivation-box">
+            <p><strong>Permutation formula</strong> \(P(n,k)\): choose first element in \(n\) ways, second in \(n-1\), etc., for k choices:
+            \[ P(n,k)=n(n-1)\cdots(n-k+1)=\dfrac{n!}{(n-k)!}. \]</p>
+
+            <p><strong>Combination formula</strong> \(\binom{n}{k}\): from each k-selection, there are \(k!\) orderings, so
+            \[ \binom{n}{k}=\dfrac{P(n,k)}{k!}=\dfrac{n!}{k!(n-k)!}. \]</p>
+          </div>
+
+          <h4>Circular permutations</h4>
+          <div class="content-box">
+            <p>Arrangements around a circle of \(n\) distinct objects (consider rotations identical): \((n-1)!\).</p>
+          </div>
+
+          <h4>Stars and bars (proof sketch)</h4>
+          <div class="content-box derivation-box">
+            <p>To choose \(k\) items from \(n\) types with repetition, represent items as \(k\) stars and \(n-1\) bars that separate types. Any arrangement of the \(n-1+k\) symbols corresponds to a solution, so
+            \[ \binom{n+k-1}{k}. \]</p>
+          </div>
+
+          <h4>Permutations with repeated elements</h4>
+          <div class="content-box">
+            <p>For a multiset with total size \(n\) and multiplicities \(r_1,\dots,r_m\), distinct permutations =
+            \[ \dfrac{n!}{r_1!\,r_2!\cdots r_m!}. \]</p>
+            <p><strong>Example:</strong> arrangements of the letters in "MISSISSIPPI" use this formula.</p>
+          </div>
+
+          <h4>Practice problems</h4>
+          <div class="content-box">
+            <ol>
+              <li>How many 5-letter strings can be formed from {A,B,C,D} without repetition?</li>
+              <li>How many 4-person committees from 10 people?</li>
+              <li>How many nonnegative integer solutions to \(x_1+x_2+x_3=7\)?</li>
+            </ol>
+            <p class="spaced"><strong>Answers:</strong> 4P5 (0 if P(4,5) impossible), \(\binom{10}{4}=210\), \(\binom{3+7-1}{7}=\binom{9}{7}=36\).</p>
+          </div>
+
           <h4>Permutation notes & examples</h4>
           <div class="content-box">
             <p>Permutations with repetition (e.g., letters with repeats): for multiset with counts r_1,...,r_m summing to n, number of distinct arrangements = \(\dfrac{n!}{r_1!\cdots r_m!}\).</p>
