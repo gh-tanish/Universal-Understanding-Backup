@@ -36,25 +36,31 @@
       <p class="date-created">Created: December 15, 2025</p>
     </section>
     <section>
-      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;">
+      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;font-size:1.05rem;">
         <h3>Overview</h3>
-        <p>The binomial theorem describes how to expand powers of a sum of two terms. It expresses
-        the power (x + y)<sup>n</sup> as a sum of terms involving binomial coefficients.</p>
+        <ul>
+          <li><strong>What:</strong> Expand powers of a sum: (x + y)<sup>n</sup>.</li>
+          <li><strong>Key ideas:</strong> binomial coefficients, Pascal's triangle, combinatorial interpretation.</li>
+        </ul>
 
-        <h4>Statement</h4>
-        <p><strong>Binomial theorem:</strong>
-        (x + y)<sup>n</sup> = &sum;<sub>k=0</sub><sup>n</sup> C(n, k) x<sup>n-k</sup> y<sup>k</sup>,
-        where C(n, k) = n! / (k!(n-k)!) are the binomial coefficients.</p>
+        <h4>Binomial theorem</h4>
+        <div style="font-size:1.12rem;background:#f8f9fb;padding:0.6rem;border-radius:8px;margin:0.6rem 0;">
+          (x + y)<sup>n</sup> = &sum;<sub>k=0</sub><sup>n</sup> C(n, k) x<sup>n-k</sup> y<sup>k</sup>
+          &nbsp;&nbsp; where &nbsp; C(n, k) = n! / (k!(n-k)!)
+        </div>
 
-        <h4>Example</h4>
-        <p>For n = 3,</p>
-        <p>(x + y)<sup>3</sup> = C(3,0)x<sup>3</sup> + C(3,1)x<sup>2</sup>y + C(3,2> x y<sup>2</sup> + C(3,3)y<sup>3</sup>
-        = x<sup>3</sup> + 3x<sup>2</sup>y + 3x y<sup>2</sup> + y<sup>3</sup>.</p>
+        <h4>Worked example</h4>
+        <ol>
+          <li>Take n = 3.</li>
+          <li>Compute coefficients: C(3,0)=1, C(3,1)=3, C(3,2)=3, C(3,3)=1.</li>
+          <li>Expand: (x + y)<sup>3</sup> = x<sup>3</sup> + 3x<sup>2</sup>y + 3x y<sup>2</sup> + y<sup>3</sup>.</li>
+        </ol>
 
-        <h4>Pascal's Triangle</h4>
-        <p>Binomial coefficients can be read directly from Pascal's triangle: each row n contains
-        the coefficients C(n, k) for k = 0..n. The triangle provides a quick combinatorial way
-        to generate coefficients without factorials.</p>
+        <h4>Pascal's triangle (quick method)</h4>
+        <p>Row n of Pascal's triangle lists the coefficients C(n, 0), C(n, 1), …, C(n, n).
+        Use the triangle to generate coefficients quickly without factorials.</p>
+
+        <p style="margin-top:0.6rem;">Tip: when expanding by hand, write coefficients first, then attach powers of x and y.</p>
       </article>
     </section>
 

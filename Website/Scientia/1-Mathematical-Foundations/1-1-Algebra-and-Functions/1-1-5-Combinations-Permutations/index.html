@@ -37,31 +37,41 @@
       <p class="date-created">Created: December 15, 2025</p>
     </section>
     <section>
-      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;">
+      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;font-size:1.05rem;">
         <h3>Overview</h3>
-        <p>Basic combinatorics studies how to count arrangements and selections. This page
-        introduces factorial notation, permutations (ordered arrangements), combinations
-        (unordered selections), and simple examples to decide which formula applies.</p>
+        <ul>
+          <li>Counting arrangements and selections — decide whether order matters.</li>
+          <li>Use factorials to compute permutations and combinations.</li>
+        </ul>
 
         <h4>Factorial</h4>
-        <p>The factorial of a non-negative integer n is<br>
-        n! = n &times; (n-1) &times; (n-2) &times; &hellip; &times; 1, with 0! = 1.</p>
+        <div style="font-size:1.1rem;background:#f8f9fb;padding:0.6rem;border-radius:8px;margin:0.6rem 0;">
+          n! = n &times; (n-1) &times; (n-2) &times; &hellip; &times; 1 &nbsp;&nbsp; (0! = 1)
+        </div>
 
-        <h4>Permutations (order matters)</h4>
-        <p>Number of ordered arrangements of k items chosen from n distinct items:
-        P(n, k) = n! / (n - k)!.</p>
-        <p><strong>Example:</strong> How many 3-letter arrangements can be made from the letters A, B, C, D?
-        P(4, 3) = 4! / (4-3)! = 4 &times; 3 &times; 2 = 24.</p>
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:0.6rem;">
+          <div style="flex:1;min-width:260px;">
+            <h4>Permutations (order matters)</h4>
+            <div style="background:#fff;padding:0.5rem;border-radius:6px;border:1px solid #eef;">
+              P(n, k) = n! / (n - k)!
+            </div>
+            <p style="margin-top:0.4rem;"><strong>Example:</strong> From A,B,C,D make 3-letter arrangements: P(4,3)=4!/(1!)=24.</p>
+          </div>
 
-        <h4>Combinations (order does not matter)</h4>
-        <p>Number of unordered selections of k items from n distinct items:
-        C(n, k) = n! / (k! (n - k)!).</p>
-        <p><strong>Example:</strong> How many ways to choose 2 people from 4? C(4, 2) = 4! / (2! 2!) = 6
-        (AB, AC, AD, BC, BD, CD).</p>
+          <div style="flex:1;min-width:260px;">
+            <h4>Combinations (order does not matter)</h4>
+            <div style="background:#fff;padding:0.5rem;border-radius:6px;border:1px solid #eef;">
+              C(n, k) = n! / (k!(n - k)!)
+            </div>
+            <p style="margin-top:0.4rem;"><strong>Example:</strong> Choose 2 from 4: C(4,2)=6 (AB, AC, AD, BC, BD, CD).</p>
+          </div>
+        </div>
 
-        <h4>Quick rule</h4>
-        <p>If order matters use permutations; if order doesn't matter use combinations. You can
-        convert between them: P(n,k) = C(n,k) &times; k!.</p>
+        <h4 style="margin-top:0.6rem;">Quick rule</h4>
+        <ul>
+          <li>If order matters, use permutations; otherwise use combinations.</li>
+          <li>Relation: P(n,k) = C(n,k) &times; k! — permutations count each combination in k! orders.</li>
+        </ul>
       </article>
     </section>
 
