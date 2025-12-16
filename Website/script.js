@@ -197,7 +197,16 @@ if (window.__uuRootScriptInitialized) {
 			if (matches.length > 0) {
 				searchResults.innerHTML = matches.map(match => {
 					const displayTitle = match.displayTitle || match.title || '';
-					return `\n          <div class="search-result-item" data-path="${match.path}">\n            <div class="search-result-content">\n              <div class="search-result-title">${displayTitle}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
+					// If a displayTitle is set (we're showing a parent title for a subsection),
+					// try to find the parent topic path so clicking navigates to the main page.
+					let navPath = match.path || '';
+					if (match.displayTitle) {
+						const parent = topics.find(t => (t.title || '').toLowerCase() === (match.displayTitle || '').toLowerCase());
+						if (parent && parent.path) {
+							navPath = parent.path;
+						}
+					}
+					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${displayTitle}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
 
