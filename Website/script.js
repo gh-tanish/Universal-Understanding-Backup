@@ -77,7 +77,15 @@ if (window.__uuRootScriptInitialized) {
 	// Define searchable topics (base list). We'll merge with generated sitemap when available.
 	const topics = [
 		{ title: 'Mathematical Foundations', path: 'Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
-		{ title: 'Algebra & Functions', path: 'Website/Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
+		{ title: 'Algebra & Functions', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
+		{ title: 'Basic Algebraic Manipulations', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-1-Basic-Algebraic-Manipulations/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.1' },
+		{ title: 'Exponents, Logarithms & Identities', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-2-Exponents-Logarithms-Identities/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.2' },
+		{ title: 'Trigonometric & Inverse Functions', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-3-Trigonometric-Inverse-Functions/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.3' },
+		{ title: 'Graphs & Transformations', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-4-Graphs-Transformations/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.4' },
+		{ title: 'Combinations & Permutations', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-5-Combinations-Permutations/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.5' },
+		{ title: 'Binomial Theorem (Binomial Expansion)', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-6-Binomial-Theorem/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.6' },
+		{ title: 'Sigma Notation & Summation', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-7-Sigma-Notation-Summation/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.7' },
+		{ title: 'Inequalities & Modulus', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-8-Inequalities-Modulus/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.8' },
 		{ title: 'Calculus', path: 'Website/Scientia/1-Mathematical-Foundations/1-2-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.2' },
 		{ title: 'Linear Algebra', path: 'Website/Scientia/1-Mathematical-Foundations/1-3-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.3' },
 		{ title: 'Differential Equations', path: 'Website/Scientia/1-Mathematical-Foundations/1-4-Differential-Equations/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.4' },
