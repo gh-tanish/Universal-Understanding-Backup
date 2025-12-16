@@ -563,13 +563,17 @@ if (window.__uuRootScriptInitialized) {
 	function resolveTargetUrl(cleanPath) {
 		const clean = (cleanPath || '').replace(/^\/+/, '');
 
-		// 0) Resolve relative to the current document first — this ensures
-		// targets like "2-Physics-Foundations/index.html" (which are
-		// relative to the current page directory, e.g. /Website/Scientia/)
-		// resolve correctly to the nested folder instead of being treated
-		// as relative to the `/Website/` folder or the repo root.
+		// 0) Resolve relative to the current document for truly relative
+		// targets (./foo, ../bar, or plain filenames). However, if the
+		// target starts with a known top-level section (e.g. "Scientia/",
+		// "Vitalis/", "Logos/", "Sensus/", or "Website/"), treat it as
+		// a site-root-style path and skip document-relative resolution so
+		// we don't accidentally append the section into the current folder
+		// (which caused URLs like /.../Integration/Scientia/...).
 		try {
-			return new URL(clean, window.location.href).href;
+			if (!/^(Scientia|Vitalis|Logos|Sensus|Website)\//i.test(clean)) {
+				return new URL(clean, window.location.href).href;
+			}
 		} catch (e) { /* fallthrough */ }
 		// 1) Prefer a <base> element if present
 		const baseEl = document.querySelector('base');
