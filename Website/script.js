@@ -507,21 +507,46 @@ if (window.__uuRootScriptInitialized) {
 				const uniq = candidates.filter(c => { if (!c) return false; if (seen.has(c)) return false; seen.add(c); return true; });
 
 				(async function tryNavigate() {
+					// Expand candidates with index.html and no-index variants to handle
+					// directory-index hosting (e.g. /path/ -> /path/index.html) and
+					// to cover both presence and absence of trailing index files.
+					const expanded = [];
+					const seen2 = new Set();
 					for (let i = 0; i < uniq.length; i++) {
-						const url = uniq[i];
+						const u = uniq[i];
+						if (!u) continue;
+						if (!seen2.has(u)) { expanded.push(u); seen2.add(u); }
+						// If it doesn't look like a file, try /index.html
+						if (!/\.html(\?|$)/i.test(u)) {
+							const withIndex = u.replace(/\/+$/, '') + '/index.html';
+							if (!seen2.has(withIndex)) { expanded.push(withIndex); seen2.add(withIndex); }
+						}
+						// If it ends with /index.html, also try the directory form
+						if (/\/index\.html$/i.test(u)) {
+							const dirForm = u.replace(/\/index\.html$/i, '');
+							if (!seen2.has(dirForm)) { expanded.push(dirForm); seen2.add(dirForm); }
+						}
+					}
+
+					try { console.debug('search navigate candidates', expanded); } catch (e) {}
+					for (let i = 0; i < expanded.length; i++) {
+						const url = expanded[i];
 						try {
 							const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+							if (resp) {
+								try { console.debug('fetch', url, '=>', resp.status); } catch (e) {}
+							}
 							if (resp && resp.ok) {
 								try { console.debug('navigate ->', url, 'from', window.location.pathname); } catch (e) {}
 								window.location.assign(url);
 								return;
 							}
-						} catch (err) { /* ignore and try next */ }
+						} catch (err) { try { console.debug('fetch failed for', url, err && err.message); } catch(e){} }
 					}
-					// Fallback: navigate to first candidate even if fetch failed (original behavior)
-					if (uniq.length > 0) {
-						try { console.debug('fallback navigate ->', uniq[0]); } catch (e) {}
-						window.location.assign(uniq[0]);
+					// Fallback: navigate to first expanded candidate even if fetch failed
+					if (expanded.length > 0) {
+						try { console.debug('fallback navigate ->', expanded[0]); } catch (e) {}
+						window.location.assign(expanded[0]);
 					}
 				})();
 				return;
