@@ -239,12 +239,38 @@ if (window.__uuRootScriptInitialized) {
 
 	function computeDepthFromPath(p) {
 		if (!p) return 1;
-		const normalized = normalizePath(p || '');
+		const normalized = normalizePath(p || '').toLowerCase();
+		// Emulate the CSS selectors used for `.section-card[href*="..."]` so
+		// search badges pick the same colour level as card refs.
+		const level4 = [
+			'1-1-1-1-','1-1-1-2-','1-1-1-3-','1-1-1-4-','1-1-1-5-','1-1-1-6-',
+			'1-1-2-1-','1-1-2-2-','1-1-2-3-','1-1-3-1-','1-1-3-2-','1-1-3-3-','1-1-3-4-','1-1-3-5-',
+			'1-1-4-1-','1-1-4-2-','1-1-4-3-','1-1-5-1-','1-1-5-2-','1-1-5-3-',
+			'1-1-6-1-','1-1-6-2-','1-1-6-3-','1-1-7-1-','1-1-7-2-','1-1-7-3-'
+		];
+		const level3 = [
+			'1-1-1-','1-1-2-','1-1-3-','1-1-4-','1-1-5-','1-1-6-','1-1-7-',
+			'1-2-1-','1-2-2-','1-2-3-'
+		];
+		const level2 = [
+			'1-1-','1-2-','1-3-','1-4-','1-5-','1-6-','1-7-','1-8-','1-9-','1-10-','1-11-','1-12-','1-13-','1-14-',
+			'2-1-','2-2-','3-1-','4-1-','5-1-','6-1-','7-1-','8-1-'
+		];
+
+		for (let i = 0; i < level4.length; i++) {
+			if (normalized.indexOf(level4[i]) !== -1) return 4;
+		}
+		for (let i = 0; i < level3.length; i++) {
+			if (normalized.indexOf(level3[i]) !== -1) return 3;
+		}
+		for (let i = 0; i < level2.length; i++) {
+			if (normalized.indexOf(level2[i]) !== -1) return 2;
+		}
+		// Fallback: count numeric-leading segments (conservative)
 		const parts = normalized.split('/').filter(Boolean);
 		let count = 0;
 		for (let i = 0; i < parts.length; i++) {
 			const seg = parts[i] || '';
-			// consider segments that start with numeric groups like "1-" or "1-2-"
 			if (/^\d+(?:-\d+)*[-_]/.test(seg)) count++;
 		}
 		return Math.max(1, count);
