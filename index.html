@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Universal Understanding</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Redirect root opens to the Website/ folder so GitHub Pages serves the canonical site -->
+  <meta http-equiv="refresh" content="0;url=Website/">
+  <script>
+    try {
+      // If we're not already under /Website/, replace to the Website/ subfolder.
+      if (!location.pathname.toLowerCase().includes('/website/')) {
+        location.replace('Website/');
+      }
+    } catch (e) { /* ignore */ }
+  </script>
   <script defer src="script.js"></script>
 </head>
 <body>
