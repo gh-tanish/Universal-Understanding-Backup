@@ -68,9 +68,9 @@ if (window.__uuRootScriptInitialized) {
 	const searchBar = document.getElementById('siteSearch');
 	const searchResults = document.getElementById('searchResults');
   
-	// Define searchable topics
+	// Define searchable topics (base list). We'll merge with generated sitemap when available.
 	const topics = [
-		{ title: 'Mathematical Foundations', path: 'Website/Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
+		{ title: 'Mathematical Foundations', path: 'Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
 		{ title: 'Algebra & Functions', path: 'Website/Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
 		{ title: 'Calculus', path: 'Website/Scientia/1-Mathematical-Foundations/1-2-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.2' },
 		{ title: 'Linear Algebra', path: 'Website/Scientia/1-Mathematical-Foundations/1-3-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.3' },
@@ -97,6 +97,39 @@ if (window.__uuRootScriptInitialized) {
 		{ title: 'Medical Specialties & Subspecialties', path: 'Vitalis/7-Medical-Specialties/index.html', section: 'Vitalis', ref: 'VI7' },
 		{ title: 'Advanced & Research Medicine', path: 'Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
 	];
+
+	// Try to load a generated sitemap (Website/sitemap.json) to include deep/nested pages.
+	(async function loadSitemapAndMerge() {
+		try {
+			const resp = await fetch('sitemap.json', { cache: 'no-store' });
+			if (!resp.ok) return;
+			const pages = await resp.json();
+			// Map pages into topic shape and merge, avoiding duplicates by path
+			const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
+			let counter = 1;
+			pages.forEach(p => {
+				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
+				if (!normalized || existingPaths.has(normalized)) return;
+				existingPaths.add(normalized);
+				const parts = (p.dir || p.path || '').split('/');
+				const top = parts[0] || '';
+				const section = top || (p.section || '');
+				// Derive a short ref code (e.g. SC, VI, LO, SE) + counter
+				const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
+				const abbrev = codeMap[top.toLowerCase()] || top.slice(0,2).toUpperCase() || 'PG';
+				const ref = `${abbrev}${counter++}`;
+				topics.push({ title: p.title || parts[parts.length-1] || normalized, path: normalized, section, ref });
+			});
+		} catch (err) {
+			console.debug('No sitemap.json found or failed to load:', err);
+		}
+	})();
+
+	function normalizePath(p) {
+		if (!p) return '';
+		// Remove any leading Website/ or ./, convert windows backslashes
+		return p.replace(/^Website[\\\/]?/i, '').replace(/^\.\//, '').replace(/\\/g, '/');
+	}
 
 	if (searchBar && searchResults) {
 		// Detect current page context
@@ -126,23 +159,19 @@ if (window.__uuRootScriptInitialized) {
 				return;
 			}
 
-			// Filter topics based on context by ref code
+			// Filter topics based on current page context (use path/section match so deep pages are included)
 			let contextTopics = topics;
-			if (currentContext === 'scientia') {
-				contextTopics = topics.filter(t => t.ref.startsWith('SC'));
-			} else if (currentContext === 'vitalis') {
-				contextTopics = topics.filter(t => t.ref.startsWith('VI'));
-			} else if (currentContext === 'logos') {
-				contextTopics = topics.filter(t => t.ref.startsWith('LO'));
-			} else if (currentContext === 'sensus') {
-				contextTopics = topics.filter(t => t.ref.startsWith('SE'));
+			if (currentContext !== 'all') {
+				contextTopics = topics.filter(t => (t.path || '').toLowerCase().includes(currentContext) || (t.section || '').toLowerCase().includes(currentContext));
 			}
 
-			const matches = contextTopics.filter(topic => 
-				topic.title.toLowerCase().includes(query) || 
-				topic.section.toLowerCase().includes(query) ||
-				topic.ref.toLowerCase().includes(query)
-			);
+			const matches = contextTopics.filter(topic => {
+				const title = (topic.title || '').toLowerCase();
+				const section = (topic.section || '').toLowerCase();
+				const path = (topic.path || '').toLowerCase();
+				const ref = (topic.ref || '').toLowerCase();
+				return title.includes(query) || section.includes(query) || path.includes(query) || ref.includes(query);
+			});
 
 			if (matches.length > 0) {
 				searchResults.innerHTML = matches.map(match => `\n          <div class="search-result-item" data-path="${match.path}">\n            <div class="search-result-content">\n              <div class="search-result-title">${match.title}</div>\n              <div class="search-result-path">${match.section}</div>\n            </div>\n            <span class="search-ref">${match.ref}</span>\n          </div>\n        `).join('');
