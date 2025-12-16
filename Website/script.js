@@ -19,31 +19,15 @@ document.addEventListener('DOMContentLoaded', function() {
       // Only intercept local links
       if (a.getAttribute('href').startsWith('#')) return;
       e.preventDefault();
-      // Always resolve from /Website/ root for robust navigation
-      const current = window.location.pathname;
-      const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
-      let websiteRoot = '/Website/';
-      if (websiteIdx !== -1) {
-        websiteRoot = current.substring(0, websiteIdx + 9);
-      } else {
-        // If not found, fallback to /Website/ from root
-        websiteRoot = '/Website/';
-      }
-      // Remove any leading slash from href
-      let cleanTarget = a.getAttribute('href').replace(/^\/+/, '');
-      // If already absolute from /Website/, don't double it
-      if (cleanTarget.toLowerCase().startsWith('website/')) {
-        cleanTarget = cleanTarget.substring(8);
-      }
-      const fullPath = websiteRoot + cleanTarget;
+      const href = a.getAttribute('href');
       if (main) {
         main.classList.remove('fade-in');
         main.classList.add('fade-out');
         setTimeout(() => {
-          window.location.href = fullPath;
+          window.location.href = href;
         }, 280);
       } else {
-        window.location.href = fullPath;
+        window.location.href = href;
       }
     }
   }, true);
@@ -111,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { title: 'Physics Foundations', path: 'Scientia/2-Physics-Foundations/index.html', section: 'Scientia', ref: 'SC2' },
     { title: 'Quantum Mechanics', path: 'Scientia/3-Quantum-Mechanics/index.html', section: 'Scientia', ref: 'SC3' },
     { title: 'Relativity', path: 'Scientia/4-Relativity/index.html', section: 'Scientia', ref: 'SC4' },
-    { title: 'Foundational Biomedical Sciences', path: 'vitalis/1-foundational-biomedical-sciences/index.html', section: 'Vitalis', ref: 'VI1' },
+    { title: 'Foundational Biomedical Sciences', path: 'Vitalis/1-Foundational-Biomedical-Sciences/index.html', section: 'Vitalis', ref: 'VI1' },
     { title: 'Cellular & Molecular Biology', path: 'vitalis/1-foundational-biomedical-sciences/1-1-cellular-and-molecular-biology/index.html', section: 'Vitalis > Foundational Biomedical Sciences', ref: 'VI1.1' },
     { title: 'Cell Structure & Organelles', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-1-Cellular-and-Molecular-Biology/1-1-1-Cell-Structure-and-Organelles/index.html', section: 'Vitalis > Foundational Biomedical Sciences > Cellular & Molecular Biology', ref: 'VI1.1.1' },
     { title: 'Nucleus', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-1-Cellular-and-Molecular-Biology/1-1-1-Cell-Structure-and-Organelles/1-1-1-1-Nucleus/index.html', section: 'Vitalis > Foundational Biomedical Sciences > Cellular & Molecular Biology > Cell Structure & Organelles', ref: 'VI1.1.1.1' },
@@ -252,21 +236,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Always resolve from /Website/ root for robust navigation
-            const current = window.location.pathname;
-            const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
-            let websiteRoot = '/Website/';
-            if (websiteIdx !== -1) {
-              websiteRoot = current.substring(0, websiteIdx + 9);
-            } else {
-              websiteRoot = '/Website/';
-            }
-            let cleanTarget = targetPath.replace(/^\/+/, '');
-            if (cleanTarget.toLowerCase().startsWith('website/')) {
-              cleanTarget = cleanTarget.substring(8);
-            }
-            const fullPath = websiteRoot + cleanTarget;
-            window.location.href = fullPath;
+            window.location.href = targetPath;
           };
           item.addEventListener('click', handleNavigation);
         });
