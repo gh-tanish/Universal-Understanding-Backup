@@ -219,28 +219,6 @@ if (window.__uuRootScriptInitialized) {
     });
   });
 
-  // Ensure toggle buttons work
-  const toggleButtons = document.querySelectorAll('.toggle-btn');
-  toggleButtons.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      let nextDiv = this.nextElementSibling;
-      while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
-        nextDiv = nextDiv.nextElementSibling;
-      }
-      if (nextDiv) {
-        const isExpanded = nextDiv.classList.contains('expanded');
-        if (isExpanded) {
-          nextDiv.classList.remove('expanded');
-          this.classList.remove('expanded');
-        } else {
-          nextDiv.classList.add('expanded');
-          this.classList.add('expanded');
-        }
-      }
-    });
-  });
-
   const form = document.getElementById('contactForm');
   const result = document.getElementById('formResult');
   const submitBtn = form && form.querySelector('button[type="submit"]');
