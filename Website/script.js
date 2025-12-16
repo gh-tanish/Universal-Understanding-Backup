@@ -363,6 +363,19 @@ if (window.__uuRootScriptInitialized) {
 	if (!window.__uuDelegatedEventsInstalled) {
 		window.__uuDelegatedEventsInstalled = true;
 		document.body.addEventListener('click', function(e) {
+			// Ensure section-card clicks always resolve correctly across hosting roots
+			// (fixes touch/iOS navigation where relative paths sometimes 404).
+			const sectionCard = e.target.closest('.section-card');
+			if (sectionCard && sectionCard.getAttribute && sectionCard.getAttribute('href')) {
+				e.preventDefault();
+				let target = sectionCard.getAttribute('href') || '';
+				// Normalize any leading 'Website/' prefix and backslashes
+				target = target.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+				const href = resolveTargetUrl(target);
+				try { console.debug('section-card navigate ->', href, 'from', window.location.pathname); } catch (e) {}
+				window.location.assign(href);
+				return;
+			}
 			const toggleBtn = e.target.closest('.toggle-btn');
 			if (toggleBtn) {
 				e.preventDefault();
