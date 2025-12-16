@@ -117,6 +117,9 @@ if (window.__uuRootScriptInitialized) {
 		{ title: 'Advanced & Research Medicine', path: 'Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
 	];
 
+	// Map path -> canonical title from sitemap.json (used to prefer sitemap titles)
+	const sitemapTitleMap = Object.create(null);
+
 	// Try to load a generated sitemap (Website/sitemap.json) to include deep/nested pages.
 	(async function loadSitemapAndMerge() {
 		try {
@@ -132,6 +135,8 @@ if (window.__uuRootScriptInitialized) {
 				// derive a clean page title: many sitemap entries include " — Section" suffix.
 				const rawTitle = (p.title || '');
 				const mainTitle = rawTitle.split(' — ')[0].trim() || rawTitle;
+				// Save canonical sitemap title for this normalized path (preserve symbols)
+				sitemapTitleMap[normalized] = mainTitle;
 
 				if (existingPaths.has(normalized)) {
 					// Update existing static topic to use the sitemap's canonical page title
@@ -214,8 +219,9 @@ if (window.__uuRootScriptInitialized) {
 
 			if (matches.length > 0) {
 				searchResults.innerHTML = matches.map(match => {
-					// Show the actual page title (may include symbols like β).
-					const titleToShow = match.title || '';
+					// Prefer sitemap canonical title if available (preserves symbols like β),
+					// otherwise fall back to the topic's configured title.
+					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
 					const navPath = match.path || '';
 					const depth = match.ref ? (match.ref.split('.').length) : 1;
