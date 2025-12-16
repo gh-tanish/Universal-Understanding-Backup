@@ -36,7 +36,7 @@
   <main class="container">
     <section class="hero">
       <h2>Combinations & Permutations</h2>
-      <p>Counting principles, factorial notation, permutations, combinations, and arrangement problems.</p>
+      <p class="lead">Counting principles, factorial notation, permutations, combinations, and arrangement problems.</p>
       <p class="date-created">Created: December 15, 2025</p>
     </section>
     <hr class="section-sep">
@@ -59,7 +59,8 @@
             <div class="content-box" style="padding:0.5rem;border-radius:6px;">
               $$ P(n,k) = \dfrac{n!}{(n-k)!} $$
             </div>
-            <p style="margin-top:0.4rem;"><strong>Example:</strong> From A,B,C,D make 3-letter arrangements: P(4,3)=4!/(1!)=24.</p>
+            <div class="spacer" aria-hidden="true"></div>
+            <p class="spaced"><strong>Example:</strong> From A,B,C,D make 3-letter arrangements: P(4,3)=4!/(1!)=24.</p>
           </div>
 
           <div style="flex:1;min-width:260px;">
@@ -67,7 +68,8 @@
             <div class="content-box" style="padding:0.5rem;border-radius:6px;">
               $$ \binom{n}{k} = \dfrac{n!}{k!\,(n-k)!} $$
             </div>
-            <p style="margin-top:0.4rem;"><strong>Example:</strong> Choose 2 from 4: C(4,2)=6 (AB, AC, AD, BC, BD, CD).</p>
+            <div class="spacer" aria-hidden="true"></div>
+            <p class="spaced"><strong>Example:</strong> Choose 2 from 4: C(4,2)=6 (AB, AC, AD, BC, BD, CD).</p>
           </div>
         </div>
 
@@ -85,6 +87,7 @@
         <div class="content-box">
           $$ P(n,k) = n (n-1) (n-2) \cdots (n-k+1) = \dfrac{n!}{(n-k)!} $$
         </div>
+        <div class="spacer" aria-hidden="true"></div>
 
         <h5>Combination formula</h5>
         <p>Each unordered selection of <em>k</em> items corresponds to <em>k!</em> different ordered lists (permutations). Therefore divide permutations by <em>k!</em>:</p>

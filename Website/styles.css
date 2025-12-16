@@ -506,6 +506,12 @@ article h5 { font-size: 0.98rem; margin-top: 0.5rem; margin-bottom: 0.35rem; fon
   border-radius: 2px;
 }
 
+/* Paragraphing utilities */
+article p { margin: 0.72rem 0; }
+.lead { font-size: 1.06rem; color: var(--muted); margin-bottom: 0.9rem; }
+.spaced { margin: 0.9rem 0; }
+.spacer { height: 1rem; display:block; }
+
   
 .search-result-item {
   padding: 10px 12px;
