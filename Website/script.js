@@ -222,13 +222,15 @@ if (window.__uuRootScriptInitialized) {
 			}
 
 			const matches = contextTopics.filter(topic => {
-				// Prefer displayTitle for matching so subpages can present the main title
-				// while still being searchable by their specific subtitle.
-				const title = ((topic.displayTitle ? topic.displayTitle + ' ' : '') + (topic.title || '')).toLowerCase();
+				// Use sitemap canonical title if available (preserves symbols and correct spelling),
+				// fall back to displayTitle/title from the static topics list.
+				const normalizedPath = normalizePath(topic.path || '');
+				const sitemapTitle = sitemapTitleMap[normalizedPath] || '';
+				const titleSource = ((topic.displayTitle ? topic.displayTitle + ' ' : '') + (sitemapTitle || topic.title || '')).toLowerCase();
 				const section = (topic.section || '').toLowerCase();
 				const path = (topic.path || '').toLowerCase();
 				const ref = (topic.ref || '').toLowerCase();
-				return title.includes(query) || section.includes(query) || path.includes(query) || ref.includes(query);
+				return titleSource.includes(query) || section.includes(query) || path.includes(query) || ref.includes(query);
 			});
 
 			if (matches.length > 0) {
