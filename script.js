@@ -50,18 +50,21 @@ if (window.__uuRootScriptInitialized) {
     themeToggle.addEventListener('touchend', function(e) { e.preventDefault(); toggleTheme(); }, { passive: false });
     themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
   }
-    // Fail-safe: attach a direct listener that stops propagation so other delegated handlers
-    // or overlays won't swallow the event. Also ensure button is interactive.
-    themeToggle.style.pointerEvents = 'auto';
-    themeToggle.disabled = false;
-    function directToggleHandler(e) {
-      console.debug('Direct theme toggle fired (Root):', e.type, e.target);
-      e.stopPropagation();
-      if (e.preventDefault) e.preventDefault();
-      toggleTheme(e);
+    // Fail-safe: only attach direct listeners when both the toggle element and
+    // the toggle function are available. This prevents runtime exceptions on
+    // pages where the nav or button was not present at load.
+    if (typeof toggleTheme === 'function' && themeToggle) {
+      themeToggle.style.pointerEvents = 'auto';
+      themeToggle.disabled = false;
+      function directToggleHandler(e) {
+        console.debug('Direct theme toggle fired (Root):', e.type, e.target);
+        e.stopPropagation();
+        if (e.preventDefault) e.preventDefault();
+        try { toggleTheme(e); } catch (err) { console.error(err); }
+      }
+      themeToggle.addEventListener('pointerup', directToggleHandler, {passive: false});
+      themeToggle.addEventListener('click', directToggleHandler, {passive: false});
     }
-    themeToggle.addEventListener('pointerup', directToggleHandler, {passive: false});
-    themeToggle.addEventListener('click', directToggleHandler, {passive: false});
 
   // Search functionality
   const searchBar = document.getElementById('siteSearch');
