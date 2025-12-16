@@ -474,6 +474,11 @@ if (window.__uuRootScriptInitialized) {
 	// can update the site's "latest update" time without editing many HTML files.
 	const LATEST_UPDATE_TEXT = 'Updated: December 16, 2025 — 6:37pm';
 	function setLatestUpdateTimestamp() {
+		// Only inject update timestamps on section pages (avoid the main site root)
+		const pathLow = (window.location.pathname || '').toLowerCase();
+		if (!(pathLow.indexOf('/website/') !== -1 || pathLow.indexOf('scientia') !== -1 || pathLow.indexOf('vitalis') !== -1 || pathLow.indexOf('logos') !== -1 || pathLow.indexOf('sensus') !== -1)) {
+			return; // skip injecting on root or unrelated pages
+		}
 		const els = document.querySelectorAll('.date-created');
 		els.forEach(el => {
 			let next = el.nextElementSibling;
