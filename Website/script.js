@@ -98,31 +98,41 @@ if (window.__uuRootScriptInitialized) {
 		{ title: 'Advanced & Research Medicine', path: 'Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
 	];
 
-	// Try to load a generated sitemap (Website/sitemap.json) to include deep/nested pages.
+	// Try to load a generated sitemap (sitemap.json) to include deep/nested pages.
+	// Use multiple candidate locations so nested pages can still fetch it.
 	(async function loadSitemapAndMerge() {
-		try {
-			const resp = await fetch('sitemap.json', { cache: 'no-store' });
-			if (!resp.ok) return;
-			const pages = await resp.json();
-			// Map pages into topic shape and merge, avoiding duplicates by path
-			const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
-			let counter = 1;
-			pages.forEach(p => {
-				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
-				if (!normalized || existingPaths.has(normalized)) return;
-				existingPaths.add(normalized);
-				const parts = (p.dir || p.path || '').split('/');
-				const top = parts[0] || '';
-				const section = top || (p.section || '');
-				// Derive a short ref code (e.g. SC, VI, LO, SE) + counter
-				const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
-				const abbrev = codeMap[top.toLowerCase()] || top.slice(0,2).toUpperCase() || 'PG';
-				const ref = `${abbrev}${counter++}`;
-				topics.push({ title: p.title || parts[parts.length-1] || normalized, path: normalized, section, ref });
-			});
-		} catch (err) {
-			console.debug('No sitemap.json found or failed to load:', err);
+		const candidates = ['sitemap.json', '../sitemap.json', '../../sitemap.json', '../../../sitemap.json', 'Website/sitemap.json', '/Website/sitemap.json'];
+		let pages = null;
+		for (const c of candidates) {
+			try {
+				const resp = await fetch(c, { cache: 'no-store' });
+				if (!resp.ok) continue;
+				pages = await resp.json();
+				console.debug('Loaded sitemap from', c, 'with', pages.length, 'entries');
+				break;
+			} catch (err) {
+				// try next
+			}
 		}
+		if (!pages) {
+			console.debug('sitemap.json not found in any candidate location');
+			return;
+		}
+		// Map pages into topic shape and merge, avoiding duplicates by path
+		const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
+		let counter = 1;
+		pages.forEach(p => {
+			const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
+			if (!normalized || existingPaths.has(normalized)) return;
+			existingPaths.add(normalized);
+			const parts = (p.dir || p.path || '').split('/');
+			const top = (parts[0] || '').toLowerCase();
+			const section = parts[0] || (p.section || '');
+			const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
+			const abbrev = codeMap[top] || (parts[0] ? parts[0].slice(0,2).toUpperCase() : 'PG');
+			const ref = `${abbrev}${counter++}`;
+			topics.push({ title: p.title || parts[parts.length-1] || normalized, path: normalized, section, ref });
+		});
 	})();
 
 	function normalizePath(p) {
