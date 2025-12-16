@@ -206,7 +206,8 @@ if (window.__uuRootScriptInitialized) {
 							navPath = parent.path;
 						}
 					}
-					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${displayTitle}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
+					const subtitle = (match.title && match.displayTitle && match.title !== match.displayTitle) ? `<div class="search-result-subtitle">${match.title}</div>` : '';
+					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${displayTitle}</div>\n              ${subtitle}\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
 
