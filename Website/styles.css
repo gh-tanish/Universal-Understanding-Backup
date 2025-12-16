@@ -544,6 +544,9 @@ body.light-mode .hero{background:linear-gradient(90deg,rgba(0,0,0,0.01),rgba(0,0
 .top-nav li a { color: var(--text) !important; }
 .search-results { background: var(--surface) !important; border-color: rgba(0,0,0,0.08) !important; box-shadow: 0 6px 18px rgba(0,0,0,0.08) !important; }
 .welcome-card { background: linear-gradient(135deg, rgba(79,172,254,0.02) 0%, rgba(143,107,255,0.03) 100%); }
+
+/* Keep designated accent-blue text constant across themes */
+.always-blue { color: var(--accent-2) !important; }
 body.light-mode .date-created{background:rgba(0,0,0,0.02); border:1px solid rgba(0,0,0,0.08)}
 body.light-mode form input,body.light-mode form textarea{background:rgba(0,0,0,0.01); border:1px solid rgba(0,0,0,0.08)}
 body.light-mode .btn.secondary{border:1px solid rgba(0,0,0,0.08)}
