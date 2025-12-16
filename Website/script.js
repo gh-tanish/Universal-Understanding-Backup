@@ -128,7 +128,20 @@ if (window.__uuRootScriptInitialized) {
 			let counter = 1;
 			pages.forEach(p => {
 				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
-				if (!normalized || existingPaths.has(normalized)) return;
+				if (!normalized) return;
+				if (existingPaths.has(normalized)) {
+					// If a static topic already exists for this path, prefer the sitemap's
+					// canonical page title (which may include symbols) by updating it.
+					for (let i = 0; i < topics.length; i++) {
+						if (normalizePath(topics[i].path) === normalized) {
+							if (p.title) topics[i].title = p.title;
+							// ensure path normalized
+							topics[i].path = normalized;
+							break;
+						}
+					}
+					return;
+				}
 				existingPaths.add(normalized);
 				const parts = (p.dir || p.path || '').split('/');
 				const top = parts[0] || '';
