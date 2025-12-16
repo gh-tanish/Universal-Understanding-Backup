@@ -466,7 +466,26 @@ if (window.__uuRootScriptInitialized) {
 	// Run once on load and observe for dynamic changes
 	try { setCardDepths(); } catch (err) { /* ignore */ }
 	if (window.MutationObserver) {
-		const mo = new MutationObserver(function() { try { setCardDepths(); } catch (e) {} });
+		// Debounce DOM-heavy operations triggered by mutations to avoid jank on mobile
+		let __uuDepthTimer = null;
+		function scheduleSetCardDepths() {
+			if (__uuDepthTimer) clearTimeout(__uuDepthTimer);
+			__uuDepthTimer = setTimeout(function() {
+				try { setCardDepths(); } catch (e) {}
+				__uuDepthTimer = null;
+			}, 120);
+		}
+		const mo = new MutationObserver(function(mutations) {
+			// Only schedule a depth recalculation when relevant nodes are added/removed
+			let interesting = false;
+			for (let i = 0; i < mutations.length; i++) {
+				const m = mutations[i];
+				if (m.addedNodes && m.addedNodes.length) { interesting = true; break; }
+				if (m.removedNodes && m.removedNodes.length) { interesting = true; break; }
+				if (m.type === 'childList') { interesting = true; break; }
+			}
+			if (interesting) scheduleSetCardDepths();
+		});
 		mo.observe(document.body, { childList: true, subtree: true });
 	}
 
