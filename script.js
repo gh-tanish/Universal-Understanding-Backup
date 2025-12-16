@@ -21,6 +21,7 @@ if (window.__uuRootScriptInitialized) {
     if (nav) {
       const li = document.createElement('li');
       const btn = document.createElement('button');
+      btn.type = 'button';
       btn.className = 'theme-toggle';
       btn.id = 'themeToggle';
       btn.textContent = body.classList.contains('light-mode') ? 'Light' : 'Dark';
@@ -40,6 +41,7 @@ if (window.__uuRootScriptInitialized) {
     function toggleTheme(e) {
       if (e && e.preventDefault) { e.preventDefault(); }
       const isLightMode = body.classList.toggle('light-mode');
+      htmlElement.classList.toggle('light-mode', isLightMode);
       themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
       themeToggle.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
       localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
@@ -48,6 +50,18 @@ if (window.__uuRootScriptInitialized) {
     themeToggle.addEventListener('touchend', function(e) { e.preventDefault(); toggleTheme(); }, { passive: false });
     themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
   }
+    // Fail-safe: attach a direct listener that stops propagation so other delegated handlers
+    // or overlays won't swallow the event. Also ensure button is interactive.
+    themeToggle.style.pointerEvents = 'auto';
+    themeToggle.disabled = false;
+    function directToggleHandler(e) {
+      console.debug('Direct theme toggle fired (Root):', e.type, e.target);
+      e.stopPropagation();
+      if (e.preventDefault) e.preventDefault();
+      toggleTheme(e);
+    }
+    themeToggle.addEventListener('pointerup', directToggleHandler, {passive: false});
+    themeToggle.addEventListener('click', directToggleHandler, {passive: false});
 
   // Search functionality
   const searchBar = document.getElementById('siteSearch');
@@ -141,39 +155,7 @@ if (window.__uuRootScriptInitialized) {
         `).join('');
         searchResults.classList.add('active');
 
-        // Add click handlers to results
-        document.querySelectorAll('.search-result-item').forEach(item => {
-          item.addEventListener('click', function() {
-            const targetPath = this.dataset.path;
-            
-            // Get the current pathname (e.g., /Scientia/1-Mathematical-Foundations/index.html)
-            const currentPath = window.location.pathname;
-            
-            // Remove the filename to get just the directory path
-            const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
-            
-            // Count directory levels by counting slashes (excluding leading/trailing)
-            const cleanPath = pathWithoutFile.replace(/^\/+|\/+$/g, '');
-            const depth = cleanPath === '' ? 0 : cleanPath.split('/').length;
-            
-            console.log('Current path:', currentPath);
-            console.log('Path without file:', pathWithoutFile);
-            console.log('Clean path:', cleanPath);
-            console.log('Depth:', depth);
-            console.log('Target:', targetPath);
-            
-            // Build relative path: go up 'depth' levels, then navigate to target
-            let relativePath = '';
-            for (let i = 0; i < depth; i++) {
-              relativePath += '../';
-            }
-            relativePath += targetPath;
-            
-            console.log('Final relative path:', relativePath);
-            
-            window.location.href = relativePath;
-          });
-        });
+        // We'll use delegated handlers for navigation and toggles (see below)
       } else {
         searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
         searchResults.classList.add('active');
@@ -195,29 +177,71 @@ if (window.__uuRootScriptInitialized) {
     });
   }
 
-  // Toggle function for expandable content
-  var toggleButtons = document.querySelectorAll('.toggle-btn');
-  
-  toggleButtons.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      var nextDiv = this.nextElementSibling;
-      while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
-        nextDiv = nextDiv.nextElementSibling;
-      }
-      
-      if (nextDiv) {
-        var isExpanded = nextDiv.classList.contains('expanded');
-        if (isExpanded) {
-          nextDiv.classList.remove('expanded');
-          this.classList.remove('expanded');
-        } else {
-          nextDiv.classList.add('expanded');
-          this.classList.add('expanded');
+  // Delegated handler for toggles, theme button, and search results (works even for dynamically-inserted elements)
+  if (!window.__uuDelegatedEventsInstalled) {
+    window.__uuDelegatedEventsInstalled = true;
+    document.body.addEventListener('click', function(e) {
+      const toggleBtn = e.target.closest('.toggle-btn');
+      if (toggleBtn) {
+        e.preventDefault();
+        let nextDiv = toggleBtn.nextElementSibling;
+        while (nextDiv && !nextDiv.classList.contains('toggle-content')) {
+          nextDiv = nextDiv.nextElementSibling;
         }
+        if (nextDiv) {
+          const isExpanded = nextDiv.classList.contains('expanded');
+          if (isExpanded) {
+            nextDiv.classList.remove('expanded');
+            toggleBtn.classList.remove('expanded');
+          } else {
+            nextDiv.classList.add('expanded');
+            toggleBtn.classList.add('expanded');
+          }
+        }
+        return;
       }
-    });
-  });
+
+      const resultItem = e.target.closest('.search-result-item');
+      if (resultItem) {
+        e.preventDefault();
+        const targetPath = resultItem.dataset.path;
+        if (!targetPath) return;
+        const currentPath = window.location.pathname;
+        const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
+        const cleanPath = pathWithoutFile.replace(/^\/+|\/+$/g, '');
+        const depth = cleanPath === '' ? 0 : cleanPath.split('/').length;
+        let relativePath = '';
+        for (let i = 0; i < depth; i++) relativePath += '../';
+        relativePath += targetPath;
+        window.location.href = relativePath;
+        return;
+      }
+
+      const themeBtn = e.target.closest('#themeToggle');
+      if (themeBtn) {
+        e.preventDefault();
+        console.debug('Root theme toggle clicked:', themeBtn, 'target:', e.target);
+        const isLightMode = body.classList.toggle('light-mode');
+        themeBtn.textContent = isLightMode ? 'Light' : 'Dark';
+        themeBtn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
+        localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+        return;
+      }
+    }, false);
+  }
+
+  // Pointerup fallback for touch
+  document.body.addEventListener('pointerup', function(e) {
+    const themeBtn = e.target.closest('#themeToggle');
+    if (themeBtn) {
+      e.preventDefault();
+      console.debug('Root theme toggle pointerup:', themeBtn, 'target:', e.target);
+      const isLightMode = body.classList.toggle('light-mode');
+      themeBtn.textContent = isLightMode ? 'Light' : 'Dark';
+      themeBtn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
+      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    }
+  }, false);
 
   const form = document.getElementById('contactForm');
   const result = document.getElementById('formResult');
