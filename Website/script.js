@@ -120,18 +120,30 @@ if (window.__uuRootScriptInitialized) {
 		}
 		// Map pages into topic shape and merge, avoiding duplicates by path
 		const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
-		let counter = 1;
 		pages.forEach(p => {
 			const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
 			if (!normalized || existingPaths.has(normalized)) return;
 			existingPaths.add(normalized);
-			const parts = (p.dir || p.path || '').split('/');
+
+			const dir = p.dir || p.path || '';
+			const parts = dir.split('/').filter(Boolean);
+
+			// Build a friendly section name from directory segments (strip numeric prefixes)
+			const humanSegments = parts.map(seg => seg.replace(/^\d+[\-]?/, '').replace(/\-/g, ' '));
+			const section = humanSegments.join(' > ') || (p.section || '');
+
+			// Derive hierarchical ref from numeric suffix in each segment (take last number in segment)
+			const nums = parts.map(seg => {
+				const m = (seg.match(/(\d+)/g) || []);
+				return m.length ? m[m.length - 1] : null;
+			}).filter(Boolean);
 			const top = (parts[0] || '').toLowerCase();
-			const section = parts[0] || (p.section || '');
 			const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
 			const abbrev = codeMap[top] || (parts[0] ? parts[0].slice(0,2).toUpperCase() : 'PG');
-			const ref = `${abbrev}${counter++}`;
-			topics.push({ title: p.title || parts[parts.length-1] || normalized, path: normalized, section, ref });
+			const ref = nums.length ? `${abbrev}${nums.join('.')}` : `${abbrev}`;
+
+			const title = p.title || humanSegments[humanSegments.length - 1] || normalized;
+			topics.push({ title, path: normalized, section, ref });
 		});
 	})();
 
@@ -175,7 +187,8 @@ if (window.__uuRootScriptInitialized) {
 				contextTopics = topics.filter(t => (t.path || '').toLowerCase().includes(currentContext) || (t.section || '').toLowerCase().includes(currentContext));
 			}
 
-			const matches = contextTopics.filter(topic => {
+			// Perform global search but prioritize local-context results
+			const allMatches = topics.filter(topic => {
 				const title = (topic.title || '').toLowerCase();
 				const section = (topic.section || '').toLowerCase();
 				const path = (topic.path || '').toLowerCase();
@@ -183,10 +196,33 @@ if (window.__uuRootScriptInitialized) {
 				return title.includes(query) || section.includes(query) || path.includes(query) || ref.includes(query);
 			});
 
-			if (matches.length > 0) {
-				searchResults.innerHTML = matches.map(match => `\n          <div class="search-result-item" data-path="${match.path}">\n            <div class="search-result-content">\n              <div class="search-result-title">${match.title}</div>\n              <div class="search-result-path">${match.section}</div>\n            </div>\n            <span class="search-ref">${match.ref}</span>\n          </div>\n        `).join('');
+			// Sort: local context matches first, then title startsWith, then shorter path
+			allMatches.sort((a, b) => {
+				const aPath = (a.path||'').toLowerCase();
+				const bPath = (b.path||'').toLowerCase();
+				const aSection = (a.section||'').toLowerCase();
+				const bSection = (b.section||'').toLowerCase();
+
+				const aLocal = currentContext !== 'all' && (aPath.includes(currentContext) || aSection.includes(currentContext));
+				const bLocal = currentContext !== 'all' && (bPath.includes(currentContext) || bSection.includes(currentContext));
+				if (aLocal !== bLocal) return aLocal ? -1 : 1;
+
+				const aqTitle = (a.title||'').toLowerCase().startsWith(query);
+				const bqTitle = (b.title||'').toLowerCase().startsWith(query);
+				if (aqTitle !== bqTitle) return aqTitle ? -1 : 1;
+
+				return (aPath.length - bPath.length) - (bPath.length - aPath.length);
+			});
+
+			if (allMatches.length > 0) {
+				searchResults.innerHTML = allMatches.map(match => `\n          <div class=\"search-result-item\" data-path=\"${match.path}\">\n            <div class=\"search-result-content\">\n              <div class=\"search-result-title\">${match.title}</div>\n              <div class=\"search-result-path\">${match.section || ''}</div>\n            </div>\n            <span class=\"search-ref\">${match.ref || ''}</span>\n          </div>\n        `).join('');
 				searchResults.classList.add('active');
 
+				// end if matches
+			} else {
+				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
+				searchResults.classList.add('active');
+			}
 				// We'll use delegated handlers for navigation and toggles (see below)
 			} else {
 				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
