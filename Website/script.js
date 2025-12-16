@@ -1,8 +1,8 @@
 // Theme toggle - run immediately, not waiting for DOMContentLoaded
-if (window.__uuScriptInitialized) {
+if (window.__uuWebsiteScriptInitialized) {
   console.debug('Website script already initialized');
 } else {
-  window.__uuScriptInitialized = true;
+  window.__uuWebsiteScriptInitialized = true;
   (function() {
     // Load saved theme immediately
     const savedTheme = localStorage.getItem('theme') || 'dark';

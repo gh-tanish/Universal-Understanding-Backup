@@ -1,7 +1,7 @@
-if (window.__uuScriptInitialized) {
-  console.debug('Universal Understanding script already initialized');
+if (window.__uuRootScriptInitialized) {
+  console.debug('Universal Understanding (root) script already initialized');
 } else {
-  window.__uuScriptInitialized = true;
+  window.__uuRootScriptInitialized = true;
   document.addEventListener('DOMContentLoaded', function() {
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
