@@ -390,29 +390,10 @@ if (window.__uuRootScriptInitialized) {
 				if (!targetPath) return;
 				// Normalize any leading 'Website/' prefix and backslashes
 				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
-				// Determine base prefix from a `<base>` element if present or from
-				// the current pathname: prefer '/Website/' when the current path
-				// indicates the site is served from that subfolder.
 				const clean = targetPath.replace(/^\/+/, '');
-				let basePrefix = '/';
-				const baseEl = document.querySelector('base');
-				if (baseEl && baseEl.getAttribute('href')) {
-					let h = baseEl.getAttribute('href') || '/';
-					if (!h.endsWith('/')) h = h + '/';
-					basePrefix = h;
-				} else {
-					const loc = window.location.pathname || '';
-					const lower = loc.toLowerCase();
-					if (lower.includes('/website/') || lower.startsWith('/website') || lower.endsWith('/website') || lower === '/website') {
-						basePrefix = '/Website/';
-					} else {
-						basePrefix = '/';
-					}
-				}
-				let href = (basePrefix === '/' ? '/' : basePrefix) + clean.replace(/^\/+/, '');
-				// Ensure we generate an absolute URL when possible
-				try { href = new URL(href, window.location.origin).href; } catch (err) { /* ignore */ }
-				window.location.href = href;
+				const href = resolveTargetUrl(clean);
+				try { console.debug('navigate ->', href, 'from', window.location.pathname); } catch (e) {}
+				window.location.assign(href);
 				return;
 			}
 
@@ -468,6 +449,34 @@ if (window.__uuRootScriptInitialized) {
 	if (window.MutationObserver) {
 		const mo = new MutationObserver(function() { try { setCardDepths(); } catch (e) {} });
 		mo.observe(document.body, { childList: true, subtree: true });
+	}
+
+	// Resolve a target path into an absolute URL robustly across hosting roots
+	function resolveTargetUrl(cleanPath) {
+		const clean = (cleanPath || '').replace(/^\/+/, '');
+		// 1) Prefer a <base> element if present
+		const baseEl = document.querySelector('base');
+		if (baseEl && baseEl.href) {
+			try { return new URL(clean, baseEl.href).href; } catch (e) { /* fallthrough */ }
+		}
+		// 2) Try to use window.location.origin when available
+		try {
+			if (window.location && window.location.origin && window.location.origin !== 'null') {
+				return new URL('/' + clean, window.location.origin).href;
+			}
+		} catch (e) { /* fallthrough */ }
+		// 3) Fallback: if current pathname contains '/Website/', use that as a prefix
+		try {
+			const p = window.location.pathname || '';
+			const lower = p.toLowerCase();
+			const idx = lower.indexOf('/website/');
+			if (idx !== -1) {
+				const prefix = p.slice(0, idx + '/Website/'.length);
+				return prefix + clean;
+			}
+		} catch (e) { /* fallthrough */ }
+		// 4) Last resort, return root-relative
+		return '/' + clean;
 	}
 	const result = document.getElementById('formResult');
 	const submitBtn = form && form.querySelector('button[type="submit"]');
