@@ -244,9 +244,19 @@ if (window.__uuRootScriptInitialized) {
 				if (!targetPath) return;
 				// Normalize any leading 'Website/' prefix and backslashes so paths resolve from site root
 				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
-				// Build an origin-rooted URL; this works when the site is served from the web root.
-				// If you host under a sub-path, consider updating `normalizePath` or sitemap entries instead.
-				const href = '/' + targetPath;
+				// Determine whether the site is being served from a '/Website/' subpath and
+				// include that prefix if present so links work whether the site is served
+				// from the repo root or from within the Website folder.
+				let basePrefix = '/';
+				const loc = window.location.pathname || '';
+				const lower = loc.toLowerCase();
+				if (lower.includes('/website/') || lower.startsWith('/website')) {
+					basePrefix = '/Website/';
+				} else {
+					// Also check for common hosting where index.html sits at /Website/index.html
+					if (lower.endsWith('/website') || lower === '/website') basePrefix = '/Website/';
+				}
+				const href = (basePrefix === '/' ? '/' : basePrefix) + targetPath.replace(/^\/+/, '');
 				window.location.href = href;
 				return;
 			}
