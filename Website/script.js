@@ -459,7 +459,27 @@ if (window.__uuRootScriptInitialized) {
 		if (baseEl && baseEl.href) {
 			try { return new URL(clean, baseEl.href).href; } catch (e) { /* fallthrough */ }
 		}
-		// 2) If current pathname contains '/Website/' (possibly nested under a repo
+
+		// 2) Try to use the script's loaded URL (document.currentScript) to
+		// derive the correct base path. This is robust across hosting roots
+		// (for example when the site is served under /RepoName/Website/).
+		try {
+			let scriptSrc = (document.currentScript && document.currentScript.src) || '';
+			if (!scriptSrc) {
+				// Fallback: find a script tag that includes 'script.js'
+				const scripts = Array.from(document.getElementsByTagName('script'));
+				for (let i = scripts.length - 1; i >= 0; i--) {
+					const s = scripts[i].src || '';
+					if (s && s.toLowerCase().indexOf('/script.js') !== -1) { scriptSrc = s; break; }
+				}
+			}
+			if (scriptSrc) {
+				const scriptBase = scriptSrc.slice(0, scriptSrc.lastIndexOf('/') + 1);
+				try { return new URL(clean, scriptBase).href; } catch (e) { /* fallthrough */ }
+			}
+		} catch (e) { /* fallthrough */ }
+
+		// 3) If current pathname contains '/Website/' (possibly nested under a repo
 		// root like '/RepoName/Website/'), preserve that prefix so links point
 		// to the correct subfolder on the same host.
 		try {
@@ -467,12 +487,11 @@ if (window.__uuRootScriptInitialized) {
 			const lower = p.toLowerCase();
 			const idx = lower.indexOf('/website/');
 			if (idx !== -1) {
-				const prefix = p.slice(0, idx + '/website/'.length);
-				// keep original casing from p for prefix
-				const origPrefix = p.slice(0, idx) + p.slice(idx, idx + '/Website/'.length);
+				const origPrefix = p.slice(0, idx + '/Website/'.length);
 				return origPrefix + clean;
 			}
 		} catch (e) { /* fallthrough */ }
+
 		// 4) Last resort, return root-relative
 		return '/' + clean;
 	}
