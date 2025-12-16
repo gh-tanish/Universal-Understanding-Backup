@@ -425,8 +425,8 @@ article ol {
 .content-box, article .content-box {
   background: var(--surface-2);
   border-radius: 10px;
-  padding: 0.75rem;
-  margin: 0.6rem 0;
+  padding: 0.9rem;
+  margin: 0.9rem 0;
   border: 1px solid var(--card-border);
   color: var(--text);
   box-shadow: var(--shadow-soft);
@@ -434,9 +434,9 @@ article ol {
 
 /* Special box for derivations: slightly stronger left accent for emphasis */
 .derivation-box {
-  border-left: 4px solid rgba(91,33,182,0.18);
+  border-left: 4px solid rgba(91,33,182,0.12);
   padding-left: 1rem;
-  background: linear-gradient(90deg, rgba(91,33,182,0.02), var(--surface-2));
+  background: linear-gradient(90deg, rgba(91,33,182,0.01), var(--surface-2));
 }
 
 /* --- KaTeX adaptive styling: ensure math is readable in both light/dark modes --- */
@@ -472,20 +472,27 @@ article ol {
 
 /* --- Typography & Layout improvements for clearer headings --- */
 /* Base sizing adjustments */
+
+/* Base sizing adjustments */
 html { font-size: 16px; }
 
-.site-header.container { padding: 1.4rem 1rem; margin-bottom: 0.6rem; }
-.site-header h1 { font-size: 1.9rem; line-height: 1.05; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+.site-header.container { padding: 1.6rem 1rem; margin-bottom: 0.8rem; }
+.site-header h1 { font-size: 2.0rem; line-height: 1.02; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
 
-.hero { padding: 1rem 0 1.2rem; margin-bottom: 1rem; }
-.hero h2 { font-size: 1.5rem; margin: 0 0 0.4rem; font-weight: 700; }
-.hero p { font-size: 1.03rem; color: var(--muted); margin: 0.2rem 0; }
+.hero { padding: 1.2rem 0 1.4rem; margin-bottom: 1.25rem; }
+.hero h2 { font-size: 1.65rem; margin: 0 0 0.45rem; font-weight: 700; }
+.hero p { font-size: 1.05rem; color: var(--muted); margin: 0.3rem 0; }
 
-article h3 { font-size: 1.18rem; margin-top: 0.4rem; margin-bottom: 0.6rem; font-weight: 700; }
-article h4 { font-size: 1.02rem; margin-top: 0.6rem; margin-bottom: 0.4rem; font-weight: 600; }
-article h5 { font-size: 0.98rem; margin-top: 0.5rem; margin-bottom: 0.35rem; font-weight: 600; }
+/* Article typography and spacing for clarity */
+article h3 { font-size: 1.28rem; margin-top: 0.6rem; margin-bottom: 0.8rem; font-weight: 700; }
+article h4 { font-size: 1.08rem; margin-top: 0.6rem; margin-bottom: 0.55rem; font-weight: 600; }
+article h5 { font-size: 1.0rem; margin-top: 0.5rem; margin-bottom: 0.45rem; font-weight: 600; }
 
 .content-box { font-size: 1rem; }
+
+article { max-width: 900px; margin: 0 auto; }
+article p, article li { line-height: 1.72; margin: 0.9rem 0; }
+article ul, article ol { margin: 0.6rem 0 0.9rem 1.25rem; }
 
 /* Slightly larger KaTeX display math for readability */
 .katex-display { font-size: 1.06rem; padding: 0.9rem; }
@@ -501,18 +508,18 @@ article h5 { font-size: 0.98rem; margin-top: 0.5rem; margin-bottom: 0.35rem; fon
 .section-sep {
   height: 1px;
   border: none;
-  margin: 1.25rem 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+  margin: 1.2rem 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
 }
 .light-mode .section-sep {
-  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0,0,0,0.04), transparent);
 }
 
 .section-rule-strong {
-  height: 2px;
+  height: 1.5px;
   border: none;
-  margin: 1.6rem 0;
-  background: linear-gradient(90deg, rgba(91,33,182,0.12), rgba(37,99,235,0.12));
+  margin: 1.4rem 0;
+  background: linear-gradient(90deg, rgba(91,33,182,0.07), rgba(37,99,235,0.07));
   border-radius: 2px;
 }
 
@@ -521,6 +528,9 @@ article p { margin: 0.72rem 0; }
 .lead { font-size: 1.06rem; color: var(--muted); margin-bottom: 0.9rem; }
 .spaced { margin: 0.9rem 0; }
 .spacer { height: 1rem; display:block; }
+.lead { font-size: 1.06rem; color: var(--muted); margin-bottom: 1.1rem; }
+.spaced { margin: 1rem 0; }
+.spacer { height: 1.4rem; display:block; }
 
 /* Details/Summary toggles styling */
 details.toggle {
@@ -537,13 +547,14 @@ details.toggle[open] {
 details.toggle summary {
   cursor: pointer;
   font-weight: 700;
-  margin: -0.2rem 0 0.35rem 0;
+  margin: 0;
   list-style: none;
   outline: none;
   display: flex;
   align-items: center;
   min-height: 48px;
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 1.02rem;
   border-radius: 8px;
   background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
   border: 1px solid transparent;
@@ -551,6 +562,7 @@ details.toggle summary {
   align-items: center;
   color: var(--text);
 }
+details.toggle summary:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
 summary::-webkit-details-marker { display: none; }
 details.toggle summary::after {
   content: '\25BE';
