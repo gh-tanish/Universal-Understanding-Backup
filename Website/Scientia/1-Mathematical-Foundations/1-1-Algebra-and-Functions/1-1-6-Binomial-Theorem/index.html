@@ -9,8 +9,7 @@
   <script defer src="../../../../script.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-</head>
-<style>
+  <style>
 /* Minimal fallback styles for boxes and KaTeX if global CSS fails to load */
 .content-box{background:rgba(0,0,0,0.04);border-radius:8px;padding:0.6rem;margin:0.6rem 0;border:1px solid rgba(0,0,0,0.06);}
 details.toggle{background:rgba(255,255,255,0.02);border:1px solid rgba(0,0,0,0.06);padding:0.5rem;border-radius:10px;margin:0.8rem 0}
@@ -18,8 +17,26 @@ details.toggle[open]{box-shadow:0 6px 18px rgba(0,0,0,0.08)}
 details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:center;min-height:44px;padding:0 0.25rem}
 .katex, .katex *{color:inherit!important;background:transparent!important}
 .katex-display{display:block;margin:0.6rem 0;padding:0.6rem;border-radius:6px;background:rgba(255,255,255,0.02);border:1px solid rgba(0,0,0,0.06)}
+
+/* Tidy KaTeX visuals inside our content without removing spacing */
+.content-box .katex,
+.content-box .katex *,
+.toggle-body .katex,
+.toggle-body .katex * {
+  /* only remove backgrounds for nested KaTeX elements; keep native borders (fraction rules) intact */
+  background: transparent !important;
+}
+
+/* Hide scrollbars while preserving layout and spacing */
+.katex, .katex-display {
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  -ms-overflow-style: none !important; /* IE/Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+.katex::-webkit-scrollbar, .katex-display::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
 </style>
-</head>
+  </head>
 <body>
   <nav class="top-nav">
     <ul>
@@ -66,88 +83,13 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
       </div>
     <hr class="section-sep">
     <section>
-      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;font-size:1.05rem;">
-        <h3>Overview</h3>
-        <ul>
-          <li><strong>What:</strong> Expand powers of a sum: (x + y)<sup>n</sup>.</li>
-          <li><strong>Key ideas:</strong> binomial coefficients, Pascal's triangle, combinatorial interpretation.</li>
-        </ul>
-
-        <h4>Why it matters</h4>
-        <p>The binomial theorem expresses the expansion of (x + y)^n as a weighted sum where the weights are combinatorial coefficients. It appears across algebra, probability, series approximations, and combinatorics.</p>
-
-        <h4>Proof (combinatorial sketch)</h4>
-        <div class="content-box derivation-box">
-          <p>Consider multiplying (x+y) by itself n times. Each term in the expanded form corresponds to choosing either x or y from each factor. To get a term with x^{n-k} y^k we must choose y from exactly k of the n factors. The number of ways to choose which k factors supply y is \(\binom{n}{k}\), so the coefficient is \(\binom{n}{k}\).</p>
-        </div>
-
-        <h4>Properties & quick examples</h4>
-        <div class="content-box">
-          <p><strong>Symmetry:</strong> \(\binom{n}{k}=\binom{n}{n-k}\).</p>
-          <p><strong>Summation identity:</strong> \(\sum_{k=0}^n \binom{n}{k} = 2^n\).</p>
-          <p><strong>Example:</strong> (1+1)^n = \(\sum_{k=0}^n \binom{n}{k} = 2^n\) (counts all subsets of an n-set).</p>
-        </div>
-        
-        <h4>Inductive proof (sketch)</h4>
-        <div class="content-box derivation-box">
-          <p>We prove the binomial theorem by induction on \(n\). Base case \(n=0\): \((x+y)^0=1\) holds. Assume
-          \((x+y)^n=\sum_{k=0}^n \binom{n}{k} x^{n-k}y^k\). Multiply both sides by \((x+y)\):
-          \[ (x+y)^{n+1} = \sum_{k=0}^n \binom{n}{k} x^{n-k+1}y^k + \sum_{k=0}^n \binom{n}{k} x^{n-k}y^{k+1}. \]
-          Reindex the second sum (set \(j=k+1\)) and combine like powers of \(x\) to obtain
-          \[ (x+y)^{n+1} = \sum_{k=0}^{n+1} \Big(\binom{n}{k} + \binom{n}{k-1}\Big) x^{n+1-k} y^k, \]
-          where \(\binom{n}{-1}=\binom{n}{n+1}=0\). Using Pascal's identity \(\binom{n}{k}+\binom{n}{k-1}=\binom{n+1}{k}\)
-          completes the induction.
-        </div>
-
-        <h4>Vandermonde's identity</h4>
-        <div class="content-box">
-          <p>For nonnegative integers \(m,n\):
-          \[ \sum_{k=0}^r \binom{m}{k}\binom{n}{r-k} = \binom{m+n}{r}. \]
-          This identity has a simple combinatorial proof: choose \(r\) items from two disjoint sets of sizes \(m\) and \(n\).</p>
-        </div>
-
-        <h4>Binomial series (general exponent)</h4>
-        <div class="content-box derivation-box">
-          <p>For arbitrary complex \(\alpha\) and |x|&lt;1, the generalized binomial series converges:
-          \[ (1+x)^\alpha = \sum_{k=0}^\infty \binom{\alpha}{k} x^k, \qquad \binom{\alpha}{k}=\dfrac{\alpha(\alpha-1)\cdots(\alpha-k+1)}{k!}. \]
-          This reduces to the usual polynomial when \(\alpha\) is a nonnegative integer.</p>
-        </div>
-
-        <h4>Applications</h4>
-        <div class="content-box">
-          <ul>
-            <li>Probability: expansion of \((p+q)^n\) gives probabilities for binomial (Bernoulli) trials.</li>
-            <li>Series approximations: Taylor expansions often use binomial coefficients.</li>
-            <li>Combinatorics: counting subsets, paths on grids and coefficients in generating functions.</li>
-          </ul>
-        </div>
-
-        <h4>Binomial theorem</h4>
-        <div class="content-box" style="font-size:1.12rem;">
+      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;font-size:1.05rem;text-align:center;">
+        <h4 style="margin:0 0 0.5rem 0;font-weight:600;color:inherit;">Formula</h4>
+        <div class="content-box" style="font-size:1.15rem;">
           $$ (x + y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^{k} $$
           <br>
           $$ \binom{n}{k} = \dfrac{n!}{k!\,(n-k)!} $$
         </div>
-        <div class="spacer" aria-hidden="true"></div>
-
-        <details class="toggle" open>
-          <summary>Worked example:</summary>
-          <div class="toggle-body">
-            <div class="content-box derivation-box">
-              <ol>
-                <li>Take n = 3.</li>
-                <li>Compute coefficients: C(3,0) = 1, C(3,1) = 3, C(3,2) = 3, C(3,3) = 1.</li>
-                <li>Expand: (x + y)<sup>3</sup> = x<sup>3</sup> + 3x<sup>2</sup>y + 3xy<sup>2</sup> + y<sup>3</sup>.</li>
-              </ol>
-            </div>
-          </div>
-        </details>
-
-        <h4>Pascal's triangle (quick method)</h4>
-        <p>Row n of Pascal's triangle lists the coefficients C(n, 0), C(n, 1), …, C(n, n).
-        Use the triangle to generate coefficients quickly without factorials.</p>
-
-        <p class="spaced">Tip: when expanding by hand, write coefficients first, then attach powers of x and y.</p>
       </article>
     </section>
     </section>
@@ -162,7 +104,9 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
         renderMathInElement(document.body, {
           delimiters: [
             {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
           ],
           throwOnError: false
         });

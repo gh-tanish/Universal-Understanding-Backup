@@ -55,69 +55,27 @@
           <span style="display:inline-block;padding:0.2em 0.8em;background:rgba(220,220,220,0.07);border-radius:8px;">By The Organic Chemistry Tutor, YouTube</span>
         </div>
       </div>
+      <style>
+        /* Tidy KaTeX visuals inside our content without removing spacing */
+        .content-box .katex,
+        .content-box .katex *,
+        .toggle-body .katex,
+        .toggle-body .katex * {
+          background: transparent !important;
+        }
+
+        /* Hide scrollbars while preserving layout and spacing */
+        .katex, .katex-display {
+          overflow-x: visible !important;
+          overflow-y: visible !important;
+          -ms-overflow-style: none !important; /* IE/Edge */
+          scrollbar-width: none !important; /* Firefox */
+        }
+        .katex::-webkit-scrollbar, .katex-display::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+      </style>
     <hr class="section-sep">
     <section>
-      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;font-size:1.05rem;">
-        <h3>Overview</h3>
-        <ul>
-          <li>Counting arrangements and selections — decide whether order matters.</li>
-          <li>Use factorials to compute permutations and combinations.</li>
-        </ul>
-
-        <h4>Factorial</h4>
-        <div class="content-box" style="font-size:1.1rem;">
-          $$ n! = n \times (n-1) \times (n-2) \times \dots \times 1 \quad (0! = 1) $$
-        </div>
-
-        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;margin-top:0.6rem;">
-          <div style="flex:1;min-width:260px;">
-            <h4>Permutations (order matters)</h4>
-            <div class="content-box" style="padding:0.5rem;border-radius:6px;">
-              $$ P(n,k) = \dfrac{n!}{(n-k)!} $$
-            </div>
-            <div class="centered">
-              <p class="spaced"><strong>Example:</strong> From A,B,C,D make 3-letter arrangements: P(4,3)=4!/(1!)=24.</p>
-            </div>
-          </div>
-
-          <div style="flex:1;min-width:260px;">
-            <h4>Combinations (order does not matter)</h4>
-            <div class="content-box" style="padding:0.5rem;border-radius:6px;">
-              $$ \binom{n}{k} = \dfrac{n!}{k!\,(n-k)!} $$
-            </div>
-            <div class="centered">
-              <p class="spaced"><strong>Example:</strong> Choose 2 from 4: C(4,2)=6 (AB, AC, AD, BC, BD, CD).</p>
-            </div>
-          </div>
-        </div>
-
-        <h4 style="margin-top:0.6rem;">Quick rule</h4>
-            <ol>
-              <li>Take n = 3.</li>
-              <li>Compute coefficients: C(3,0) = 1, C(3,1) = 3, C(3,2) = 3, C(3,3) = 1.</li>
-              <li>Expand: (x + y)<sup>3</sup> = x<sup>3</sup> + 3x<sup>2</sup>y + 3xy<sup>2</sup> + y<sup>3</sup>.</li>
-            </ol>
-        <details class="toggle">
-          <summary>Derivations (click to expand)</summary>
-          <div class="toggle-body">
-            <p>This section gives concise derivations for the permutation and combination formulas.</p>
-
-            <h5>Permutation formula</h5>
-            <p>To form an ordered list of length <em>k</em> from <em>n</em> distinct items: choose the first item in <em>n</em> ways, the second in <em>n-1</em> ways, and so on until the <em>k</em>-th item in <em>n-k+1</em> ways. Multiply these choices:</p>
-            <div class="content-box">
-              $$ P(n,k) = n (n-1) (n-2) \cdots (n-k+1) = \dfrac{n!}{(n-k)!} $$
-            </div>
-
-            <div class="spacer" aria-hidden="true"></div>
-
-            <h5>Combination formula</h5>
-            <p>Each unordered selection of <em>k</em> items corresponds to <em>k!</em> different ordered lists (permutations). Therefore divide permutations by <em>k!</em>:</p>
-            <div class="content-box">
-              $$ \binom{n}{k} = \dfrac{P(n,k)}{k!} = \dfrac{n!}{k!\,(n-k)!} $$
-            </div>
-          </div>
-        </details>
-      </article>
+      <!-- Text removed per request: content under the video was deleted -->
     </section>
 
     </section>
@@ -130,9 +88,11 @@
     document.addEventListener('DOMContentLoaded', function () {
       if (window.renderMathInElement) {
         renderMathInElement(document.body, {
-          delimiters: [
+            delimiters: [
             {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
+            {left: '$', right: '$', display: false},
+            {left: '\\(', right: '\\)', display: false},
+            {left: '\\[', right: '\\]', display: true}
           ],
           throwOnError: false
         });
