@@ -165,6 +165,26 @@ if (window.__uuRootScriptInitialized) {
 			// Map pages into topic shape and merge, avoiding duplicates by path
 			const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
 			let counter = 1;
+
+			function deriveRefFromPath(normalizedPath, top) {
+				// normalizedPath e.g. 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/...'
+				const parts = (normalizedPath || '').split('/').filter(Boolean);
+				const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
+				const abbrev = codeMap[(top || parts[0] || '').toLowerCase()] || (parts[0] || '').slice(0,2).toUpperCase() || 'PG';
+				const nums = [];
+				// for each segment after the top-level, take the last numeric token in the leading dash-separated prefix
+				for (let i = 1; i < parts.length; i++) {
+					const seg = parts[i];
+					const m = seg.match(/^(\d+(?:-\d+)*)/);
+					if (m) {
+						const tokens = m[1].split('-').filter(Boolean);
+						nums.push(tokens[tokens.length - 1]);
+					}
+				}
+				// if no numbers found, fallback to counter-like single number
+				if (nums.length === 0) return `${abbrev}${counter++}`;
+				return `${abbrev}${nums.join('.')}`;
+			}
 			pages.forEach(p => {
 				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
 				if (!normalized) return;
@@ -189,9 +209,7 @@ if (window.__uuRootScriptInitialized) {
 				const parts = (p.dir || p.path || '').split('/');
 				const top = parts[0] || '';
 				const section = top || (p.section || '');
-				const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
-				const abbrev = codeMap[top.toLowerCase()] || top.slice(0,2).toUpperCase() || 'PG';
-				const ref = `${abbrev}${counter++}`;
+				const ref = deriveRefFromPath(normalized, top);
 				topics.push({ title: mainTitle || parts[parts.length-1] || normalized, path: normalized, section, ref });
 			});
 			// Sync any existing topics to use sitemap canonical titles when available
