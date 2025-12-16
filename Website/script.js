@@ -4,6 +4,33 @@ if (window.__uuRootScriptInitialized) {
 } else {
 	window.__uuRootScriptInitialized = true;
 	document.addEventListener('DOMContentLoaded', function() {
+		// Freshness check: when the user opens the site directly (no same-origin referrer),
+		// fetch the current page with `cache: "no-store"` and compare the 'Latest Update'
+		// marker. If the fetched HTML differs (newer), reload with a cache-busting query
+		// so GitHub Pages / the browser returns the latest content instead of a stale copy.
+		(function ensurePageIsFreshOnEntry() {
+			try {
+				const updateEl = document.querySelector('.update-date');
+				if (!updateEl) return;
+				// Only run this when the user navigated directly (initial open)
+				const ref = (document.referrer || '');
+				const isDirectOpen = !ref || (new URL(ref, location.href).origin !== location.origin);
+				if (!isDirectOpen) return;
+				const currentMarker = updateEl.textContent.trim();
+				fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
+					.then(r => r.text())
+					.then(txt => {
+						if (!txt) return;
+						// If the fresh HTML doesn't contain the same update marker, it's likely newer.
+						if (!txt.includes(currentMarker)) {
+							const u = new URL(location.href);
+							u.searchParams.set('_', Date.now());
+							location.replace(u.toString());
+						}
+					})
+					.catch(() => {});
+			} catch (e) { /* ignore */ }
+		})();
 	// Theme toggle functionality (ensure a toggle exists)
 	let themeToggle = document.getElementById('themeToggle');
 	const htmlElement = document.documentElement;
