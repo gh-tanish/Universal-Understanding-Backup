@@ -1,0 +1,25 @@
+# Operating system
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor
+.vscode/
+
+# Python
+__pycache__/
+
+# Secrets and credentials
+.env
+*.pem
+*.key
+secrets/
+*.log
+
+# Backup zips: keep backups/ tracked (do NOT ignore backups/)
