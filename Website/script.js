@@ -200,7 +200,8 @@ if (window.__uuRootScriptInitialized) {
 					const titleToShow = match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
 					const navPath = match.path || '';
-					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
+					const depth = match.ref ? (match.ref.split('.').length) : 1;
+					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
 
