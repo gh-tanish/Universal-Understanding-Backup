@@ -110,20 +110,22 @@ details.toggle summary{cursor:pointer;font-weight:700;display:flex;align-items:c
         <details class="toggle">
           <summary>Derivations (click to expand)</summary>
           <div class="toggle-body">
-            <p>This section gives concise derivations for the permutation and combination formulas.</p>
+            <div class="content-box derivation-box">
+              <p>This section gives concise derivations for the permutation and combination formulas.</p>
 
-            <h5>Permutation formula</h5>
-            <p>To form an ordered list of length <em>k</em> from <em>n</em> distinct items: choose the first item in <em>n</em> ways, the second in <em>n-1</em> ways, and so on until the <em>k</em>-th item in <em>n-k+1</em> ways. Multiply these choices:</p>
-            <div class="content-box">
-              $$ P(n,k) = n (n-1) (n-2) \cdots (n-k+1) = \dfrac{n!}{(n-k)!} $$
-            </div>
+              <h5>Permutation formula</h5>
+              <p>To form an ordered list of length <em>k</em> from <em>n</em> distinct items: choose the first item in <em>n</em> ways, the second in <em>n-1</em> ways, and so on until the <em>k</em>-th item in <em>n-k+1</em> ways. Multiply these choices:</p>
+              <div class="content-box">
+                $$ P(n,k) = n (n-1) (n-2) \cdots (n-k+1) = \dfrac{n!}{(n-k)!} $$
+              </div>
 
-            <div class="spacer" aria-hidden="true"></div>
+              <div class="spacer" aria-hidden="true"></div>
 
-            <h5>Combination formula</h5>
-            <p>Each unordered selection of <em>k</em> items corresponds to <em>k!</em> different ordered lists (permutations). Therefore divide permutations by <em>k!</em>:</p>
-            <div class="content-box">
-              $$ \binom{n}{k} = \dfrac{P(n,k)}{k!} = \dfrac{n!}{k!\,(n-k)!} $$
+              <h5>Combination formula</h5>
+              <p>Each unordered selection of <em>k</em> items corresponds to <em>k!</em> different ordered lists (permutations). Therefore divide permutations by <em>k!</em>:</p>
+              <div class="content-box">
+                $$ \binom{n}{k} = \dfrac{P(n,k)}{k!} = \dfrac{n!}{k!\,(n-k)!} $$
+              </div>
             </div>
           </div>
         </details>

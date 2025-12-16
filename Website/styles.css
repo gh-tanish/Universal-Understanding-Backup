@@ -432,6 +432,13 @@ article ol {
   box-shadow: var(--shadow-soft);
 }
 
+/* Special box for derivations: slightly stronger left accent for emphasis */
+.derivation-box {
+  border-left: 4px solid rgba(91,33,182,0.18);
+  padding-left: 1rem;
+  background: linear-gradient(90deg, rgba(91,33,182,0.02), var(--surface-2));
+}
+
 /* --- KaTeX adaptive styling: ensure math is readable in both light/dark modes --- */
 /* Force KaTeX text color to follow theme text color and remove hard white backgrounds */
 .katex, .katex * {
