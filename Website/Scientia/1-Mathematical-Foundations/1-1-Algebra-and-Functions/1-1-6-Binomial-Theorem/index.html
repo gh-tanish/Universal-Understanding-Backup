@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Binomial Theorem & Expansion — Algebra & Functions</title>
   <link rel="stylesheet" href="../../../../styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script defer src="../../../../script.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
 </head>
 <body>
   <nav class="top-nav">
@@ -45,8 +48,9 @@
 
         <h4>Binomial theorem</h4>
         <div class="content-box" style="font-size:1.12rem;">
-          (x + y)<sup>n</sup> = &sum;<sub>k=0</sub><sup>n</sup> C(n, k) x<sup>n-k</sup> y<sup>k</sup>
-          &nbsp;&nbsp; where &nbsp; C(n, k) = n! / (k!(n-k)!)
+          $$ (x + y)^n = \sum_{k=0}^n \binom{n}{k} x^{n-k} y^{k} $$
+          <br>
+          $$ \binom{n}{k} = \dfrac{n!}{k!\,(n-k)!} $$
         </div>
 
         <h4>Worked example</h4>
@@ -86,5 +90,18 @@
   <footer>
     <p>Developer: Tanish Paul</p>
   </footer>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
 </body>
 </html>
