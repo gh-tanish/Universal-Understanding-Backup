@@ -75,6 +75,20 @@
           <li>If order matters, use permutations; otherwise use combinations.</li>
           <li>Relation: P(n,k) = C(n,k) &times; k! — permutations count each combination in k! orders.</li>
         </ul>
+        <h4 style="margin-top:0.6rem;">Derivations</h4>
+        <p>This section gives concise derivations for the permutation and combination formulas.</p>
+
+        <h5>Permutation formula</h5>
+        <p>To form an ordered list of length <em>k</em> from <em>n</em> distinct items: choose the first item in <em>n</em> ways, the second in <em>n-1</em> ways, and so on until the <em>k</em>-th item in <em>n-k+1</em> ways. Multiply these choices:</p>
+        <div class="content-box">
+          $$ P(n,k) = n (n-1) (n-2) \cdots (n-k+1) = \dfrac{n!}{(n-k)!} $$
+        </div>
+
+        <h5>Combination formula</h5>
+        <p>Each unordered selection of <em>k</em> items corresponds to <em>k!</em> different ordered lists (permutations). Therefore divide permutations by <em>k!</em>:</p>
+        <div class="content-box">
+          $$ \binom{n}{k} = \dfrac{P(n,k)}{k!} = \dfrac{n!}{k!\,(n-k)!} $$
+        </div>
       </article>
     </section>
 
