@@ -512,6 +512,36 @@ article p { margin: 0.72rem 0; }
 .spaced { margin: 0.9rem 0; }
 .spacer { height: 1rem; display:block; }
 
+/* Details/Summary toggles styling */
+details.toggle {
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  margin: 0.8rem 0;
+}
+details.toggle[open] {
+  box-shadow: var(--shadow-soft);
+}
+details.toggle summary {
+  cursor: pointer;
+  font-weight: 700;
+  margin: -0.2rem 0 0.35rem 0;
+  list-style: none;
+  outline: none;
+  display: block;
+}
+summary::-webkit-details-marker { display: none; }
+details.toggle summary::after {
+  content: '\25BE';
+  float: right;
+  transition: transform 0.18s ease;
+  color: var(--muted);
+}
+details.toggle[open] summary::after { transform: rotate(180deg); }
+details.toggle .toggle-body { margin-top: 0.6rem; }
+
+
   
 .search-result-item {
   padding: 10px 12px;
