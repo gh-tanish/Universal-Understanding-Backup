@@ -263,8 +263,13 @@ if (window.__uuRootScriptInitialized) {
       const resultItem = e.target.closest('.search-result-item');
       if (resultItem) {
         e.preventDefault();
-        const targetPath = resultItem.dataset.path;
+        let targetPath = resultItem.dataset.path || '';
         if (!targetPath) return;
+        // Normalize any leading 'Website/' prefix and backslashes so links
+        // work regardless of whether the page is served from the repo root
+        // or the `Website/` subfolder. This mirrors normalization in the
+        // Website-level script and prevents 404s from mixed prefixes.
+        targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
         const currentPath = window.location.pathname;
         const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
         const cleanPath = pathWithoutFile.replace(/^\/+|\/+$/g, '');
