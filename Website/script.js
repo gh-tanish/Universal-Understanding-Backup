@@ -464,6 +464,27 @@ if (window.__uuRootScriptInitialized) {
 		mo.observe(document.body, { childList: true, subtree: true });
 	}
 
+	// Insert or update a visible "Updated" timestamp across pages so a single change
+	// can update the site's "latest update" time without editing many HTML files.
+	const LATEST_UPDATE_TEXT = 'Updated: December 16, 2025 — 6:37pm';
+	function setLatestUpdateTimestamp() {
+		const els = document.querySelectorAll('.date-created');
+		els.forEach(el => {
+			let next = el.nextElementSibling;
+			if (!next || !next.classList || !next.classList.contains('date-updated')) {
+				next = document.createElement('p');
+				next.className = 'date-updated';
+				el.parentNode.insertBefore(next, el.nextSibling);
+			}
+			next.textContent = LATEST_UPDATE_TEXT;
+		});
+	}
+	try { setLatestUpdateTimestamp(); } catch (err) { /* ignore */ }
+	if (window.MutationObserver) {
+		const mo2 = new MutationObserver(function() { try { setLatestUpdateTimestamp(); } catch (e) {} });
+		mo2.observe(document.body, { childList: true, subtree: true });
+	}
+
 	// Resolve a target path into an absolute URL robustly across hosting roots
 	function resolveTargetUrl(cleanPath) {
 		const clean = (cleanPath || '').replace(/^\/+/, '');
