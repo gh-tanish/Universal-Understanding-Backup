@@ -1,4 +1,8 @@
-document.addEventListener('DOMContentLoaded', function() {
+if (window.__uuScriptInitialized) {
+  console.debug('Universal Understanding script already initialized');
+} else {
+  window.__uuScriptInitialized = true;
+  document.addEventListener('DOMContentLoaded', function() {
   // Theme toggle functionality
   const themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
@@ -233,4 +237,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     submitBtn.disabled = false;
   });
-});
+  });
+}

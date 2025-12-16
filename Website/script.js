@@ -1,11 +1,15 @@
 // Theme toggle - run immediately, not waiting for DOMContentLoaded
-(function() {
-  // Load saved theme immediately
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  if (savedTheme === 'light') {
-    document.body.classList.add('light-mode');
-  }
-})();
+if (window.__uuScriptInitialized) {
+  console.debug('Website script already initialized');
+} else {
+  window.__uuScriptInitialized = true;
+  (function() {
+    // Load saved theme immediately
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+    }
+  })();
 
 document.addEventListener('DOMContentLoaded', function() {
   // Add fade-in to main content
