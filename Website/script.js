@@ -326,13 +326,14 @@ if (window.__uuRootScriptInitialized) {
 				searchResults.innerHTML = matches.map(match => {
 					// Prefer sitemap canonical title if available (preserves symbols like β),
 					// otherwise fall back to the topic's configured title.
-					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
-					// Always navigate to the specific page for this match (subsection path).
-					const navPath = match.path || '';
+						const normalizedNavPath = normalizePath(match.path || '');
+						const titleToShow = sitemapTitleMap[normalizedNavPath] || match.title || '';
+						// Always navigate to the specific page for this match (subsection path).
+						const navPath = normalizedNavPath || '';
 					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
 					// so search badges match the card refs exactly. Fall back to
 					// path-derived depth when `ref` is missing.
-					const depth = match.ref ? (match.ref.split('.').length) : computeDepthFromPath(match.path || '');
+					const depth = match.ref ? (match.ref.split('.').length) : computeDepthFromPath(navPath || '');
 					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
@@ -462,6 +463,16 @@ if (window.__uuRootScriptInitialized) {
 		// 2) Try to use window.location.origin when available
 		try {
 			if (window.location && window.location.origin && window.location.origin !== 'null') {
+				// If the path already looks like a top-level section (e.g. 'Vitalis/...'),
+				// treat it as origin-root. If it looks like a numeric/relative path
+				// (e.g. '1-2-7-1-...'), resolve relative to current page instead.
+				if (/^(scientia|vitalis|logos|sensus|website)\//i.test(clean) || clean.startsWith('/')) {
+					return new URL('/' + clean.replace(/^\/+/, ''), window.location.origin).href;
+				}
+				// numeric-leading segments should be resolved relative to current location
+				if (/^[0-9]/.test(clean)) {
+					return new URL(clean, window.location.href).href;
+				}
 				return new URL('/' + clean, window.location.origin).href;
 			}
 		} catch (e) { /* fallthrough */ }
@@ -473,6 +484,10 @@ if (window.__uuRootScriptInitialized) {
 			if (idx !== -1) {
 				const prefix = p.slice(0, idx + '/Website/'.length);
 				return prefix + clean;
+			}
+			// If path looks numeric (relative), resolve against current page
+			if (/^[0-9]/.test(clean)) {
+				try { return new URL(clean, window.location.href).href; } catch (e) { /* ignore */ }
 			}
 		} catch (e) { /* fallthrough */ }
 		// 4) Last resort, return root-relative
