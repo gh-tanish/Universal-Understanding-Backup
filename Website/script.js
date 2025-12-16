@@ -19,14 +19,32 @@ document.addEventListener('DOMContentLoaded', function() {
       // Only intercept local links
       if (a.getAttribute('href').startsWith('#')) return;
       e.preventDefault();
+      // Always resolve from /Website/ root for robust navigation
+      const current = window.location.pathname;
+      const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
+      let websiteRoot = '/Website/';
+      if (websiteIdx !== -1) {
+        websiteRoot = current.substring(0, websiteIdx + 9);
+      }
+      // Remove any leading slash from href
+      const cleanTarget = a.getAttribute('href').replace(/^\/+/, '');
+      const fullPath = websiteRoot + cleanTarget;
       if (main) {
         main.classList.remove('fade-in');
         main.classList.add('fade-out');
         setTimeout(() => {
-          window.location.href = a.href;
+          if (window.location.origin && window.location.origin !== 'null') {
+            window.location.href = window.location.origin + fullPath;
+          } else {
+            window.location.href = fullPath;
+          }
         }, 280);
       } else {
-        window.location.href = a.href;
+        if (window.location.origin && window.location.origin !== 'null') {
+          window.location.href = window.location.origin + fullPath;
+        } else {
+          window.location.href = fullPath;
+        }
       }
     }
   }, true);
@@ -235,8 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const targetPath = this.dataset.path;
             if (!targetPath) return;
-            // Always resolve from Website root for robust navigation
-            // Find the /Website/ root in the current path
+            // Always resolve from /Website/ root for robust navigation
             const current = window.location.pathname;
             const websiteIdx = current.toLowerCase().lastIndexOf('/website/');
             let websiteRoot = '/Website/';
@@ -247,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const cleanTarget = targetPath.replace(/^\/+/, '');
             // Compose the full path
             const fullPath = websiteRoot + cleanTarget;
-            // Use location.origin if available, else just use the path
             if (window.location.origin && window.location.origin !== 'null') {
               window.location.href = window.location.origin + fullPath;
             } else {
