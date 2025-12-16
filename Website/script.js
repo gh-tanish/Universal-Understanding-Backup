@@ -396,7 +396,16 @@ if (window.__uuRootScriptInitialized) {
 					// otherwise fall back to the topic's configured title.
 					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
-					const navPath = match.path || '';
+					let navPath = match.path || '';
+					try {
+						// Normalize and resolve the nav path now so the rendered
+						// search result carries an absolute href that navigation
+						// can use reliably across hosting roots and devices.
+						navPath = (navPath || '').replace(/\\/g, '/').replace(/^\/+/, '');
+						// Prefer stripping a leading Website/ when resolving
+						const candidate = navPath.replace(/^Website[\\\/]?/i, '');
+						navPath = resolveTargetUrl(candidate || navPath);
+					} catch (e) { /* leave navPath as originally provided */ }
 					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
 					// so search badges match the card refs exactly. Fall back to
 					// path-derived depth when `ref` is missing.
