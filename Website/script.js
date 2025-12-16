@@ -10,11 +10,35 @@ if (window.__uuRootScriptInitialized) {
 	const body = document.body;
 
 	// Load saved theme preference
-	const savedTheme = localStorage.getItem('theme') || 'dark';
+	const savedTheme = (function() { try { return localStorage.getItem('theme') || 'dark'; } catch (e) { return 'dark'; } })();
 	if (savedTheme === 'light') {
 		body.classList.add('light-mode');
+		htmlElement.classList.add('light-mode');
 	} else {
 		body.classList.remove('light-mode');
+		htmlElement.classList.remove('light-mode');
+	}
+
+	// Unified toggle function (outer-scoped so mobile/Safari can access it reliably)
+	let __uuToggleLock = false;
+	function toggleTheme(e) {
+		if (e && e.preventDefault) e.preventDefault();
+		if (__uuToggleLock) return;
+		__uuToggleLock = true;
+		try {
+			const isLightMode = body.classList.toggle('light-mode');
+			htmlElement.classList.toggle('light-mode', isLightMode);
+			const btn = document.getElementById('themeToggle');
+			if (btn) {
+				btn.textContent = isLightMode ? 'Light' : 'Dark';
+				btn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
+				btn.disabled = false;
+				btn.style.pointerEvents = 'auto';
+			}
+			try { localStorage.setItem('theme', isLightMode ? 'light' : 'dark'); } catch (err) {}
+		} finally {
+			setTimeout(function(){ __uuToggleLock = false; }, 300);
+		}
 	}
 
 	if (!themeToggle) {
@@ -39,30 +63,12 @@ if (window.__uuRootScriptInitialized) {
 		themeToggle.textContent = isLight ? 'Light' : 'Dark';
 		themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
 		themeToggle.setAttribute('tabindex', '0');
-		function toggleTheme(e) {
-			if (e && e.preventDefault) { e.preventDefault(); }
-			const isLightMode = body.classList.toggle('light-mode');
-			htmlElement.classList.toggle('light-mode', isLightMode);
-			themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
-			themeToggle.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
-			localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-		}
+		// Attach events that all call the same outer-scoped toggle. Use both click and touchend
+		// for compatibility; the toggle function has a short lock to avoid double-firing.
 		themeToggle.addEventListener('click', toggleTheme, { passive: false });
-		themeToggle.addEventListener('touchend', function(e) { e.preventDefault(); toggleTheme(); }, { passive: false });
-		themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
+		themeToggle.addEventListener('touchend', function(e) { if (e && e.preventDefault) e.preventDefault(); toggleTheme(e); }, { passive: false });
+		themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { if (e && e.preventDefault) e.preventDefault(); toggleTheme(e); } });
 	}
-		// Fail-safe: attach a direct listener that stops propagation so other delegated handlers
-		// or overlays won't swallow the event. Also ensure button is interactive.
-		themeToggle.style.pointerEvents = 'auto';
-		themeToggle.disabled = false;
-		function directToggleHandler(e) {
-			console.debug('Direct theme toggle fired (Root):', e.type, e.target);
-			e.stopPropagation();
-			if (e.preventDefault) e.preventDefault();
-			toggleTheme(e);
-		}
-		themeToggle.addEventListener('pointerup', directToggleHandler, {passive: false});
-		themeToggle.addEventListener('click', directToggleHandler, {passive: false});
 
 	// Search functionality
 	const searchBar = document.getElementById('siteSearch');
@@ -242,11 +248,8 @@ if (window.__uuRootScriptInitialized) {
 			const themeBtn = e.target.closest('#themeToggle');
 			if (themeBtn) {
 				e.preventDefault();
-				console.debug('Root theme toggle clicked:', themeBtn, 'target:', e.target);
-				const isLightMode = body.classList.toggle('light-mode');
-				themeBtn.textContent = isLightMode ? 'Light' : 'Dark';
-				themeBtn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
-				localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+				if (console && console.debug) console.debug('Root theme toggle clicked:', themeBtn, 'target:', e.target);
+				try { toggleTheme(e); } catch (err) { console.error(err); }
 				return;
 			}
 		}, false);
@@ -256,12 +259,9 @@ if (window.__uuRootScriptInitialized) {
 	document.body.addEventListener('pointerup', function(e) {
 		const themeBtn = e.target.closest('#themeToggle');
 		if (themeBtn) {
-			e.preventDefault();
-			console.debug('Root theme toggle pointerup:', themeBtn, 'target:', e.target);
-			const isLightMode = body.classList.toggle('light-mode');
-			themeBtn.textContent = isLightMode ? 'Light' : 'Dark';
-			themeBtn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
-			localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+				e.preventDefault();
+				if (console && console.debug) console.debug('Root theme toggle pointerup:', themeBtn, 'target:', e.target);
+				try { toggleTheme(e); } catch (err) { console.error(err); }
 		}
 	}, false);
 
