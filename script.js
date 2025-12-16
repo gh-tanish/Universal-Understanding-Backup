@@ -272,6 +272,32 @@ if (window.__uuRootScriptInitialized) {
     }
   }, false);
 
+  // Insert a "Last edited" timestamp into page footers if not already present.
+  (function insertLastEdited() {
+    try {
+      const lastRaw = document.lastModified || '';
+      let formatted = lastRaw;
+      try {
+        const dt = new Date(lastRaw);
+        if (!isNaN(dt.getTime())) {
+          formatted = dt.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+        }
+      } catch (e) { /* fall back to raw */ }
+
+      const footers = document.getElementsByTagName('footer');
+      for (let i = 0; i < footers.length; i++) {
+        const f = footers[i];
+        if (f.querySelector('.last-edited')) continue;
+        const p = document.createElement('p');
+        p.className = 'last-edited';
+        p.textContent = 'Last edited: ' + formatted;
+        f.appendChild(p);
+      }
+    } catch (err) {
+      console.debug('Could not insert last-edited timestamp', err);
+    }
+  })();
+
   const form = document.getElementById('contactForm');
   const result = document.getElementById('formResult');
   const submitBtn = form && form.querySelector('button[type="submit"]');
