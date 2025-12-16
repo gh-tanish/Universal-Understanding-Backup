@@ -3,34 +3,50 @@ if (window.__uuRootScriptInitialized) {
 } else {
   window.__uuRootScriptInitialized = true;
   document.addEventListener('DOMContentLoaded', function() {
-  // Theme toggle functionality
-  const themeToggle = document.getElementById('themeToggle');
+  // Theme toggle functionality (ensure a toggle exists)
+  let themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
   const body = document.body;
-  
+
   // Load saved theme preference
   const savedTheme = localStorage.getItem('theme') || 'dark';
   if (savedTheme === 'light') {
     body.classList.add('light-mode');
-    if (themeToggle) themeToggle.textContent = 'Light';
   } else {
     body.classList.remove('light-mode');
-    if (themeToggle) themeToggle.textContent = 'Dark';
   }
-  
-  // Theme toggle function
-  function toggleTheme(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const isLightMode = body.classList.toggle('light-mode');
-    themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
-    localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+
+  if (!themeToggle) {
+    const nav = document.querySelector('.top-nav ul');
+    if (nav) {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.className = 'theme-toggle';
+      btn.id = 'themeToggle';
+      btn.textContent = body.classList.contains('light-mode') ? 'Light' : 'Dark';
+      btn.setAttribute('aria-pressed', body.classList.contains('light-mode') ? 'true' : 'false');
+      btn.setAttribute('tabindex', '0');
+      li.appendChild(btn);
+      nav.appendChild(li);
+      themeToggle = btn;
+    }
   }
-  
-  // Theme toggle button handlers - support both click and touch
+
   if (themeToggle) {
+    const isLight = body.classList.contains('light-mode');
+    themeToggle.textContent = isLight ? 'Light' : 'Dark';
+    themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+    themeToggle.setAttribute('tabindex', '0');
+    function toggleTheme(e) {
+      if (e && e.preventDefault) { e.preventDefault(); }
+      const isLightMode = body.classList.toggle('light-mode');
+      themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
+      themeToggle.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
+      localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+    }
     themeToggle.addEventListener('click', toggleTheme, { passive: false });
-    themeToggle.addEventListener('touchend', toggleTheme, { passive: false });
+    themeToggle.addEventListener('touchend', function(e) { e.preventDefault(); toggleTheme(); }, { passive: false });
+    themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); } });
   }
 
   // Search functionality

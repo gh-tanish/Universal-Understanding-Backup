@@ -36,17 +36,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }, true);
 
-  // Theme toggle functionality
-  const themeToggle = document.getElementById('themeToggle');
+  // Theme toggle functionality (ensure a toggle exists)
+  let themeToggle = document.getElementById('themeToggle');
   const body = document.body;
-  
-  // Update button text based on current mode
+
+  if (!themeToggle) {
+    const nav = document.querySelector('.top-nav ul');
+    if (nav) {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.className = 'theme-toggle';
+      btn.id = 'themeToggle';
+      btn.textContent = body.classList.contains('light-mode') ? 'Light' : 'Dark';
+      btn.setAttribute('aria-pressed', body.classList.contains('light-mode') ? 'true' : 'false');
+      btn.setAttribute('tabindex', '0');
+      li.appendChild(btn);
+      nav.appendChild(li);
+      themeToggle = btn;
+    }
+  }
+
   if (themeToggle) {
     const isLight = body.classList.contains('light-mode');
     themeToggle.textContent = isLight ? 'Light' : 'Dark';
     themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
     themeToggle.setAttribute('tabindex', '0');
-    // Unified toggle function for both click and touch
     function toggleTheme() {
       const isLightMode = body.classList.toggle('light-mode');
       themeToggle.textContent = isLightMode ? 'Light' : 'Dark';
@@ -58,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       toggleTheme();
     }, {passive: false});
-    // Keyboard accessibility
     themeToggle.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
