@@ -512,6 +512,39 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
   color: #06b6d4;
 }
 
+/* Mirror depth-based colouring for cards using data-depth attribute */
+.section-card[data-depth="2"] .card-ref {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(59, 130, 246, 0.08));
+  border-color: rgba(37, 99, 235, 0.25);
+  color: #93c5fd;
+}
+.section-card[data-depth="3"] .card-ref {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.12), rgba(56, 189, 248, 0.08));
+  border-color: rgba(14, 165, 233, 0.25);
+  color: #7dd3fc;
+}
+.section-card[data-depth="4"] .card-ref {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.12), rgba(34, 211, 238, 0.08));
+  border-color: rgba(6, 182, 212, 0.25);
+  color: #67e8f9;
+}
+
+.light-mode .section-card[data-depth="2"] .card-ref {
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(59, 130, 246, 0.05));
+  border-color: rgba(37, 99, 235, 0.2);
+  color: #2563eb;
+}
+.light-mode .section-card[data-depth="3"] .card-ref {
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(56, 189, 248, 0.05));
+  border-color: rgba(14, 165, 233, 0.2);
+  color: #0284c7;
+}
+.light-mode .section-card[data-depth="4"] .card-ref {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(34, 211, 238, 0.05));
+  border-color: rgba(6, 182, 212, 0.2);
+  color: #0891b2;
+}
+
 .search-result-title {
   font-weight: 600;
   font-size: 0.9rem;

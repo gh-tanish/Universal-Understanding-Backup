@@ -428,6 +428,38 @@ if (window.__uuRootScriptInitialized) {
 	}, false);
 
 	const form = document.getElementById('contactForm');
+
+	// Ensure `.section-card` and inner `.card-ref` elements carry a `data-depth`
+	// attribute so CSS can color them the same way search badges are colored.
+	function setCardDepths() {
+		const cards = document.querySelectorAll('.section-card');
+		cards.forEach(card => {
+			let depth = 1;
+			const cardRefEl = card.querySelector('.card-ref');
+			// Prefer explicit ref text inside the card (e.g. "VI1.2.7.1")
+			if (cardRefEl) {
+				const text = (cardRefEl.textContent || '').trim();
+				if (text && text.indexOf('.') !== -1) {
+					depth = text.split('.').length;
+				} else if (card.getAttribute('href')) {
+					depth = computeDepthFromPath(card.getAttribute('href'));
+				} else {
+					// try to infer from nested links
+					const a = card.querySelector('a[href]');
+					if (a) depth = computeDepthFromPath(a.getAttribute('href'));
+				}
+				cardRefEl.setAttribute('data-depth', String(depth));
+			}
+			card.setAttribute('data-depth', String(depth));
+		});
+	}
+
+	// Run once on load and observe for dynamic changes
+	try { setCardDepths(); } catch (err) { /* ignore */ }
+	if (window.MutationObserver) {
+		const mo = new MutationObserver(function() { try { setCardDepths(); } catch (e) {} });
+		mo.observe(document.body, { childList: true, subtree: true });
+	}
 	const result = document.getElementById('formResult');
 	const submitBtn = form && form.querySelector('button[type="submit"]');
 
