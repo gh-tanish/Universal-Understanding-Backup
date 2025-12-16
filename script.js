@@ -29,6 +29,36 @@ if (window.__uuRootScriptInitialized) {
         }).catch(()=>{});
     } catch (e) { /* ignore */ }
   })();
+  // Create a small floating "Last edited" badge so the timestamp is visible on every page.
+  (function floatingLastEditedBadge() {
+    try {
+      const raw = document.lastModified || '';
+      let label = raw;
+      try {
+        const dt = new Date(raw);
+        if (!isNaN(dt.getTime())) label = dt.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+      } catch (e) {}
+
+      // Do not duplicate badge
+      if (document.getElementById('__uuLastEditedBadge')) return;
+
+      const badge = document.createElement('div');
+      badge.id = '__uuLastEditedBadge';
+      badge.className = 'uu-last-edited-badge';
+      badge.setAttribute('role', 'note');
+      badge.setAttribute('aria-label', 'Last edited');
+      badge.textContent = 'Last edited: ' + label;
+
+      // Allow user to hide badge by clicking (toggles small state)
+      badge.addEventListener('click', function () {
+        badge.classList.toggle('collapsed');
+      }, false);
+
+      document.body.appendChild(badge);
+    } catch (err) {
+      console.debug('Could not create floating last-edited badge', err);
+    }
+  })();
   // Theme toggle functionality (ensure a toggle exists)
   let themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
