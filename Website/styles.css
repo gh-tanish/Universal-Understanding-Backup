@@ -625,10 +625,27 @@ section{margin-bottom:1.5rem}
   text-decoration: none;
   color: inherit;
   min-height: 180px;
+  cursor: pointer;
+  pointer-events: auto;
 }
-.section-card:hover {
+
+/* Ensure .section-card links are clickable and styled as links */
+.section-card[href],
+.section-card a {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.section-card a:focus, .section-card:focus {
+  outline: 2px solid var(--accent-2, #2563eb);
+  outline-offset: 2px;
+}
+.section-card:hover, .section-card:focus {
   transform: translateY(-6px);
   box-shadow: 0 24px 60px rgba(2,6,23,0.75);
+  text-decoration: none;
 }
 .section-card h3 {
   margin: 0;
