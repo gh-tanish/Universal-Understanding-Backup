@@ -129,13 +129,15 @@ if (window.__uuRootScriptInitialized) {
 			pages.forEach(p => {
 				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
 				if (!normalized) return;
+				// derive a clean page title: many sitemap entries include " — Section" suffix.
+				const rawTitle = (p.title || '');
+				const mainTitle = rawTitle.split(' — ')[0].trim() || rawTitle;
+
 				if (existingPaths.has(normalized)) {
-					// If a static topic already exists for this path, prefer the sitemap's
-					// canonical page title (which may include symbols) by updating it.
+					// Update existing static topic to use the sitemap's canonical page title
 					for (let i = 0; i < topics.length; i++) {
 						if (normalizePath(topics[i].path) === normalized) {
-							if (p.title) topics[i].title = p.title;
-							// ensure path normalized
+							if (mainTitle) topics[i].title = mainTitle;
 							topics[i].path = normalized;
 							break;
 						}
@@ -146,12 +148,15 @@ if (window.__uuRootScriptInitialized) {
 				const parts = (p.dir || p.path || '').split('/');
 				const top = parts[0] || '';
 				const section = top || (p.section || '');
-				// Derive a short ref code (e.g. SC, VI, LO, SE) + counter
 				const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
 				const abbrev = codeMap[top.toLowerCase()] || top.slice(0,2).toUpperCase() || 'PG';
 				const ref = `${abbrev}${counter++}`;
-				topics.push({ title: p.title || parts[parts.length-1] || normalized, path: normalized, section, ref });
+				topics.push({ title: mainTitle || parts[parts.length-1] || normalized, path: normalized, section, ref });
 			});
+			// If the user has an active query, re-run the input event so results include merged pages
+			if (searchBar && searchBar.value && searchBar.value.trim().length > 0) {
+				try { searchBar.dispatchEvent(new Event('input', { bubbles: true })); } catch (err) { /* ignore */ }
+			}
 		} catch (err) {
 			console.debug('No sitemap.json found or failed to load:', err);
 		}
