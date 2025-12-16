@@ -603,6 +603,19 @@ if (window.__uuRootScriptInitialized) {
 		// 4) Last resort, return root-relative
 		return '/' + clean;
 	}
+
+	// Normalize any anchor.section-card hrefs on load so navigation works
+	// consistently (especially on touch devices / GitHub Pages roots).
+	try {
+		const anchors = document.querySelectorAll('a.section-card[href]');
+		anchors.forEach(a => {
+			let href = a.getAttribute('href') || '';
+			// Strip leading Website/ or backslashes and normalize
+			href = href.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+			const resolved = resolveTargetUrl(href);
+			if (resolved) a.setAttribute('href', resolved);
+		});
+	} catch (e) { /* ignore */ }
 	const result = document.getElementById('formResult');
 	const submitBtn = form && form.querySelector('button[type="submit"]');
 
