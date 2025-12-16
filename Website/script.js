@@ -329,9 +329,10 @@ if (window.__uuRootScriptInitialized) {
 					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
 					const navPath = match.path || '';
-					// Compute depth from the topic path so visual coloring matches
-					// how `.section-card` selectors derive levels from path segments.
-					const depth = computeDepthFromPath(match.path || '');
+					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
+					// so search badges match the card refs exactly. Fall back to
+					// path-derived depth when `ref` is missing.
+					const depth = match.ref ? (match.ref.split('.').length) : computeDepthFromPath(match.path || '');
 					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
