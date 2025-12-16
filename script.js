@@ -156,6 +156,23 @@ if (window.__uuRootScriptInitialized) {
     { title: 'Advanced & Research Medicine', path: 'Vitalis/8-Advanced-Research-Medicine/index.html', section: 'Vitalis', ref: 'VI8' }
   ];
 
+  // Resolve a target path into an absolute URL for root-level pages.
+  function resolveRootTargetUrl(p) {
+    try {
+      if (!p) return '';
+      let path = (p || '').replace(/\\/g, '/').replace(/^\/+/, '');
+      // If already absolute, return as-is
+      if (/^https?:\/\//i.test(path)) return path;
+      const origin = window.location.origin || '';
+      // If path already contains Website/ prefix, return origin + /path
+      if (/^Website\//i.test(path)) return origin + '/' + path.replace(/^\/+/, '');
+      // If path starts with a top-level section, assume under Website/
+      if (/^(Scientia|Vitalis|Logos|Sensus)\//i.test(path)) return origin + '/Website/' + path.replace(/^\/+/, '');
+      // Default: place under Website/
+      return origin + '/Website/' + path.replace(/^\/+/, '');
+    } catch (e) { return p; }
+  }
+
   if (searchBar && searchResults) {
     // Detect current page context
     const currentPath = window.location.pathname;
@@ -203,15 +220,14 @@ if (window.__uuRootScriptInitialized) {
       );
 
       if (matches.length > 0) {
-        searchResults.innerHTML = matches.map(match => `
-          <div class="search-result-item" data-path="${match.path}">
-            <div class="search-result-content">
-              <div class="search-result-title">${match.title}</div>
-              <div class="search-result-path">${match.section}</div>
-            </div>
-            <span class="search-ref">${match.ref}</span>
-          </div>
-        `).join('');
+        searchResults.innerHTML = matches.map(match => {
+          let navPath = match.path || '';
+          try {
+            navPath = (navPath || '').replace(/\\/g, '/').replace(/^\/+/, '');
+            navPath = resolveRootTargetUrl(navPath);
+          } catch (e) { /* leave navPath */ }
+          return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${match.title}</div>\n              <div class="search-result-path">${match.section}</div>\n            </div>\n            <span class="search-ref">${match.ref}</span>\n          </div>\n        `;
+        }).join('');
         searchResults.classList.add('active');
 
         // We'll use delegated handlers for navigation and toggles (see below)
@@ -265,10 +281,21 @@ if (window.__uuRootScriptInitialized) {
         e.preventDefault();
         let targetPath = resultItem.dataset.path || '';
         if (!targetPath) return;
-        // Normalize any leading 'Website/' prefix and backslashes so links
-        // work regardless of whether the page is served from the repo root
-        // or the `Website/` subfolder. This mirrors normalization in the
-        // Website-level script and prevents 404s from mixed prefixes.
+        // If the search result provided an absolute URL (or root-absolute),
+        // navigate directly. This ensures search results resolved to
+        // origin + '/Website/...' (set by root render) work from any page.
+        if (/^https?:\/\//i.test(targetPath) || /^\/Website\//i.test(targetPath) || /^\//.test(targetPath)) {
+          try {
+            if (/^\//.test(targetPath) && !/^https?:\/\//i.test(targetPath)) {
+              targetPath = window.location.origin + targetPath;
+            }
+          } catch (e) { /* ignore */ }
+          window.location.href = targetPath;
+          return;
+        }
+
+        // Fallback: normalize any leading 'Website/' prefix and backslashes
+        // and navigate using a document-relative path (for legacy entries).
         targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
         const currentPath = window.location.pathname;
         const pathWithoutFile = currentPath.substring(0, currentPath.lastIndexOf('/'));
