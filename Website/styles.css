@@ -401,6 +401,65 @@ body{margin:0;font-family:'Inter',sans-serif;background:var(--bg);color:var(--te
     transition-duration: 1.1s, 1.1s, 1.1s, 1.1s, 2.2s !important;
     transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1) !important;
   }
+
+/* --- Readability & Indentation tweaks for content --- */
+/* Slightly larger base for article content and clearer list indentation */
+article, .container article, main article {
+  font-size: 1.06rem;
+}
+
+article ul, article ol {
+  padding-left: 1.4rem;
+  margin-left: 0.1rem;
+}
+
+article li {
+  margin: 0.42rem 0;
+}
+
+article ol {
+  padding-left: 1.6rem;
+}
+
+/* Indented blocks for formula / example boxes */
+.content-box, article .content-box {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 0.6rem;
+  margin: 0.6rem 0;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* --- KaTeX adaptive styling: ensure math is readable in both light/dark modes --- */
+/* Force KaTeX text color to follow theme text color and remove hard white backgrounds */
+.katex, .katex * {
+  color: var(--text) !important;
+  background: transparent !important;
+}
+
+/* Display-mode math gets a subtle surface background that adapts to theme */
+.katex-display {
+  display: block;
+  margin: 0.8rem 0;
+  padding: 0.6rem;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text) !important;
+}
+
+.light-mode .katex-display {
+  border-color: rgba(0,0,0,0.06);
+}
+
+/* Make inline math slightly larger and aligned with text */
+.katex .mord {
+  font-size: 1.02em;
+}
+
+/* Ensure KaTeX SVG or HTML output doesn't carry inline white fills */
+.katex svg * { fill: currentColor !important; }
+
   
 .search-result-item {
   padding: 10px 12px;
