@@ -237,6 +237,19 @@ if (window.__uuRootScriptInitialized) {
 		return p.replace(/^Website[\\\/]?/i, '').replace(/^\.\//, '').replace(/\\/g, '/');
 	}
 
+	function computeDepthFromPath(p) {
+		if (!p) return 1;
+		const normalized = normalizePath(p || '');
+		const parts = normalized.split('/').filter(Boolean);
+		let count = 0;
+		for (let i = 0; i < parts.length; i++) {
+			const seg = parts[i] || '';
+			// consider segments that start with numeric groups like "1-" or "1-2-"
+			if (/^\d+(?:-\d+)*[-_]/.test(seg)) count++;
+		}
+		return Math.max(1, count);
+	}
+
 	if (searchBar && searchResults) {
 		// Detect current page context
 		const currentPath = window.location.pathname;
@@ -290,7 +303,9 @@ if (window.__uuRootScriptInitialized) {
 					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
 					const navPath = match.path || '';
-					const depth = match.ref ? (match.ref.split('.').length) : 1;
+					// Compute depth from the topic path so visual coloring matches
+					// how `.section-card` selectors derive levels from path segments.
+					const depth = computeDepthFromPath(match.path || '');
 					return `\n          <div class="search-result-item" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </div>\n        `;
 				}).join('');
 				searchResults.classList.add('active');
