@@ -570,7 +570,7 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif}
 .top-nav li a:hover{color:var(--accent-2);border-bottom-color:var(--accent-2)}
 .top-nav li a.active{color:var(--accent-2);border-bottom-color:var(--accent)}
 
-.site-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--surface);border-bottom:1px solid rgba(255,255,255,0.04);transition:background-color 0.4s ease,border-color 0.4s ease}
+.site-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--surface);border-bottom:1px solid var(--card-border);transition:background-color 0.4s ease,border-color 0.4s ease}
 .site-header h1{margin:0;font-size:1.1rem;background:linear-gradient(90deg,#4facfe,#8f6bff,#ff7ab6,#4facfe);background-size:200% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:titleGradientShift 8s ease-in-out infinite}
 
 @keyframes titleGradientShift {
@@ -584,9 +584,9 @@ h1,h2,h3,h4,h5,h6{font-family:'Space Grotesk',sans-serif}
 
 .container{max-width:1100px;margin:1.5rem auto;padding:0 2rem}
 section{margin-bottom:1.5rem}
-.hero{padding:2.4rem;background:linear-gradient(90deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+.hero{padding:2.4rem;background:var(--surface-2);border-radius:8px;border:1px solid var(--card-border)}
 .updates-list{display:flex;flex-direction:column;gap:0.75rem;margin-top:0.75rem}
-.update-item{padding:1rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px}
+.update-item{padding:1rem;background:var(--surface-2);border:1px solid var(--card-border);border-radius:8px}
 .update-meta{display:flex;gap:0.75rem;align-items:center;margin-bottom:0.5rem}
 .update-tag{display:inline-block;padding:0.2rem 0.5rem;border-radius:6px;background:rgba(91,33,182,0.18);color:var(--text);font-size:0.8rem}
 .update-date{color:var(--muted);font-size:0.85rem}
@@ -597,10 +597,10 @@ section{margin-bottom:1.5rem}
 .welcome-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
 .welcome-card {
   padding: 1.5rem;
-  background: linear-gradient(135deg,rgba(91,33,182,0.1),rgba(37,99,235,0.1));
-  border: 1px solid rgba(91,33,182,0.2);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   border-radius: 8px;
-  transition: box-shadow 1.1s cubic-bezier(0.33, 1, 0.68, 1), background 1.1s cubic-bezier(0.33, 1, 0.68, 1), border-color 1.1s cubic-bezier(0.33, 1, 0.68, 1), transform 1.1s cubic-bezier(0.33, 1, 0.68, 1);
+  transition: box-shadow 0.55s cubic-bezier(0.33, 1, 0.68, 1), background 0.55s cubic-bezier(0.33, 1, 0.68, 1), border-color 0.55s cubic-bezier(0.33, 1, 0.68, 1), transform 0.55s cubic-bezier(0.33, 1, 0.68, 1);
   display: flex;
   flex-direction: column;
   text-decoration: none;
@@ -618,9 +618,10 @@ section{margin-bottom:1.5rem}
   transform: scale(1.1);
 }
 .welcome-card:hover {
-  background: linear-gradient(135deg,rgba(91,33,182,0.15),rgba(37,99,235,0.15));
+  background: var(--card-bg);
   transform: translateY(-4px);
   border-color: var(--accent);
+  box-shadow: var(--shadow);
 }
 .welcome-card h4 {
   margin: 0 0 .5rem;
