@@ -367,6 +367,12 @@ if (window.__uuRootScriptInitialized) {
 			// (fixes touch/iOS navigation where relative paths sometimes 404).
 			const sectionCard = e.target.closest('.section-card');
 			if (sectionCard && sectionCard.getAttribute && sectionCard.getAttribute('href')) {
+				// If the section-card itself is a native anchor element, allow the
+				// browser's default navigation to proceed (prevents double-handling
+				// that can break navigation). Only intercept non-anchor cards.
+				if (sectionCard.tagName && sectionCard.tagName.toLowerCase() === 'a') {
+					return; // let the anchor do its job
+				}
 				e.preventDefault();
 				let target = sectionCard.getAttribute('href') || '';
 				// Normalize any leading 'Website/' prefix and backslashes
