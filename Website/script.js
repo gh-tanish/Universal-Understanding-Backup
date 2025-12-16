@@ -475,12 +475,47 @@ if (window.__uuRootScriptInitialized) {
 				e.preventDefault();
 				let targetPath = resultItem.dataset.path || '';
 				if (!targetPath) return;
-				// Normalize any leading 'Website/' prefix and backslashes
-				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+				// Normalize slashes
+				targetPath = targetPath.replace(/\\/g, '/').replace(/^\/+/, '');
 				const clean = targetPath.replace(/^\/+/, '');
-				const href = resolveTargetUrl(clean);
-				try { console.debug('navigate ->', href, 'from', window.location.pathname); } catch (e) {}
-				window.location.assign(href);
+				// Build candidate URLs in order of preference. We'll try each with a
+				// lightweight fetch to ensure the target exists before navigating.
+				const candidates = [];
+				try {
+					// Primary: treat clean as-is (resolve against site rules)
+					candidates.push(resolveTargetUrl(clean));
+				} catch (e) {}
+				// Also try with an explicit Website/ prefix (some topics originate from sitemap with/without it)
+				if (!/^Website\//i.test(clean)) {
+					try { candidates.push(resolveTargetUrl('Website/' + clean)); } catch (e) {}
+				}
+				// Try document-relative resolution (useful when the target is truly relative)
+				try { candidates.push(new URL(clean, window.location.href).href); } catch (e) {}
+				// Try stripping Website/ if present
+				try { candidates.push(resolveTargetUrl(clean.replace(/^Website[\\\/]?/i, ''))); } catch (e) {}
+
+				// Deduplicate while preserving order
+				const seen = new Set();
+				const uniq = candidates.filter(c => { if (!c) return false; if (seen.has(c)) return false; seen.add(c); return true; });
+
+				(async function tryNavigate() {
+					for (let i = 0; i < uniq.length; i++) {
+						const url = uniq[i];
+						try {
+							const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+							if (resp && resp.ok) {
+								try { console.debug('navigate ->', url, 'from', window.location.pathname); } catch (e) {}
+								window.location.assign(url);
+								return;
+							}
+						} catch (err) { /* ignore and try next */ }
+					}
+					// Fallback: navigate to first candidate even if fetch failed (original behavior)
+					if (uniq.length > 0) {
+						try { console.debug('fallback navigate ->', uniq[0]); } catch (e) {}
+						window.location.assign(uniq[0]);
+					}
+				})();
 				return;
 			}
 
