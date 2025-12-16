@@ -102,7 +102,12 @@ if (window.__uuRootScriptInitialized) {
 		{ title: 'Physics Foundations', path: 'Website/Scientia/2-Physics-Foundations/index.html', section: 'Scientia', ref: 'SC2' },
 		{ title: 'Quantum Mechanics', path: 'Website/Scientia/3-Quantum-Mechanics/index.html', section: 'Scientia', ref: 'SC3' },
 		{ title: 'Relativity', path: 'Website/Scientia/4-Relativity/index.html', section: 'Scientia', ref: 'SC4' },
-		{ title: 'Foundational Biomedical Sciences', path: 'Website/Vitalis/1-Foundational-Biomedical-Sciences/index.html', section: 'Vitalis', ref: 'VI1' },
+		{ title: 'Foundational Biomedical Sciences', path: 'Vitalis/1-Foundational-Biomedical-Sciences/index.html', section: 'Vitalis', ref: 'VI1' },
+		{ title: 'Biochemistry', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/index.html', section: 'Vitalis > Foundational Biomedical Sciences', ref: 'VI1.2' },
+		{ title: 'Lipid and Fatty Acid Metabolism', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/1-2-4-Lipid-and-Fatty-Acid-Metabolism/index.html', section: 'Vitalis > Biochemistry', ref: 'VI1.2.4' },
+		{ title: 'Beta Oxidation and Ketogenesis', displayTitle: 'Lipid and Fatty Acid Metabolism', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/1-2-4-Lipid-and-Fatty-Acid-Metabolism/1-2-4-1-Beta-Oxidation-and-Ketogenesis/index.html', section: 'Vitalis > Biochemistry > Lipid and Fatty Acid Metabolism', ref: 'VI1.2.4.1' },
+		{ title: 'Lipoprotein Metabolism', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/1-2-4-Lipid-and-Fatty-Acid-Metabolism/1-2-4-3-Lipoprotein-Metabolism/index.html', section: 'Vitalis > Biochemistry > Lipid and Fatty Acid Metabolism', ref: 'VI1.2.4.3' },
+		{ title: 'Cholesterol Synthesis', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/1-2-4-Lipid-and-Fatty-Acid-Metabolism/1-2-4-2-Cholesterol-Synthesis/index.html', section: 'Vitalis > Biochemistry > Lipid and Fatty Acid Metabolism', ref: 'VI1.2.4.2' },
 		{ title: 'Anatomy & Human Structure', path: 'Vitalis/2-Anatomy-and-Human-Structure/index.html', section: 'Vitalis', ref: 'VI2' },
 		{ title: 'Physiology', path: 'Vitalis/3-Physiology/index.html', section: 'Vitalis', ref: 'VI3' },
 		{ title: 'Pathology', path: 'Vitalis/4-Pathology/index.html', section: 'Vitalis', ref: 'VI4' },
@@ -188,7 +193,10 @@ if (window.__uuRootScriptInitialized) {
 			});
 
 			if (matches.length > 0) {
-				searchResults.innerHTML = matches.map(match => `\n          <div class="search-result-item" data-path="${match.path}">\n            <div class="search-result-content">\n              <div class="search-result-title">${match.title}</div>\n              <div class="search-result-path">${match.section}</div>\n            </div>\n            <span class="search-ref">${match.ref}</span>\n          </div>\n        `).join('');
+				searchResults.innerHTML = matches.map(match => {
+					const displayTitle = match.displayTitle || match.title || '';
+					return `\n          <div class="search-result-item" data-path="${match.path}">\n            <div class="search-result-content">\n              <div class="search-result-title">${displayTitle}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref">${match.ref || ''}</span>\n          </div>\n        `;
+				}).join('');
 				searchResults.classList.add('active');
 
 				// We'll use delegated handlers for navigation and toggles (see below)
