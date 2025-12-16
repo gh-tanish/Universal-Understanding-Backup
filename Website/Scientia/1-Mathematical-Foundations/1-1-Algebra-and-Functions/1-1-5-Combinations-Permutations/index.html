@@ -36,6 +36,34 @@
       <p>Counting principles, factorial notation, permutations, combinations, and arrangement problems.</p>
       <p class="date-created">Created: December 15, 2025</p>
     </section>
+    <section>
+      <article style="max-width:900px;margin:0 auto 3rem auto;line-height:1.6;">
+        <h3>Overview</h3>
+        <p>Basic combinatorics studies how to count arrangements and selections. This page
+        introduces factorial notation, permutations (ordered arrangements), combinations
+        (unordered selections), and simple examples to decide which formula applies.</p>
+
+        <h4>Factorial</h4>
+        <p>The factorial of a non-negative integer n is<br>
+        n! = n &times; (n-1) &times; (n-2) &times; &hellip; &times; 1, with 0! = 1.</p>
+
+        <h4>Permutations (order matters)</h4>
+        <p>Number of ordered arrangements of k items chosen from n distinct items:
+        P(n, k) = n! / (n - k)!.</p>
+        <p><strong>Example:</strong> How many 3-letter arrangements can be made from the letters A, B, C, D?
+        P(4, 3) = 4! / (4-3)! = 4 &times; 3 &times; 2 = 24.</p>
+
+        <h4>Combinations (order does not matter)</h4>
+        <p>Number of unordered selections of k items from n distinct items:
+        C(n, k) = n! / (k! (n - k)!).</p>
+        <p><strong>Example:</strong> How many ways to choose 2 people from 4? C(4, 2) = 4! / (2! 2!) = 6
+        (AB, AC, AD, BC, BD, CD).</p>
+
+        <h4>Quick rule</h4>
+        <p>If order matters use permutations; if order doesn't matter use combinations. You can
+        convert between them: P(n,k) = C(n,k) &times; k!.</p>
+      </article>
+    </section>
 
     <section>
       <div style="background:rgba(120,120,120,0.07);border-radius:12px;padding:2rem 1rem 1rem 1rem;max-width:800px;margin:2rem auto 2.5rem auto;box-shadow:0 1px 4px rgba(0,0,0,0.01);">
