@@ -3,6 +3,32 @@ if (window.__uuRootScriptInitialized) {
 } else {
   window.__uuRootScriptInitialized = true;
   document.addEventListener('DOMContentLoaded', function() {
+  // Root-level freshness guard: when the site is opened directly (no referrer),
+  // fetch the current URL with `no-store` and compare HTML. If the server
+  // returns a different version, reload with a cache-busting query so the
+  // browser / CDN yields the newest content. Run at most once per session.
+  (function rootFreshnessGuard() {
+    try {
+      if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem('__uuFreshnessChecked')) return;
+      const ref = (document.referrer || '');
+      const isDirectOpen = !ref || (new URL(ref, location.href).origin !== location.origin);
+      if (!isDirectOpen) return;
+      fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
+        .then(r => r.text())
+        .then(txt => {
+          if (!txt) return;
+          try {
+            const current = document.documentElement.outerHTML;
+            if (txt !== current) {
+              try { if (typeof sessionStorage !== 'undefined') sessionStorage.setItem('__uuFreshnessChecked', '1'); } catch (e) {}
+              const u = new URL(location.href);
+              u.searchParams.set('_', Date.now());
+              location.replace(u.toString());
+            }
+          } catch (e) { /* ignore comparison errors */ }
+        }).catch(()=>{});
+    } catch (e) { /* ignore */ }
+  })();
   // Theme toggle functionality (ensure a toggle exists)
   let themeToggle = document.getElementById('themeToggle');
   const htmlElement = document.documentElement;
