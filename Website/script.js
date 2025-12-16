@@ -123,9 +123,23 @@ if (window.__uuRootScriptInitialized) {
 	// Try to load a generated sitemap (Website/sitemap.json) to include deep/nested pages.
 	(async function loadSitemapAndMerge() {
 		try {
-			const resp = await fetch('sitemap.json', { cache: 'no-store' });
-			if (!resp.ok) return;
-			const pages = await resp.json();
+			// Try multiple locations for sitemap.json so pages served from subpaths
+			// (e.g. /Website/Vitalis/) still load the canonical sitemap.
+			const candidates = ['sitemap.json', '/sitemap.json', '/Website/sitemap.json'];
+			let resp = null;
+			let pages = null;
+			for (let i = 0; i < candidates.length; i++) {
+				try {
+					resp = await fetch(candidates[i], { cache: 'no-store' });
+					if (resp && resp.ok) {
+						pages = await resp.json();
+						break;
+					}
+				} catch (err) {
+					// ignore and try next
+				}
+			}
+			if (!pages) return;
 			// Map pages into topic shape and merge, avoiding duplicates by path
 			const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
 			let counter = 1;
