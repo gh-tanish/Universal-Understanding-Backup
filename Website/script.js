@@ -185,7 +185,9 @@ if (window.__uuRootScriptInitialized) {
 			}
 
 			const matches = contextTopics.filter(topic => {
-				const title = (topic.title || '').toLowerCase();
+				// Prefer displayTitle for matching so subpages can present the main title
+				// while still being searchable by their specific subtitle.
+				const title = ((topic.displayTitle ? topic.displayTitle + ' ' : '') + (topic.title || '')).toLowerCase();
 				const section = (topic.section || '').toLowerCase();
 				const path = (topic.path || '').toLowerCase();
 				const ref = (topic.ref || '').toLowerCase();
