@@ -390,44 +390,29 @@ if (window.__uuRootScriptInitialized) {
 				if (!targetPath) return;
 				// Normalize any leading 'Website/' prefix and backslashes
 				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
-				// Try multiple candidate URLs (root, /Website/, and relative) and
-				// prefer the first that responds OK to a quick HEAD request. This
-				// handles different hosting roots (root vs /Website/) and mobile
-				// environments that might otherwise produce 404.
-				(async function() {
-					const origin = window.location.origin || '';
-					const clean = targetPath.replace(/^\/+/, '');
-					const candidates = [
-						(origin ? origin + '/' + clean : '/' + clean),
-						(origin ? origin + '/Website/' + clean : '/Website/' + clean),
-						new URL(clean, window.location.href).href
-					];
-
-					const tryFetch = (url, ms) => {
-						return new Promise((resolve) => {
-							let settled = false;
-							const timer = setTimeout(() => { if (!settled) { settled = true; resolve(false); } }, ms || 1200);
-							fetch(url, { method: 'HEAD', cache: 'no-store' }).then(r => {
-								if (!settled) { settled = true; clearTimeout(timer); resolve(r && r.ok); }
-							}).catch(() => { if (!settled) { settled = true; clearTimeout(timer); resolve(false); } });
-						});
-					};
-
-					for (let i = 0; i < candidates.length; i++) {
-						const url = candidates[i];
-						try {
-							const ok = await tryFetch(url, 1200);
-							if (ok) { window.location.href = url; return; }
-						} catch (err) { /* ignore and try next */ }
+				// Determine base prefix from a `<base>` element if present or from
+				// the current pathname: prefer '/Website/' when the current path
+				// indicates the site is served from that subfolder.
+				const clean = targetPath.replace(/^\/+/, '');
+				let basePrefix = '/';
+				const baseEl = document.querySelector('base');
+				if (baseEl && baseEl.getAttribute('href')) {
+					let h = baseEl.getAttribute('href') || '/';
+					if (!h.endsWith('/')) h = h + '/';
+					basePrefix = h;
+				} else {
+					const loc = window.location.pathname || '';
+					const lower = loc.toLowerCase();
+					if (lower.includes('/website/') || lower.startsWith('/website') || lower.endsWith('/website') || lower === '/website') {
+						basePrefix = '/Website/';
+					} else {
+						basePrefix = '/';
 					}
-
-					// Fallback: navigate to resolved relative URL
-					try {
-						window.location.href = new URL(clean, window.location.href).href;
-					} catch (err) {
-						window.location.href = '/' + clean;
-					}
-				})();
+				}
+				let href = (basePrefix === '/' ? '/' : basePrefix) + clean.replace(/^\/+/, '');
+				// Ensure we generate an absolute URL when possible
+				try { href = new URL(href, window.location.origin).href; } catch (err) { /* ignore */ }
+				window.location.href = href;
 				return;
 			}
 
