@@ -562,6 +562,15 @@ if (window.__uuRootScriptInitialized) {
 	// Resolve a target path into an absolute URL robustly across hosting roots
 	function resolveTargetUrl(cleanPath) {
 		const clean = (cleanPath || '').replace(/^\/+/, '');
+
+		// 0) Resolve relative to the current document first — this ensures
+		// targets like "2-Physics-Foundations/index.html" (which are
+		// relative to the current page directory, e.g. /Website/Scientia/)
+		// resolve correctly to the nested folder instead of being treated
+		// as relative to the `/Website/` folder or the repo root.
+		try {
+			return new URL(clean, window.location.href).href;
+		} catch (e) { /* fallthrough */ }
 		// 1) Prefer a <base> element if present
 		const baseEl = document.querySelector('base');
 		if (baseEl && baseEl.href) {
