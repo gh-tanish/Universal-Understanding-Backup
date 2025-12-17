@@ -474,7 +474,7 @@ if (window.__uuRootScriptInitialized) {
 				// Normalize any leading 'Website/' prefix and backslashes
 				target = target.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
 				const href = resolveTargetUrl(target);
-				try { console.debug('section-card navigate ->', href, 'from', window.location.pathname); } catch (e) {}
+				try { console.debug('section-card raw target ->', sectionCard.getAttribute('href'), 'normalized ->', target, 'resolved ->', href, 'from', window.location.pathname); } catch (e) {}
 				window.location.assign(href);
 				return;
 			}
@@ -640,7 +640,10 @@ if (window.__uuRootScriptInitialized) {
 				if (m.removedNodes && m.removedNodes.length) { interesting = true; break; }
 				if (m.type === 'childList') { interesting = true; break; }
 			}
-			if (interesting) scheduleSetCardDepths();
+			if (interesting) {
+				scheduleSetCardDepths();
+				try { normalizeSectionCardAnchors(); } catch (e) {}
+			}
 		});
 		mo.observe(document.body, { childList: true, subtree: true });
 	}
@@ -705,18 +708,28 @@ if (window.__uuRootScriptInitialized) {
 		return '/' + clean;
 	}
 
-	// Normalize any anchor.section-card hrefs on load so navigation works
-	// consistently (especially on touch devices / GitHub Pages roots).
-	try {
-		const anchors = document.querySelectorAll('a.section-card[href]');
-		anchors.forEach(a => {
-			let href = a.getAttribute('href') || '';
-			// Strip leading Website/ or backslashes and normalize
-			href = href.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
-			const resolved = resolveTargetUrl(href);
-			if (resolved) a.setAttribute('href', resolved);
-		});
-	} catch (e) { /* ignore */ }
+	// Normalize any anchor.section-card hrefs so navigation works consistently
+	// (especially on touch devices / GitHub Pages roots). Exposed as a function
+	// so it can be re-run when cards are added dynamically.
+	function normalizeSectionCardAnchors() {
+		try {
+			const anchors = document.querySelectorAll('a.section-card[href]');
+			anchors.forEach(a => {
+				let href = a.getAttribute('href') || '';
+				const orig = href;
+				// Strip leading Website/ or backslashes and normalize
+				href = href.replace(/^Website[\\\/]?/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+				const resolved = resolveTargetUrl(href);
+				if (resolved) {
+					a.setAttribute('href', resolved);
+					try { console.debug('normalized anchor.section-card', orig, '=>', resolved); } catch (e) {}
+				}
+			});
+		} catch (e) { /* ignore */ }
+	}
+
+	// Run normalization once now
+	try { normalizeSectionCardAnchors(); } catch (e) { /* ignore */ }
 	const result = document.getElementById('formResult');
 	const submitBtn = form && form.querySelector('button[type="submit"]');
 
