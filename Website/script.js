@@ -524,6 +524,21 @@ if (window.__uuRootScriptInitialized) {
 					// Primary: treat clean as-is (resolve against site rules)
 					candidates.push(resolveTargetUrl(clean));
 				} catch (e) {}
+
+				// Exhaustive: generate candidates by inserting potential repo prefixes
+				// before '/Website/' derived from current pathname. This helps when
+				// the site is hosted under a repo subpath (e.g. /<repo>/Website/).
+				try {
+					const origin = window.location.origin || '';
+					const parts = (window.location.pathname || '/').split('/').filter(Boolean);
+					for (let i = 0; i <= parts.length; i++) {
+						const prefix = '/' + parts.slice(0, i).join('/');
+						let candidatePath = (prefix.replace(/\/+/g, '/') + '/Website/' + clean).replace(/\/+/g, '/');
+						// Normalize double slashes
+						candidatePath = candidatePath.replace(/([^:]^)\/+/g, '$1/');
+						try { candidates.push(origin + candidatePath); } catch (e) {}
+					}
+				} catch (e) {}
 				// Also try with an explicit Website/ prefix (some topics originate from sitemap with/without it)
 				if (!/^Website\//i.test(clean)) {
 					try { candidates.push(resolveTargetUrl('Website/' + clean)); } catch (e) {}
