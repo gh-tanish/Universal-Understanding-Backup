@@ -398,7 +398,13 @@ if (window.__uuRootScriptInitialized) {
 		}
     
 		searchBar.addEventListener('input', function(e) {
-			const query = e.target.value.toLowerCase().trim();
+				const query = e.target.value.toLowerCase().trim();
+				try { console.debug && console.debug('search input:', query); } catch(e) {}
+				// Immediate UI feedback so users see the dropdown while results compute
+				try {
+					searchResults.innerHTML = '<div class="search-result-item">Searching…</div>';
+					searchResults.classList.add('active');
+				} catch(e) {}
 			try {
 				if (query.length === 0) {
 					searchResults.classList.remove('active');
