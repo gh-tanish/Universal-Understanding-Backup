@@ -344,6 +344,8 @@ if (window.__uuRootScriptInitialized) {
 		return Math.max(1, count);
 	}
 
+	try {
+	console.debug && console.debug('search init:', !!searchBar, !!searchResults);
 	if (searchBar && searchResults) {
 		// Detect current page context
 		const currentPath = window.location.pathname;
@@ -361,6 +363,9 @@ if (window.__uuRootScriptInitialized) {
 		} else if (currentPath.includes('Sensus') || currentPath.includes('sensus')) {
 			currentContext = 'sensus';
 			searchBar.placeholder = 'Search Sensus topics (SE)...';
+		}
+		} catch (err) {
+			try { console.error('search init failed', err); } catch(e) {}
 		}
     
 		searchBar.addEventListener('input', function(e) {
