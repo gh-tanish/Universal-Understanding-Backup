@@ -19,41 +19,39 @@ if (window.__uuRootScriptInitialized) {
 				const currentMarker = updateEl.textContent.trim();
 				fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
 					.then(r => r.text())
-					// Make `currentContext` and a simple fallback renderer available
-					// in the outer scope so the input handler can call the fallback
-					// even if initialization fails.
-					let currentContext = 'all';
-					function renderSimpleResults(query) {
-						try {
-							const q = (query || '').toLowerCase().trim();
-							if (!q) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
-							const matches = topics.filter(t => {
-								const title = ((t.displayTitle ? t.displayTitle + ' ' : '') + (t.title || '')).toLowerCase();
-								const section = (t.section || '').toLowerCase();
-								const ref = (t.ref || '').toLowerCase();
-								const path = (t.path || '').toLowerCase();
-								return title.includes(q) || section.includes(q) || ref.includes(q) || path.includes(q);
-							});
-							if (!matches || matches.length === 0) {
-								searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
-								searchResults.classList.add('active');
-								return;
-							}
-							searchResults.innerHTML = matches.slice(0, 30).map(match => {
-								let nav = (match.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
-								try { nav = resolveTargetUrl(nav.replace(/^Website[\\\/]?/i, '')); } catch(e) {}
-								return `\n\t\t\t\t<div class="search-result-item" data-path="${nav}">\n\t\t\t\t<div class="search-result-content">\n\t\t\t\t\t<div class="search-result-title">${(match.title||'')}</div>\n\t\t\t\t\t<div class="search-result-path">${(match.section||'')}</div>\n\t\t\t\t</div>\n\t\t\t\t<span class="search-ref">${(match.ref||'')}</span>\n\t\t\t</div>`;
-							}).join('');
-							searchResults.classList.add('active');
-						} catch (err) { try { console.error('renderSimpleResults failed', err); } catch(e) {} }
-					}
+					.then(txt => {
+						if (!txt) return;
+						// If the fresh HTML doesn't contain the same update marker, it's likely newer.
+						if (!txt.includes(currentMarker)) {
+							const u = new URL(location.href);
+							u.searchParams.set('_', Date.now());
+							location.replace(u.toString());
+						}
+					})
+					.catch(() => {});
+			} catch (e) { /* ignore */ }
+		})();
+	// Theme toggle functionality (ensure a toggle exists)
+	let themeToggle = document.getElementById('themeToggle');
+	const htmlElement = document.documentElement;
+	const body = document.body;
 
-					try {
-					console.debug && console.debug('search init:', !!searchBar, !!searchResults);
-					if (searchBar && searchResults) {
+	// Load saved theme preference
+	const savedTheme = (function() { try { return localStorage.getItem('theme') || 'dark'; } catch (e) { return 'dark'; } })();
+	if (savedTheme === 'light') {
+		body.classList.add('light-mode');
+		htmlElement.classList.add('light-mode');
+	} else {
+		body.classList.remove('light-mode');
+		htmlElement.classList.remove('light-mode');
+	}
 
-						// Detect current page context
-						const currentPath = window.location.pathname;
+	// Unified toggle function (outer-scoped so mobile/Safari can access it reliably)
+	let __uuToggleLock = false;
+	function toggleTheme(e) {
+		if (e && e.preventDefault) e.preventDefault();
+		if (__uuToggleLock) return;
+		__uuToggleLock = true;
 		try {
 			const isLightMode = body.classList.toggle('light-mode');
 			htmlElement.classList.toggle('light-mode', isLightMode);
@@ -116,47 +114,6 @@ if (window.__uuRootScriptInitialized) {
 		{ title: 'Sigma Notation & Summation', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-7-Sigma-Notation-Summation/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.7' },
 		{ title: 'Inequalities & Modulus', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-8-Inequalities-Modulus/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.8' },
 		{ title: 'Calculus', path: 'Website/Scientia/1-Mathematical-Foundations/1-2-Calculus/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.2' },
-		{ title: 'Calculus Foundations', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.1' },
-		{ title: 'Concept of a Limit', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Concept-of-a-limit/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations', ref: 'SC1.2.1.1' },
-		{ title: 'Definition of Limit & Continuity', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Concept-of-a-limit/Definition-of-limit-and-continuity/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Concept of a Limit', ref: 'SC1.2.1.1.1' },
-		{ title: 'Left- and Right-Hand Limits', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Concept-of-a-limit/Left-and-right-hand-limits/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Concept of a Limit', ref: 'SC1.2.1.1.2' },
-		{ title: "L'Hôpital's Rule for Indeterminate Forms", path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Concept-of-a-limit/LHopitals-rule-for-indeterminate-forms/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Concept of a Limit', ref: 'SC1.2.1.1.3' },
-		{ title: 'Tangents & Instantaneous Rates of Change', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Derivatives-as-rates-of-change/Tangents-instantaneous-rates-of-change/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Derivatives as Rates of Change', ref: 'SC1.2.1.2.1' },
-		{ title: 'First Principles of Differentiation', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Derivatives-as-rates-of-change/First-principles-of-differentiation/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Derivatives as Rates of Change', ref: 'SC1.2.1.2.2' },
-		{ title: 'Power, Exponential, Logarithmic & Trigonometric Functions', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Basic-differentiation-rules/Power-exponential-log-trig-functions/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Basic Differentiation Rules', ref: 'SC1.2.1.3.1' },
-		{ title: 'Chain, Product & Quotient Rules', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Basic-differentiation-rules/Chain-product-quotient-rules/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Basic Differentiation Rules', ref: 'SC1.2.1.3.2' },
-		{ title: 'Implicit Differentiation', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Basic-differentiation-rules/Implicit-differentiation/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Basic Differentiation Rules', ref: 'SC1.2.1.3.3' },
-		{ title: 'Parametric Differentiation', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Basic-differentiation-rules/Parametric-differentiation/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Basic Differentiation Rules', ref: 'SC1.2.1.3.4' },
-		{ title: 'Stationary Points, Maxima & Minima', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Stationary-points-maxima-minima/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.1' },
-		{ title: 'Points of Inflection', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Points-of-inflection/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.2' },
-		{ title: 'Curve Sketching', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Curve-sketching/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.3' },
-		{ title: 'Motion Problems (Velocity & Acceleration)', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Motion-problems-velocity-acceleration/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.4' },
-		{ title: 'Related Rates Problems', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Related-rates-problems/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.5' },
-		{ title: 'Newton–Raphson Method (Numerical)', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/Newton-Raphson-method/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations > Applications of Differentiation', ref: 'SC1.2.1.4.6' },
-		{ title: 'Derivatives as Rates of Change', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Derivatives-as-rates-of-change/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations', ref: 'SC1.2.1.2' },
-		{ title: 'Basic Differentiation Rules', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Basic-differentiation-rules/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations', ref: 'SC1.2.1.3' },
-		{ title: 'Applications of Differentiation', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Calculus-Foundations/Applications-of-differentiation/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Calculus Foundations', ref: 'SC1.2.1.4' },
-		{ title: 'Integration', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.2' },
-		{ title: 'Fundamental Theorem of Calculus', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Fundamental-Theorem-of-Calculus/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.1' },
-		{ title: 'Indefinite Integration', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Indefinite-Integration/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.2' },
-		{ title: 'Definite Integrals', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Definite-Integrals/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.3' },
-		{ title: 'Integration Techniques', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Integration-Techniques/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.4' },
-		{ title: 'Substitution', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Integration-Techniques/Substitution/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Integration Techniques', ref: 'SC1.2.2.4.1' },
-		{ title: 'Integration by Parts', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Integration-Techniques/Integration-by-Parts/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Integration Techniques', ref: 'SC1.2.2.4.2' },
-		{ title: 'Partial Fractions', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Integration-Techniques/Partial-Fractions/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Integration Techniques', ref: 'SC1.2.2.4.3' },
-		{ title: 'Trigonometric Identities & Substitutions', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Integration-Techniques/Trig-Identities-and-Substitutions/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Integration Techniques', ref: 'SC1.2.2.4.4' },
-		{ title: 'Improper Integrals & Convergence', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Improper-Integrals-and-Convergence/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.5' },
-		{ title: 'Applications of Integration', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration', ref: 'SC1.2.2.6' },
-		{ title: 'Area Between Curves', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/Area-between-curves/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Applications of Integration', ref: 'SC1.2.2.6.1' },
-		{ title: 'Volume of Revolution', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/Volume-of-Revolution/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Applications of Integration', ref: 'SC1.2.2.6.2' },
-		{ title: 'Arc Length', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/Arc-Length/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Applications of Integration', ref: 'SC1.2.2.6.3' },
-		{ title: 'Mean Value of a Function', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/Mean-Value-of-a-Function/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Applications of Integration', ref: 'SC1.2.2.6.4' },
-		{ title: 'Probability Density Integrals', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Integration/Applications-of-Integration/Probability-Density-Integrals/index.html', section: 'Scientia > Mathematical Foundations > Calculus > Integration > Applications of Integration', ref: 'SC1.2.2.6.5' },
-		{ title: 'Exponential & Logarithmic Calculus', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Exponential-and-Logarithmic-Calculus/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.3' },
-		{ title: 'Series & Approximations', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Series-and-Approximations/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.4' },
-		{ title: 'Multivariable Calculus', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Multivariable-Calculus/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.5' },
-		{ title: 'Advanced Calculus Concepts', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Advanced-Calculus-Concepts/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.6' },
-		{ title: 'Prep for Analysis & Topology', path: 'Scientia/1-Mathematical-Foundations/1-2-Calculus/Prep-for-Analysis-and-Topology/index.html', section: 'Scientia > Mathematical Foundations > Calculus', ref: 'SC1.2.7' },
 		{ title: 'Linear Algebra', path: 'Website/Scientia/1-Mathematical-Foundations/1-3-Linear-Algebra/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.3' },
 		{ title: 'Differential Equations', path: 'Website/Scientia/1-Mathematical-Foundations/1-4-Differential-Equations/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.4' },
 		{ title: 'Complex Numbers & Complex Analysis', path: 'Website/Scientia/1-Mathematical-Foundations/1-5-Complex-Numbers/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.5' },
@@ -255,14 +212,89 @@ if (window.__uuRootScriptInitialized) {
 				if (nums.length === 0) return `${abbrev}${counter++}`;
 				return `${abbrev}${nums.join('.')}`;
 			}
-			pages.forEach(p => {
+			// Helper: attempt to fetch the page and extract a `.card-ref` value.
+			async function fetchCardRefForNormalized(normalized) {
+				if (!normalized) return '';
+				const origin = window.location.origin;
+				const candidates = [
+					normalized,
+					'/' + normalized,
+					'/Website/' + normalized,
+					origin + '/' + normalized,
+					origin + '/Website/' + normalized
+				];
+				for (let i = 0; i < candidates.length; i++) {
+					try {
+						const resp = await fetch(candidates[i], { cache: 'no-store' });
+						if (!resp || !resp.ok) continue;
+						const txt = await resp.text();
+						if (!txt) continue;
+						// Try DOM parsing first
+						try {
+							const parser = new DOMParser();
+							const doc = parser.parseFromString(txt, 'text/html');
+							const el = doc.querySelector('.card-ref');
+							if (el && el.textContent && el.textContent.trim()) return el.textContent.trim();
+						} catch (err) {
+							// ignore DOM parse errors
+						}
+						// Fallback: regex find
+						const m = txt.match(/<[^>]*class=["']card-ref["'][^>]*>([^<]+)<\//i);
+						if (m && m[1]) return m[1].trim();
+						// If no direct `.card-ref` found, attempt to find a parent index
+						try {
+							// Use the normalized path (not the candidate URL) to compute the parent index reliably
+							const normParts = (normalized || '').split('/').filter(Boolean);
+							if (normParts.length > 2) {
+								// parent index is the folder containing the section cards: .../<parentFolder>/index.html
+								const parentParts = normParts.slice(0, normParts.length - 2).concat(['index.html']);
+								const parentPathBases = [
+									'/' + parentParts.join('/'),
+									'/Website/' + parentParts.join('/'),
+									window.location.origin + '/' + parentParts.join('/')
+								];
+								for (let pi = 0; pi < parentPathBases.length; pi++) {
+									try {
+										const presp = await fetch(parentPathBases[pi], { cache: 'no-store' });
+										if (!presp || !presp.ok) continue;
+										const ptxt = await presp.text();
+										const parser2 = new DOMParser();
+										const pdoc = parser2.parseFromString(ptxt, 'text/html');
+										const hrefToken = normParts[normParts.length - 2] || '';
+										const card = Array.from(pdoc.querySelectorAll('.section-card')).find(c => {
+											const h = (c.getAttribute('href') || '').replace(/\\/g, '/');
+											return h.indexOf(hrefToken) !== -1 || h.endsWith(hrefToken + '/') || h.endsWith(hrefToken + '/index.html');
+										});
+										if (card) {
+											const cref = card.querySelector('.card-ref');
+											if (cref && cref.textContent && cref.textContent.trim()) return cref.textContent.trim();
+										}
+									} catch (err) {
+										/* ignore parent fetch errors and try next base */
+									}
+								}
+							}
+						} catch (err) { /* ignore parent inspection errors */ }
+					} catch (err) {
+						// ignore fetch errors and try next candidate
+					}
+				}
+				return '';
+			}
+
+			// Process sitemap pages sequentially so we can await page fetches when needed.
+			for (let pi = 0; pi < pages.length; pi++) {
+				const p = pages[pi];
 				const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
-				if (!normalized) return;
+				if (!normalized) continue;
 				// derive a clean page title: many sitemap entries include " — Section" suffix.
 				const rawTitle = (p.title || '');
 				const mainTitle = rawTitle.split(' — ')[0].trim() || rawTitle;
 				// Save canonical sitemap title for this normalized path (preserve symbols)
 				sitemapTitleMap[normalized] = mainTitle;
+
+				const parts = (p.dir || p.path || '').split('/');
+				const top = parts[0] || '';
 
 				if (existingPaths.has(normalized)) {
 					// Update existing static topic to use the sitemap's canonical page title
@@ -270,18 +302,29 @@ if (window.__uuRootScriptInitialized) {
 						if (normalizePath(topics[i].path) === normalized) {
 							if (mainTitle) topics[i].title = mainTitle;
 							topics[i].path = normalized;
+							try {
+								// Prefer explicit `.card-ref` found on the page; fall back to derived ref
+								const fetchedRef = await fetchCardRefForNormalized(normalized);
+								if (fetchedRef) {
+									topics[i].ref = fetchedRef;
+								} else {
+									topics[i].ref = deriveRefFromPath(normalized, top);
+								}
+							} catch (e) { /* ignore ref recompute errors */ }
 							break;
 						}
 					}
-					return;
+					continue;
 				}
 				existingPaths.add(normalized);
-				const parts = (p.dir || p.path || '').split('/');
-				const top = parts[0] || '';
 				const section = top || (p.section || '');
-				const ref = deriveRefFromPath(normalized, top);
+				let ref = deriveRefFromPath(normalized, top);
+				try {
+					const pageRef = await fetchCardRefForNormalized(normalized);
+					if (pageRef) ref = pageRef;
+				} catch (e) { /* ignore */ }
 				topics.push({ title: mainTitle || parts[parts.length-1] || normalized, path: normalized, section, ref });
-			});
+			}
 			// Sync any existing topics to use sitemap canonical titles when available
 			for (let i = 0; i < topics.length; i++) {
 				const n = normalizePath(topics[i].path || '');
@@ -346,36 +389,7 @@ if (window.__uuRootScriptInitialized) {
 		return Math.max(1, count);
 	}
 
-	try {
-	console.debug && console.debug('search init:', !!searchBar, !!searchResults);
 	if (searchBar && searchResults) {
-
-	// Simple fallback renderer (used if the main search logic throws)
-	function renderSimpleResults(query) {
-		try {
-			const q = (query || '').toLowerCase().trim();
-			if (!q) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
-			const matches = topics.filter(t => {
-				const title = ((t.displayTitle ? t.displayTitle + ' ' : '') + (t.title || '')).toLowerCase();
-				const section = (t.section || '').toLowerCase();
-				const ref = (t.ref || '').toLowerCase();
-				const path = (t.path || '').toLowerCase();
-				return title.includes(q) || section.includes(q) || ref.includes(q) || path.includes(q);
-			});
-			if (!matches || matches.length === 0) {
-				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
-				searchResults.classList.add('active');
-				return;
-			}
-			searchResults.innerHTML = matches.slice(0, 30).map(match => {
-				let nav = (match.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
-				try { nav = resolveTargetUrl(nav.replace(/^Website[\\\/]?/i, '')); } catch(e) {}
-				return `\n				<div class="search-result-item" data-path="${nav}">\n\t	\t\t<div class="search-result-content">\n\t\t\t\t\t<div class="search-result-title">${(match.title||'')}</div>\n\t\t\t\t\t<div class="search-result-path">${(match.section||'')}</div>\n\t\t\t\t</div>\n\t\t\t\t<span class="search-ref">${(match.ref||'')}</span>\n\t\t\t</div>`;
-			}).join('');
-			searchResults.classList.add('active');
-		} catch (err) { try { console.error('renderSimpleResults failed', err); } catch(e) {} }
-	}
-
 		// Detect current page context
 		const currentPath = window.location.pathname;
 		let currentContext = 'all';
@@ -393,24 +407,15 @@ if (window.__uuRootScriptInitialized) {
 			currentContext = 'sensus';
 			searchBar.placeholder = 'Search Sensus topics (SE)...';
 		}
-		} catch (err) {
-			try { console.error('search init failed', err); } catch(e) {}
-		}
     
 		searchBar.addEventListener('input', function(e) {
-				const query = e.target.value.toLowerCase().trim();
-				try { console.debug && console.debug('search input:', query); } catch(e) {}
-				// Immediate UI feedback so users see the dropdown while results compute
-				try {
-					searchResults.innerHTML = '<div class="search-result-item">Searching…</div>';
-					searchResults.classList.add('active');
-				} catch(e) {}
-			try {
-				if (query.length === 0) {
-					searchResults.classList.remove('active');
-					searchResults.innerHTML = '';
-					return;
-				}
+			const query = e.target.value.toLowerCase().trim();
+      
+			if (query.length === 0) {
+				searchResults.classList.remove('active');
+				searchResults.innerHTML = '';
+				return;
+			}
 
 			// Filter topics based on current page context (use path/section match so deep pages are included)
 			let contextTopics = topics;
@@ -436,46 +441,7 @@ if (window.__uuRootScriptInitialized) {
 					// otherwise fall back to the topic's configured title.
 					const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
 					// Always navigate to the specific page for this match (subsection path).
-					// Emit an absolute URL (origin + '/Website/' + normalized path) so
-					// search `data-path` is reliable from any page or device.
-					let navPath = match.path || '';
-					try {
-						const normalized = normalizePath(navPath || '');
-						const origin = (window.location && window.location.origin) ? window.location.origin : '';
-						// If the site is served under a repo subpath (e.g. /<repo>/Website/...),
-						// preserve the full prefix up to and including 'Website/' so the
-						// emitted absolute URL matches GitHub Pages hosting paths.
-						let fullPrefix = '';
-						try {
-							const p = (window.location && window.location.pathname) ? window.location.pathname : '';
-							const lower = p.toLowerCase();
-							const idx = lower.indexOf('/website/');
-							if (idx !== -1) {
-								fullPrefix = p.slice(0, idx + '/Website/'.length);
-							} else {
-								// Try to derive prefix from the loaded script's src
-								let scriptSrc = (document.currentScript && document.currentScript.src) || '';
-								if (!scriptSrc) {
-									const scripts = document.getElementsByTagName('script');
-									for (let i = scripts.length - 1; i >= 0; i--) {
-										const s = scripts[i].src || '';
-										if (s && s.toLowerCase().indexOf('/website/') !== -1) { scriptSrc = s; break; }
-									}
-								}
-								if (scriptSrc) {
-									try {
-										const u = new URL(scriptSrc, window.location.href);
-										const sp = u.pathname || '';
-										const li = sp.toLowerCase().indexOf('/website/');
-										if (li !== -1) fullPrefix = sp.slice(0, li + '/Website/'.length);
-									} catch (ee) {}
-								}
-							}
-						} catch (ee) {}
-						// Build absolute URL preserving any repo prefix found
-						const stripped = normalized.replace(/^Website\//i, '').replace(/^\/+/, '');
-						navPath = origin + (fullPrefix || '/Website') + '/' + stripped;
-					} catch (e) { /* leave navPath as originally provided */ }
+					const navPath = match.path || '';
 					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
 					// so search badges match the card refs exactly. Fall back to
 					// path-derived depth when `ref` is missing.
@@ -488,10 +454,6 @@ if (window.__uuRootScriptInitialized) {
 			} else {
 				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
 				searchResults.classList.add('active');
-			}
-			} catch (err) {
-				try { console.error('main search handler failed, falling back', err); } catch(e) {}
-				renderSimpleResults(query);
 			}
 		});
 
@@ -529,7 +491,7 @@ if (window.__uuRootScriptInitialized) {
 				// Normalize any leading 'Website/' prefix and backslashes
 				target = target.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
 				const href = resolveTargetUrl(target);
-				try { console.debug('section-card raw target ->', sectionCard.getAttribute('href'), 'normalized ->', target, 'resolved ->', href, 'from', window.location.pathname); } catch (e) {}
+				try { console.debug('section-card navigate ->', href, 'from', window.location.pathname); } catch (e) {}
 				window.location.assign(href);
 				return;
 			}
@@ -558,86 +520,12 @@ if (window.__uuRootScriptInitialized) {
 				e.preventDefault();
 				let targetPath = resultItem.dataset.path || '';
 				if (!targetPath) return;
-				// Normalize slashes
-				targetPath = targetPath.replace(/\\/g, '/').replace(/^\/+/, '');
+				// Normalize any leading 'Website/' prefix and backslashes
+				targetPath = targetPath.replace(/^Website[\\\/]/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
 				const clean = targetPath.replace(/^\/+/, '');
-				// Build candidate URLs in order of preference. We'll try each with a
-				// lightweight fetch to ensure the target exists before navigating.
-				const candidates = [];
-
-				// Exhaustive: generate candidates by inserting potential repo prefixes
-				// before '/Website/' derived from current pathname. Try these first
-				// so hosted repo subpaths are preferred over root-relative '/Website/'.
-				try {
-					const origin = window.location.origin || '';
-					const parts = (window.location.pathname || '/').split('/').filter(Boolean);
-					for (let i = parts.length; i >= 0; i--) {
-						const prefix = '/' + parts.slice(0, i).join('/');
-						let candidatePath = (prefix.replace(/\\/+/g, '/') + '/Website/' + clean).replace(/\\/+/g, '/');
-						// Normalize double slashes
-						candidatePath = candidatePath.replace(/([^:]^)\\/+/g, '$1/');
-						try { candidates.push(origin + candidatePath); } catch (e) {}
-					}
-				} catch (e) {}
-
-				// Primary: treat clean as-is (resolve against site rules)
-				try { candidates.push(resolveTargetUrl(clean)); } catch (e) {}
-				// Also try with an explicit Website/ prefix (some topics originate from sitemap with/without it)
-				if (!/^Website\//i.test(clean)) {
-					try { candidates.push(resolveTargetUrl('Website/' + clean)); } catch (e) {}
-				}
-				// Try document-relative resolution (useful when the target is truly relative)
-				try { candidates.push(new URL(clean, window.location.href).href); } catch (e) {}
-				// Try stripping Website/ if present
-				try { candidates.push(resolveTargetUrl(clean.replace(/^Website[\\\/]?/i, ''))); } catch (e) {}
-
-				// Deduplicate while preserving order
-				const seen = new Set();
-				const uniq = candidates.filter(c => { if (!c) return false; if (seen.has(c)) return false; seen.add(c); return true; });
-
-				(async function tryNavigate() {
-					// Expand candidates with index.html and no-index variants to handle
-					// directory-index hosting (e.g. /path/ -> /path/index.html) and
-					// to cover both presence and absence of trailing index files.
-					const expanded = [];
-					const seen2 = new Set();
-					for (let i = 0; i < uniq.length; i++) {
-						const u = uniq[i];
-						if (!u) continue;
-						if (!seen2.has(u)) { expanded.push(u); seen2.add(u); }
-						// If it doesn't look like a file, try /index.html
-						if (!/\.html(\?|$)/i.test(u)) {
-							const withIndex = u.replace(/\/+$/, '') + '/index.html';
-							if (!seen2.has(withIndex)) { expanded.push(withIndex); seen2.add(withIndex); }
-						}
-						// If it ends with /index.html, also try the directory form
-						if (/\/index\.html$/i.test(u)) {
-							const dirForm = u.replace(/\/index\.html$/i, '');
-							if (!seen2.has(dirForm)) { expanded.push(dirForm); seen2.add(dirForm); }
-						}
-					}
-
-					try { console.debug('search navigate candidates', expanded); } catch (e) {}
-					for (let i = 0; i < expanded.length; i++) {
-						const url = expanded[i];
-						try {
-							const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
-							if (resp) {
-								try { console.debug('fetch', url, '=>', resp.status); } catch (e) {}
-							}
-							if (resp && resp.ok) {
-								try { console.debug('navigate ->', url, 'from', window.location.pathname); } catch (e) {}
-								window.location.assign(url);
-								return;
-							}
-						} catch (err) { try { console.debug('fetch failed for', url, err && err.message); } catch(e){} }
-					}
-					// Fallback: navigate to first expanded candidate even if fetch failed
-					if (expanded.length > 0) {
-						try { console.debug('fallback navigate ->', expanded[0]); } catch (e) {}
-						window.location.assign(expanded[0]);
-					}
-				})();
+				const href = resolveTargetUrl(clean);
+				try { console.debug('navigate ->', href, 'from', window.location.pathname); } catch (e) {}
+				window.location.assign(href);
 				return;
 			}
 
@@ -709,10 +597,7 @@ if (window.__uuRootScriptInitialized) {
 				if (m.removedNodes && m.removedNodes.length) { interesting = true; break; }
 				if (m.type === 'childList') { interesting = true; break; }
 			}
-			if (interesting) {
-				scheduleSetCardDepths();
-				try { normalizeSectionCardAnchors(); } catch (e) {}
-			}
+			if (interesting) scheduleSetCardDepths();
 		});
 		mo.observe(document.body, { childList: true, subtree: true });
 	}
@@ -722,19 +607,6 @@ if (window.__uuRootScriptInitialized) {
 	// Resolve a target path into an absolute URL robustly across hosting roots
 	function resolveTargetUrl(cleanPath) {
 		const clean = (cleanPath || '').replace(/^\/+/, '');
-
-		// 0) Resolve relative to the current document for truly relative
-		// targets (./foo, ../bar, or plain filenames). However, if the
-		// target starts with a known top-level section (e.g. "Scientia/",
-		// "Vitalis/", "Logos/", "Sensus/", or "Website/"), treat it as
-		// a site-root-style path and skip document-relative resolution so
-		// we don't accidentally append the section into the current folder
-		// (which caused URLs like /.../Integration/Scientia/...).
-		try {
-			if (!/^(Scientia|Vitalis|Logos|Sensus|Website)\//i.test(clean)) {
-				return new URL(clean, window.location.href).href;
-			}
-		} catch (e) { /* fallthrough */ }
 		// 1) Prefer a <base> element if present
 		const baseEl = document.querySelector('base');
 		if (baseEl && baseEl.href) {
@@ -776,29 +648,6 @@ if (window.__uuRootScriptInitialized) {
 		// 4) Last resort, return root-relative
 		return '/' + clean;
 	}
-
-	// Normalize any anchor.section-card hrefs so navigation works consistently
-	// (especially on touch devices / GitHub Pages roots). Exposed as a function
-	// so it can be re-run when cards are added dynamically.
-	function normalizeSectionCardAnchors() {
-		try {
-			const anchors = document.querySelectorAll('a.section-card[href]');
-			anchors.forEach(a => {
-				let href = a.getAttribute('href') || '';
-				const orig = href;
-				// Strip leading Website/ or backslashes and normalize
-				href = href.replace(/^Website[\\\/]?/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
-				const resolved = resolveTargetUrl(href);
-				if (resolved) {
-					a.setAttribute('href', resolved);
-					try { console.debug('normalized anchor.section-card', orig, '=>', resolved); } catch (e) {}
-				}
-			});
-		} catch (e) { /* ignore */ }
-	}
-
-	// Run normalization once now
-	try { normalizeSectionCardAnchors(); } catch (e) { /* ignore */ }
 	const result = document.getElementById('formResult');
 	const submitBtn = form && form.querySelector('button[type="submit"]');
 
