@@ -1,0 +1,390 @@
+// Backed-up corrupted copy of Website/script.js (timestamped)
+// DO NOT EDIT - this is a snapshot of the live file before restore.
+// Source: Website/script.js (corrupted)
+
+// Universal Understanding - site script (corrupted snapshot)
+if (window.__uuRootScriptInitialized) {
+    console.debug('Universal Understanding (root) script already initialized');
+} else {
+    window.__uuRootScriptInitialized = true;
+    document.addEventListener('DOMContentLoaded', function() {
+        (function ensurePageIsFreshOnEntry() {
+            try {
+                const updateEl = document.querySelector('.update-date');
+                if (!updateEl) return;
+                const ref = (document.referrer || '');
+                const isDirectOpen = !ref || (new URL(ref, location.href).origin !== location.origin);
+                if (!isDirectOpen) return;
+                const currentMarker = updateEl.textContent.trim();
+                fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
+                    .then(r => r.text())
+                    .then(txt => {
+                        if (!txt) return;
+                        if (!txt.includes(currentMarker)) {
+                            const u = new URL(location.href);
+                            u.searchParams.set('_', Date.now());
+                            location.replace(u.toString());
+                        }
+                    })
+                    .catch(() => {});
+            } catch (e) { /* ignore */ }
+        })();
+
+        // Theme toggle
+        let themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        const body = document.body;
+
+        const savedTheme = (function() { try { return localStorage.getItem('theme') || 'dark'; } catch (e) { return 'dark'; } })();
+        if (savedTheme === 'light') {
+            body.classList.add('light-mode');
+            htmlElement.classList.add('light-mode');
+        } else {
+            body.classList.remove('light-mode');
+            htmlElement.classList.remove('light-mode');
+        }
+
+        let __uuToggleLock = false;
+        function toggleTheme(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (__uuToggleLock) return;
+            __uuToggleLock = true;
+            try {
+                const isLightMode = body.classList.toggle('light-mode');
+                htmlElement.classList.toggle('light-mode', isLightMode);
+                const btn = document.getElementById('themeToggle');
+                if (btn) {
+                    btn.textContent = isLightMode ? 'Light' : 'Dark';
+                    btn.setAttribute('aria-pressed', isLightMode ? 'true' : 'false');
+                    btn.disabled = false;
+                    btn.style.pointerEvents = 'auto';
+                }
+                try { localStorage.setItem('theme', isLightMode ? 'light' : 'dark'); } catch (err) {}
+            } finally {
+                setTimeout(function(){ __uuToggleLock = false; }, 300);
+            }
+        }
+
+        if (!themeToggle) {
+            const nav = document.querySelector('.top-nav ul');
+            if (nav) {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'theme-toggle';
+                btn.id = 'themeToggle';
+                btn.textContent = body.classList.contains('light-mode') ? 'Light' : 'Dark';
+                btn.setAttribute('aria-pressed', body.classList.contains('light-mode') ? 'true' : 'false');
+                btn.setAttribute('tabindex', '0');
+                li.appendChild(btn);
+                nav.appendChild(li);
+                themeToggle = btn;
+            }
+        }
+
+        if (themeToggle) {
+            const isLight = body.classList.contains('light-mode');
+            themeToggle.textContent = isLight ? 'Light' : 'Dark';
+            themeToggle.setAttribute('aria-pressed', isLight ? 'true' : 'false');
+            themeToggle.setAttribute('tabindex', '0');
+            themeToggle.addEventListener('click', toggleTheme, { passive: false });
+            themeToggle.addEventListener('touchend', function(e) { if (e && e.preventDefault) e.preventDefault(); toggleTheme(e); }, { passive: false });
+            themeToggle.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') { if (e && e.preventDefault) e.preventDefault(); toggleTheme(e); } });
+        }
+
+        // Search
+        const searchBar = document.getElementById('siteSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        const topics = [
+            { title: 'Mathematical Foundations', path: 'Scientia/1-Mathematical-Foundations/index.html', section: 'Scientia', ref: 'SC1' },
+            { title: 'Algebra & Functions', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/index.html', section: 'Scientia > Mathematical Foundations', ref: 'SC1.1' },
+            { title: 'Basic Algebraic Manipulations', path: 'Scientia/1-Mathematical-Foundations/1-1-Algebra-and-Functions/1-1-1-Basic-Algebraic-Manipulations/index.html', section: 'Scientia > Mathematical Foundations > Algebra & Functions', ref: 'SC1.1.1' },
+            { title: 'Biochemistry', path: 'Vitalis/1-Foundational-Biomedical-Sciences/1-2-Biochemistry/index.html', section: 'Vitalis > Foundational Biomedical Sciences', ref: 'VI1.2' }
+        ];
+
+        const sitemapTitleMap = Object.create(null);
+
+        (async function loadSitemapAndMerge() {
+            try {
+                const origin = window.location.origin;
+                const pathnameParts = (window.location.pathname || '/').split('/').filter(Boolean);
+                const candidates = [];
+                candidates.push('sitemap.json');
+                candidates.push('/sitemap.json');
+                candidates.push('/Website/sitemap.json');
+                candidates.push(origin + '/sitemap.json');
+                candidates.push(origin + '/Website/sitemap.json');
+                for (let i = pathnameParts.length; i >= 0; i--) {
+                    const prefix = '/' + pathnameParts.slice(0, i).join('/');
+                    candidates.push(prefix.replace(/\/+/, '/') + '/sitemap.json');
+                    candidates.push(origin + prefix.replace(/\/+/, '/') + '/sitemap.json');
+                }
+                let resp = null;
+                let pages = null;
+                for (let i = 0; i < candidates.length; i++) {
+                    const url = candidates[i];
+                    try {
+                        resp = await fetch(url, { cache: 'no-store' });
+                        if (resp && resp.ok) {
+                            pages = await resp.json();
+                            console.debug('Loaded sitemap from', url);
+                            break;
+                        }
+                    } catch (err) { /* ignore */ }
+                }
+                if (!pages) return;
+                const existingPaths = new Set(topics.map(t => normalizePath(t.path)));
+                let counter = 1;
+                function deriveRefFromPath(normalizedPath, top) {
+                    const parts = (normalizedPath || '').split('/').filter(Boolean);
+                    const codeMap = { scientia: 'SC', vitalis: 'VI', logos: 'LO', sensus: 'SE' };
+                    const abbrev = codeMap[(top || parts[0] || '').toLowerCase()] || (parts[0] || '').slice(0,2).toUpperCase() || 'PG';
+                    const nums = [];
+                    for (let i = 1; i < parts.length; i++) {
+                        const seg = parts[i];
+                        const m = seg.match(/^(\d+(?:-\d+)*)/);
+                        if (m) { const tokens = m[1].split('-').filter(Boolean); nums.push(tokens[tokens.length - 1]); }
+                    }
+                    if (nums.length === 0) return `${abbrev}${counter++}`;
+                    return `${abbrev}${nums.join('.')}`;
+                }
+                pages.forEach(p => {
+                    const normalized = normalizePath(p.path || p.rawPath || p.dir || '');
+                    if (!normalized) return;
+                    const rawTitle = (p.title || '');
+                    const mainTitle = rawTitle.split(' — ')[0].trim() || rawTitle;
+                    sitemapTitleMap[normalized] = mainTitle;
+                    if (existingPaths.has(normalized)) {
+                        for (let i = 0; i < topics.length; i++) {
+                            if (normalizePath(topics[i].path) === normalized) {
+                                if (mainTitle) topics[i].title = mainTitle;
+                                topics[i].path = normalized;
+                                break;
+                            }
+                        }
+                        return;
+                    }
+                    existingPaths.add(normalized);
+                    const parts = (p.dir || p.path || '').split('/');
+                    const top = parts[0] || '';
+                    const section = top || (p.section || '');
+                    const ref = deriveRefFromPath(normalized, top);
+                    topics.push({ title: mainTitle || parts[parts.length-1] || normalized, path: normalized, section, ref });
+                });
+                for (let i = 0; i < topics.length; i++) {
+                    const n = normalizePath(topics[i].path || '');
+                    if (sitemapTitleMap[n]) topics[i].title = sitemapTitleMap[n];
+                }
+                if (searchBar && searchBar.value && searchBar.value.trim().length > 0) {
+                    try { searchBar.dispatchEvent(new Event('input', { bubbles: true })); } catch (err) { }
+                }
+            } catch (err) { console.debug('sitemap load failed', err); }
+        })();
+
+        function normalizePath(p) { if (!p) return ''; return p.replace(/^Website[\\\/]?/i, '').replace(/^\.\//, '').replace(/\\/g, '/'); }
+
+        function computeDepthFromPath(p) { if (!p) return 1; const normalized = normalizePath(p).toLowerCase(); const level4 = ['1-1-1-1-','1-1-1-2-']; const level3 = ['1-1-1-','1-1-2-']; const level2 = ['1-1-','1-2-']; for (let i=0;i<level4.length;i++){ if (normalized.indexOf(level4[i])!==-1) return 4;} for (let i=0;i<level3.length;i++){ if (normalized.indexOf(level3[i])!==-1) return 3;} for (let i=0;i<level2.length;i++){ if (normalized.indexOf(level2[i])!==-1) return 2;} const parts = normalized.split('/').filter(Boolean); let count=0; for (let i=0;i<parts.length;i++){ if (/^\d+(?:-\d+)*[-_]/.test(parts[i])) count++; } return Math.max(1,count); }
+
+        if (searchBar && searchResults) {
+            const currentPath = window.location.pathname;
+            let currentContext = 'all';
+            if (currentPath.includes('Scientia') || currentPath.includes('scientia')) { currentContext = 'scientia'; searchBar.placeholder = 'Search Scientia topics (SC)...'; }
+            else if (currentPath.includes('Vitalis') || currentPath.includes('vitalis')) { currentContext = 'vitalis'; searchBar.placeholder = 'Search Vitalis topics (VI)...'; }
+            else if (currentPath.includes('Logos') || currentPath.includes('logos')) { currentContext = 'logos'; searchBar.placeholder = 'Search Logos topics (LO)...'; }
+            else if (currentPath.includes('Sensus') || currentPath.includes('sensus')) { currentContext = 'sensus'; searchBar.placeholder = 'Search Sensus topics (SE)...'; }
+
+            searchBar.addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length === 0) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
+                let contextTopics = topics;
+                if (currentContext !== 'all') contextTopics = topics.filter(t => (t.path||'').toLowerCase().includes(currentContext) || (t.section||'').toLowerCase().includes(currentContext));
+                const matches = contextTopics.filter(topic => {
+                    const normalizedPath = normalizePath(topic.path || '');
+                    const sitemapTitle = sitemapTitleMap[normalizedPath] || '';
+                    const titleSource = ((topic.displayTitle ? topic.displayTitle + ' ' : '') + (sitemapTitle || topic.title || '')).toLowerCase();
+                    const section = (topic.section || '').toLowerCase();
+                    const path = (topic.path || '').toLowerCase();
+                    const ref = (topic.ref || '').toLowerCase();
+                    return titleSource.includes(query) || section.includes(query) || path.includes(query) || ref.includes(query);
+                });
+                if (matches.length > 0) {
+                    searchResults.innerHTML = matches.map(match => {
+                        const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
+                        const navPath = (match.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+                        let href = '';
+                        try { href = resolveTargetUrl(navPath.replace(/^Website[\\\/]?/i, '')); } catch (e) { href = navPath; }
+                        const depth = match.ref ? (match.ref.split('.').length) : computeDepthFromPath(match.path || '');
+                        return `\n          <a class="search-result-link search-result-item" href="${href}" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </a>\n        `;
+                    }).join('');
+                    searchResults.classList.add('active');
+                } else {
+                    searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
+                    searchResults.classList.add('active');
+                }
+            });
+
+            document.addEventListener('click', function(e) { if (!searchBar.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.remove('active'); });
+
+            searchBar.addEventListener('focus', function() { if (this.value.trim().length > 0) searchResults.classList.add('active'); });
+        }
+
+        if (!window.__uuDelegatedEventsInstalled) {
+            window.__uuDelegatedEventsInstalled = true;
+            document.body.addEventListener('click', function(e) {
+                const sectionCard = e.target.closest('.section-card');
+                if (sectionCard && sectionCard.getAttribute && sectionCard.getAttribute('href')) {
+                    if (sectionCard.tagName && sectionCard.tagName.toLowerCase() === 'a') return;
+                    e.preventDefault();
+                    let target = sectionCard.getAttribute('href') || '';
+                    target = target.replace(/^Website[\\\/]?/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+                    const href = resolveTargetUrl(target);
+                    window.location.assign(href);
+                    return;
+                }
+                const toggleBtn = e.target.closest('.toggle-btn');
+                if (toggleBtn) {
+                    e.preventDefault();
+                    let nextDiv = toggleBtn.nextElementSibling;
+                    while (nextDiv && !nextDiv.classList.contains('toggle-content')) nextDiv = nextDiv.nextElementSibling;
+                    if (nextDiv) {
+                        const isExpanded = nextDiv.classList.contains('expanded');
+                        nextDiv.classList.toggle('expanded', !isExpanded);
+                        toggleBtn.classList.toggle('expanded', !isExpanded);
+                    }
+                    return;
+                }
+
+                const nativeAnchor = e.target.closest('a.search-result-item');
+                if (nativeAnchor) return;
+
+                const resultItem = e.target.closest('.search-result-item');
+                if (resultItem) {
+                    e.preventDefault();
+                    let targetPath = resultItem.dataset.path || '';
+                    if (!targetPath) return;
+                    targetPath = targetPath.replace(/^Website[\\\/]?/i, '').replace(/\\/g, '/').replace(/^\/+/, '');
+                    const href = resolveTargetUrl(targetPath);
+                    window.location.assign(href);
+                    return;
+                }
+
+                const themeBtn = e.target.closest('#themeToggle');
+                if (themeBtn) { e.preventDefault(); try { toggleTheme(e); } catch (err) { console.error(err); } return; }
+            }, false);
+        }
+
+        document.body.addEventListener('pointerup', function(e) { const themeBtn = e.target.closest('#themeToggle'); if (themeBtn) { e.preventDefault(); try { toggleTheme(e); } catch (err) { console.error(err); } } }, false);
+
+        const form = document.getElementById('contactForm');
+        function setCardDepths() {
+            const cards = document.querySelectorAll('.section-card');
+            cards.forEach(card => {
+                let depth = 1;
+                const cardRefEl = card.querySelector('.card-ref');
+                if (cardRefEl) {
+                    const text = (cardRefEl.textContent || '').trim();
+                    if (text && text.indexOf('.') !== -1) depth = text.split('.').length;
+                    else if (card.getAttribute('href')) depth = computeDepthFromPath(card.getAttribute('href'));
+                    else { const a = card.querySelector('a[href]'); if (a) depth = computeDepthFromPath(a.getAttribute('href')); }
+                    cardRefEl.setAttribute('data-depth', String(depth));
+                }
+                card.setAttribute('data-depth', String(depth));
+            });
+        }
+
+        try { setCardDepths(); } catch (err) { }
+        if (window.MutationObserver) {
+            let __uuDepthTimer = null;
+            function scheduleSetCardDepths() { if (__uuDepthTimer) clearTimeout(__uuDepthTimer); __uuDepthTimer = setTimeout(function() { try { setCardDepths(); } catch (e) {} __uuDepthTimer = null; }, 120); }
+            const mo = new MutationObserver(function(mutations) { let interesting = false; for (let i = 0; i < mutations.length; i++) { const m = mutations[i]; if (m.addedNodes && m.addedNodes.length) { interesting = true; break; } if (m.removedNodes && m.removedNodes.length) { interesting = true; break; } if (m.type === 'childList') { interesting = true; break; } } if (interesting) scheduleSetCardDepths(); });
+            mo.observe(document.body, { childList: true, subtree: true });
+        }
+
+        function resolveTargetUrl(cleanPath) {
+            const clean = (cleanPath || '').replace(/^\/+/, '');
+            const baseEl = document.querySelector('base');
+            if (baseEl && baseEl.href) { try { return new URL(clean, baseEl.href).href; } catch (e) { } }
+            try {
+                let scriptSrc = (document.currentScript && document.currentScript.src) || '';
+                if (!scriptSrc) {
+                    const scripts = Array.from(document.getElementsByTagName('script'));
+                    for (let i = scripts.length - 1; i >= 0; i--) {
+                        const s = scripts[i].src || '';
+                        if (s && s.toLowerCase().indexOf('/script.js') !== -1) { scriptSrc = s; break; }
+                    }
+                }
+                if (scriptSrc) { const scriptBase = scriptSrc.slice(0, scriptSrc.lastIndexOf('/') + 1); try { return new URL(clean, scriptBase).href; } catch (e) { } }
+            } catch (e) { }
+            try { const p = window.location.pathname || ''; const lower = p.toLowerCase(); const idx = lower.indexOf('/website/'); if (idx !== -1) { const origPrefix = p.slice(0, idx + '/Website/'.length); return origPrefix + clean; } } catch (e) { }
+            return '/' + clean;
+        }
+
+        const result = document.getElementById('formResult');
+        const submitBtn = form && form.querySelector('button[type="submit"]');
+        form && form.addEventListener('submit', async (e)=> {
+            e.preventDefault(); result.textContent = ''; if (!submitBtn) return; submitBtn.disabled = true;
+            const email = document.getElementById('email')?.value || ''; const message = document.getElementById('message')?.value || '';
+            try {
+                const resp = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, message }) });
+                if (resp.ok) { result.textContent = 'Thanks — your message was received.'; form.reset(); } else { const text = await resp.text().catch(()=>resp.statusText||'Error'); result.textContent = 'Submission failed: ' + text; }
+            } catch (err) { result.textContent = 'Could not contact server — message not saved locally.'; console.error(err); }
+            submitBtn.disabled = false;
+        });
+    });
+}
+
+if (window.__uuRootScriptInitialized) {
+	console.debug('Universal Understanding (root) script already initialized');
+} else {
+	window.__uuRootScriptInitialized = true;
+	document.addEventListener('DOMContentLoaded', function() {
+		// Freshness check: when the user opens the site directly (no same-origin referrer),
+		// fetch the current page with `cache: "no-store"` and compare the 'Latest Update'
+		// marker. If the fetched HTML differs (newer), reload with a cache-busting query
+		// so GitHub Pages / the browser returns the latest content instead of a stale copy.
+		(function ensurePageIsFreshOnEntry() {
+			try {
+				const updateEl = document.querySelector('.update-date');
+				if (!updateEl) return;
+				// Only run this when the user navigated directly (initial open)
+				const ref = (document.referrer || '');
+				const isDirectOpen = !ref || (new URL(ref, location.href).origin !== location.origin);
+				if (!isDirectOpen) return;
+				const currentMarker = updateEl.textContent.trim();
+				fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
+					.then(r => r.text())
+					// Make `currentContext` and a simple fallback renderer available
+					// in the outer scope so the input handler can call the fallback
+					// even if initialization fails.
+					let currentContext = 'all';
+					function renderSimpleResults(query) {
+						try {
+							const q = (query || '').toLowerCase().trim();
+							if (!q) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
+							const matches = topics.filter(t => {
+								const title = ((t.displayTitle ? t.displayTitle + ' ' : '') + (t.title || '')).toLowerCase();
+								const section = (t.section || '').toLowerCase();
+								const ref = (t.ref || '').toLowerCase();
+								const path = (t.path || '').toLowerCase();
+								return title.includes(q) || section.includes(q) || ref.includes(q) || path.includes(q);
+							});
+							if (matches.length > 0) {
+								searchResults.innerHTML = matches.map(match => {
+									const titleToShow = sitemapTitleMap[normalizePath(match.path || '')] || match.title || '';
+									const navPath = (match.path || '').replace(/\\/g, '/').replace(/^\/+/,'');
+									let href = '';
+									try { href = resolveTargetUrl(navPath.replace(/^Website[\\\/]?/i, '')); } catch (e) { href = navPath; }
+									const depth = match.ref ? (match.ref.split('.').length) : computeDepthFromPath(match.path || '');
+									return `\n          <a class="search-result-link search-result-item" href="${href}" data-path="${navPath}">\n            <div class="search-result-content">\n              <div class="search-result-title">${titleToShow}</div>\n              <div class="search-result-path">${match.section || ''}</div>\n            </div>\n            <span class="search-ref" data-depth="${depth}">${match.ref || ''}</span>\n          </a>\n        `;
+								}).join('');
+								searchResults.classList.add('active');
+							} else {
+								searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
+								searchResults.classList.add('active');
+							}
+						}catch(e){}
+					}
+					*** End Patch
+
+// (rest omitted in snapshot)
