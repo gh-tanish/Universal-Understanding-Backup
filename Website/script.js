@@ -347,6 +347,33 @@ if (window.__uuRootScriptInitialized) {
 	try {
 	console.debug && console.debug('search init:', !!searchBar, !!searchResults);
 	if (searchBar && searchResults) {
+
+	// Simple fallback renderer (used if the main search logic throws)
+	function renderSimpleResults(query) {
+		try {
+			const q = (query || '').toLowerCase().trim();
+			if (!q) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
+			const matches = topics.filter(t => {
+				const title = ((t.displayTitle ? t.displayTitle + ' ' : '') + (t.title || '')).toLowerCase();
+				const section = (t.section || '').toLowerCase();
+				const ref = (t.ref || '').toLowerCase();
+				const path = (t.path || '').toLowerCase();
+				return title.includes(q) || section.includes(q) || ref.includes(q) || path.includes(q);
+			});
+			if (!matches || matches.length === 0) {
+				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
+				searchResults.classList.add('active');
+				return;
+			}
+			searchResults.innerHTML = matches.slice(0, 30).map(match => {
+				let nav = (match.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+				try { nav = resolveTargetUrl(nav.replace(/^Website[\\\/]?/i, '')); } catch(e) {}
+				return `\n				<div class="search-result-item" data-path="${nav}">\n\t	\t\t<div class="search-result-content">\n\t\t\t\t\t<div class="search-result-title">${(match.title||'')}</div>\n\t\t\t\t\t<div class="search-result-path">${(match.section||'')}</div>\n\t\t\t\t</div>\n\t\t\t\t<span class="search-ref">${(match.ref||'')}</span>\n\t\t\t</div>`;
+			}).join('');
+			searchResults.classList.add('active');
+		} catch (err) { try { console.error('renderSimpleResults failed', err); } catch(e) {} }
+	}
+
 		// Detect current page context
 		const currentPath = window.location.pathname;
 		let currentContext = 'all';
@@ -370,12 +397,12 @@ if (window.__uuRootScriptInitialized) {
     
 		searchBar.addEventListener('input', function(e) {
 			const query = e.target.value.toLowerCase().trim();
-      
-			if (query.length === 0) {
-				searchResults.classList.remove('active');
-				searchResults.innerHTML = '';
-				return;
-			}
+			try {
+				if (query.length === 0) {
+					searchResults.classList.remove('active');
+					searchResults.innerHTML = '';
+					return;
+				}
 
 			// Filter topics based on current page context (use path/section match so deep pages are included)
 			let contextTopics = topics;
@@ -453,6 +480,10 @@ if (window.__uuRootScriptInitialized) {
 			} else {
 				searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
 				searchResults.classList.add('active');
+			}
+			} catch (err) {
+				try { console.error('main search handler failed, falling back', err); } catch(e) {}
+				renderSimpleResults(query);
 			}
 		});
 
