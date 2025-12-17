@@ -520,25 +520,24 @@ if (window.__uuRootScriptInitialized) {
 				// Build candidate URLs in order of preference. We'll try each with a
 				// lightweight fetch to ensure the target exists before navigating.
 				const candidates = [];
-				try {
-					// Primary: treat clean as-is (resolve against site rules)
-					candidates.push(resolveTargetUrl(clean));
-				} catch (e) {}
 
 				// Exhaustive: generate candidates by inserting potential repo prefixes
-				// before '/Website/' derived from current pathname. This helps when
-				// the site is hosted under a repo subpath (e.g. /<repo>/Website/).
+				// before '/Website/' derived from current pathname. Try these first
+				// so hosted repo subpaths are preferred over root-relative '/Website/'.
 				try {
 					const origin = window.location.origin || '';
 					const parts = (window.location.pathname || '/').split('/').filter(Boolean);
-					for (let i = 0; i <= parts.length; i++) {
+					for (let i = parts.length; i >= 0; i--) {
 						const prefix = '/' + parts.slice(0, i).join('/');
-						let candidatePath = (prefix.replace(/\/+/g, '/') + '/Website/' + clean).replace(/\/+/g, '/');
+						let candidatePath = (prefix.replace(/\\/+/g, '/') + '/Website/' + clean).replace(/\\/+/g, '/');
 						// Normalize double slashes
-						candidatePath = candidatePath.replace(/([^:]^)\/+/g, '$1/');
+						candidatePath = candidatePath.replace(/([^:]^)\\/+/g, '$1/');
 						try { candidates.push(origin + candidatePath); } catch (e) {}
 					}
 				} catch (e) {}
+
+				// Primary: treat clean as-is (resolve against site rules)
+				try { candidates.push(resolveTargetUrl(clean)); } catch (e) {}
 				// Also try with an explicit Website/ prefix (some topics originate from sitemap with/without it)
 				if (!/^Website\//i.test(clean)) {
 					try { candidates.push(resolveTargetUrl('Website/' + clean)); } catch (e) {}
