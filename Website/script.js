@@ -19,39 +19,41 @@ if (window.__uuRootScriptInitialized) {
 				const currentMarker = updateEl.textContent.trim();
 				fetch(location.href, { cache: 'no-store', credentials: 'same-origin' })
 					.then(r => r.text())
-					.then(txt => {
-						if (!txt) return;
-						// If the fresh HTML doesn't contain the same update marker, it's likely newer.
-						if (!txt.includes(currentMarker)) {
-							const u = new URL(location.href);
-							u.searchParams.set('_', Date.now());
-							location.replace(u.toString());
-						}
-					})
-					.catch(() => {});
-			} catch (e) { /* ignore */ }
-		})();
-	// Theme toggle functionality (ensure a toggle exists)
-	let themeToggle = document.getElementById('themeToggle');
-	const htmlElement = document.documentElement;
-	const body = document.body;
+					// Make `currentContext` and a simple fallback renderer available
+					// in the outer scope so the input handler can call the fallback
+					// even if initialization fails.
+					let currentContext = 'all';
+					function renderSimpleResults(query) {
+						try {
+							const q = (query || '').toLowerCase().trim();
+							if (!q) { searchResults.classList.remove('active'); searchResults.innerHTML = ''; return; }
+							const matches = topics.filter(t => {
+								const title = ((t.displayTitle ? t.displayTitle + ' ' : '') + (t.title || '')).toLowerCase();
+								const section = (t.section || '').toLowerCase();
+								const ref = (t.ref || '').toLowerCase();
+								const path = (t.path || '').toLowerCase();
+								return title.includes(q) || section.includes(q) || ref.includes(q) || path.includes(q);
+							});
+							if (!matches || matches.length === 0) {
+								searchResults.innerHTML = '<div class="search-result-item" style="cursor: default; pointer-events: none;">No results found</div>';
+								searchResults.classList.add('active');
+								return;
+							}
+							searchResults.innerHTML = matches.slice(0, 30).map(match => {
+								let nav = (match.path || '').replace(/\\/g, '/').replace(/^\/+/, '');
+								try { nav = resolveTargetUrl(nav.replace(/^Website[\\\/]?/i, '')); } catch(e) {}
+								return `\n\t\t\t\t<div class="search-result-item" data-path="${nav}">\n\t\t\t\t<div class="search-result-content">\n\t\t\t\t\t<div class="search-result-title">${(match.title||'')}</div>\n\t\t\t\t\t<div class="search-result-path">${(match.section||'')}</div>\n\t\t\t\t</div>\n\t\t\t\t<span class="search-ref">${(match.ref||'')}</span>\n\t\t\t</div>`;
+							}).join('');
+							searchResults.classList.add('active');
+						} catch (err) { try { console.error('renderSimpleResults failed', err); } catch(e) {} }
+					}
 
-	// Load saved theme preference
-	const savedTheme = (function() { try { return localStorage.getItem('theme') || 'dark'; } catch (e) { return 'dark'; } })();
-	if (savedTheme === 'light') {
-		body.classList.add('light-mode');
-		htmlElement.classList.add('light-mode');
-	} else {
-		body.classList.remove('light-mode');
-		htmlElement.classList.remove('light-mode');
-	}
+					try {
+					console.debug && console.debug('search init:', !!searchBar, !!searchResults);
+					if (searchBar && searchResults) {
 
-	// Unified toggle function (outer-scoped so mobile/Safari can access it reliably)
-	let __uuToggleLock = false;
-	function toggleTheme(e) {
-		if (e && e.preventDefault) e.preventDefault();
-		if (__uuToggleLock) return;
-		__uuToggleLock = true;
+						// Detect current page context
+						const currentPath = window.location.pathname;
 		try {
 			const isLightMode = body.classList.toggle('light-mode');
 			htmlElement.classList.toggle('light-mode', isLightMode);
