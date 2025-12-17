@@ -164,29 +164,43 @@ if (window.__uuRootScriptInitialized) {
       // If already absolute, return as-is
       if (/^https?:\/\//i.test(path)) return path;
       const origin = window.location.origin || '';
-      // Detect whether site is hosted under /Website/
-      let siteBase = '';
+      // Preserve full prefix up to and including '/Website/' when present so
+      // emitted URLs match GitHub Pages repo subpaths (e.g. /<repo>/Website/...).
       try {
-        const locPath = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
-        if (locPath.indexOf('/website/') !== -1) {
-          siteBase = '/Website';
-        } else {
-          // check script src for /Website/
-          let scriptSrc = (document.currentScript && document.currentScript.src) || '';
-          if (!scriptSrc) {
-            const scripts = document.getElementsByTagName('script');
-            for (let i = scripts.length - 1; i >= 0; i--) {
-              const s = scripts[i].src || '';
-              if (s && s.toLowerCase().indexOf('/website/') !== -1) { scriptSrc = s; break; }
-            }
+        const p = (window.location && window.location.pathname) ? window.location.pathname : '';
+        const lower = p.toLowerCase();
+        const idx = lower.indexOf('/website/');
+        if (idx !== -1) {
+          const origPrefix = p.slice(0, idx + '/Website/'.length);
+          const stripped = path.replace(/^Website[\\\/]?/i, '').replace(/^\/+/, '');
+          return origin + origPrefix + stripped;
+        }
+      } catch (ee) {}
+      // Fallback: attempt to detect prefix from script src
+      try {
+        let scriptSrc = (document.currentScript && document.currentScript.src) || '';
+        if (!scriptSrc) {
+          const scripts = document.getElementsByTagName('script');
+          for (let i = scripts.length - 1; i >= 0; i--) {
+            const s = scripts[i].src || '';
+            if (s) { scriptSrc = s; break; }
           }
-          if (scriptSrc && scriptSrc.toLowerCase().indexOf('/website/') !== -1) siteBase = '/Website';
+        }
+        if (scriptSrc) {
+          const u = new URL(scriptSrc, window.location.href);
+          const sp = u.pathname || '';
+          const li = sp.toLowerCase().indexOf('/website/');
+          if (li !== -1) {
+            const origPrefix = sp.slice(0, li + '/Website/'.length);
+            const stripped = path.replace(/^Website[\\\/]?/i, '').replace(/^\/+/, '');
+            return origin + origPrefix + stripped;
+          }
         }
       } catch (ee) {}
 
-      // Strip any leading Website/ so we can reapply the detected base consistently
+      // Last resort: return origin + /Website/ + stripped
       const stripped = path.replace(/^Website[\\\/]?/i, '').replace(/^\/+/, '');
-      return origin + siteBase + '/' + stripped;
+      return origin + '/Website/' + stripped;
     } catch (e) { return p; }
   }
 

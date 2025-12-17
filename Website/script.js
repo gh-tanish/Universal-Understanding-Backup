@@ -402,15 +402,18 @@ if (window.__uuRootScriptInitialized) {
 					try {
 						const normalized = normalizePath(navPath || '');
 						const origin = (window.location && window.location.origin) ? window.location.origin : '';
-						// Detect whether the current site is hosted under /Website/.
-						// If so, include that prefix; otherwise emit root-relative paths.
-						let siteBase = '';
+						// If the site is served under a repo subpath (e.g. /<repo>/Website/...),
+						// preserve the full prefix up to and including 'Website/' so the
+						// emitted absolute URL matches GitHub Pages hosting paths.
+						let fullPrefix = '';
 						try {
-							const p = (window.location && window.location.pathname) ? window.location.pathname.toLowerCase() : '';
-							if (p.indexOf('/website/') !== -1) {
-								siteBase = '/Website';
+							const p = (window.location && window.location.pathname) ? window.location.pathname : '';
+							const lower = p.toLowerCase();
+							const idx = lower.indexOf('/website/');
+							if (idx !== -1) {
+								fullPrefix = p.slice(0, idx + '/Website/'.length);
 							} else {
-								// check script src for /Website/
+								// Try to derive prefix from the loaded script's src
 								let scriptSrc = (document.currentScript && document.currentScript.src) || '';
 								if (!scriptSrc) {
 									const scripts = document.getElementsByTagName('script');
@@ -419,11 +422,19 @@ if (window.__uuRootScriptInitialized) {
 										if (s && s.toLowerCase().indexOf('/website/') !== -1) { scriptSrc = s; break; }
 									}
 								}
-								if (scriptSrc && scriptSrc.toLowerCase().indexOf('/website/') !== -1) siteBase = '/Website';
+								if (scriptSrc) {
+									try {
+										const u = new URL(scriptSrc, window.location.href);
+										const sp = u.pathname || '';
+										const li = sp.toLowerCase().indexOf('/website/');
+										if (li !== -1) fullPrefix = sp.slice(0, li + '/Website/'.length);
+									} catch (ee) {}
+								}
 							}
 						} catch (ee) {}
-						// Ensure we don't duplicate the Website/ segment when building the URL
-						navPath = origin + siteBase + '/' + normalized.replace(/^Website\//i, '').replace(/^\/+/, '');
+						// Build absolute URL preserving any repo prefix found
+						const stripped = normalized.replace(/^Website\//i, '').replace(/^\/+/, '');
+						navPath = origin + (fullPrefix || '/Website') + '/' + stripped;
 					} catch (e) { /* leave navPath as originally provided */ }
 					// Prefer using the topic `ref` (e.g. VI1.2.7.1) to determine depth
 					// so search badges match the card refs exactly. Fall back to
